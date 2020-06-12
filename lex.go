@@ -41,15 +41,16 @@ var keywords = map[string]int{
 	")":        RP,
 	"null":     NULL,
 	"$":        DOLLAR,
-	"CAST":     CAST,
+	"cast":     CAST,
+	"::":       CAST,
 }
 
 var replaceMap = map[string]string{
 	"==": " EQ ",
 	"!=": " NOT_EQ ",
-	"::": " CAST",
+	"::": " CAST ",
 }
-var replacer = regexp.MustCompile("(==|!=|!==)")
+var replacer = regexp.MustCompile("(==|!=|!==|::)")
 
 type Lexer struct {
 	s           scanner.Scanner
@@ -63,7 +64,7 @@ func NewLexer(str string) *Lexer {
 		return replaceMap[strings.ToLower(s)]
 	})
 	l.s.Init(strings.NewReader(str))
-	l.s.Mode = scanner.ScanStrings | scanner.ScanFloats | scanner.ScanInts | scanner.ScanIdents | scanner.SkipComments
+	l.s.Mode = scanner.ScanStrings | scanner.ScanFloats | scanner.ScanInts | scanner.ScanIdents | scanner.SkipComments | scanner.ScanRawStrings
 	return &l
 }
 func (l *Lexer) Text() string {
@@ -106,4 +107,8 @@ func (l *Lexer) Lex(lval *yySymType) int {
 
 func (l *Lexer) Error(s string) {
 	panic(s)
+}
+
+func unquoteRawString(s string) string {
+	return s[1 : len(s)-1]
 }

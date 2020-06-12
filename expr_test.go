@@ -31,7 +31,7 @@ func TestExpr2(t *testing.T) {
 }
 
 func TestExpr3(t *testing.T) {
-	code := "add($1,$1)"
+	code := "($1+$1*0.1)::Float::Text"
 	p, err := Compile(code, []types.BaseType{types.Int})
 	if err != nil {
 		panic(err)
@@ -68,6 +68,58 @@ func TestExprMultiIf(t *testing.T) {
 	}
 	t.Log(types.ToString(ret))
 }
+func TestExprCast(t *testing.T) {
+	code := "`12`"
+	p, err := Compile(code, []types.BaseType{types.Int,types.Int})
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10, ),types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10, )})
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
+func TestExprNow(t *testing.T) {
+	code := `now()`
+	p, err := Compile(code, []types.BaseType{})
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run(nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
+func TestExprNowDate(t *testing.T) {
+	code := `now()::Text`
+	p, err := Compile(code, []types.BaseType{})
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run(nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
+func TestExprNowTime(t *testing.T) {
+	code := `now()::Time`
+	p, err := Compile(code, []types.BaseType{})
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run(nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
 
 func BenchmarkExpr(b *testing.B) {
 	code := "$1 > 1"

@@ -46,16 +46,16 @@ import "strconv"
 %left LIKE CONTAINS
 %left ADD MINUS
 %left MUL DIV
-%left CAST
 %right LP
 %right DOLLAR
+%right CAST
 %%
 
 input:    e  { yylex.(*Lexer).parseResult=$1.node;};
 
 e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int); }
     | STR              { str,_:=strconv.Unquote(yylex.(*Lexer).Text());$$.node =newAst(CONST,str,types.Text); }
-    | RAWSTR           { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Text); }
+    | RAWSTR           { $$.node =newAst(CONST,unquoteRawString(yylex.(*Lexer).Text()),types.Text); }
     | FLOAT            { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Float); }
     | BOOL             { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Bool); }
     | e AND e          { $$.node =newAst(FUNC,"and",types.Any,$1.node,$3.node); }
@@ -75,10 +75,12 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int);
     | LP e RP          { $$.node =$2.node ;}
     | IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$3.node.Children...);}
     | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any);}
-    | e CAST IDD       { $$.node =newAst(FUNC,"to"+$1.node.Value,types.Any);}
+    | e cast_func      { $$.node =newAst(FUNC,$2.node.Value,types.Any,$1.node);}
 ;
 
 IDD: ID {$$.node=newAst(NULL,yylex.(*Lexer).Text(),types.Any);};
+
+cast_func: CAST IDD    { $$.node =newAst(FUNC,"to"+$2.node.Value,types.Any);}
 
 e_list:   e  {$$.node =newAst(NULL,"",types.Any,$1.node);}
         | e_list COMMA e  {$$.node=newAst(NULL,"",types.Any,append($1.node.Children,$3.node)...);}

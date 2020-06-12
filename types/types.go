@@ -2,9 +2,15 @@ package types
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type BaseType int
+
+var _, LocalOffsetSec = time.Now().Local().Zone()
+var LocalOffsetNano = int64(LocalOffsetSec) * int64(time.Second)
 
 const (
 	Any BaseType = iota + 1000
@@ -89,16 +95,40 @@ func (v NullableVector) Length() int {
 	return len(v.IsNullArr)
 }
 
+// for debug
+// todo optimize performance
 func ToString(v INullableVector) string {
-	ret := ""
+	var retSegs []string
 	for i := 0; i < v.Length(); i++ {
 		if v.IsNull(i) == true {
-			ret += "null "
+			retSegs = append(retSegs, "NULL")
 		} else {
-			ret += fmt.Sprintf("%v ", v.Index(i))
+			time.Now().Month()
+			val := v.Index(i)
+			switch v.Type() {
+			case Int, Float, Bool:
+				retSegs = append(retSegs, fmt.Sprintf("%v", val))
+			case Text:
+				retSegs = append(retSegs, strconv.Quote(val.(string)))
+			case Numeric:
+				retSegs = append(retSegs, Numeric2Text(val.(int64), v.(*NullableNumeric).Scale))
+			case Timestamp:
+				t := time.Unix(0, val.(int64)).In(time.Local)
+				retSegs = append(retSegs, t.Format(time.RFC3339))
+			case Time:
+				t := time.Unix(0, val.(int64)).In(time.UTC)
+				retSegs = append(retSegs, t.Format("15:04:05"))
+			case Date:
+				t := time.Unix(0, val.(int64)).In(time.UTC)
+				retSegs = append(retSegs, t.Format("2006-01-02"))
+			}
 		}
 	}
-	return "[" + ret + "]"
+	if v.IsScala() {
+		return GetTypeName(v.Type()) + "(" + strings.Join(retSegs, ",") + ")"
+	} else {
+		return GetTypeName(v.Type()) + "[" + strings.Join(retSegs, ",") + "]"
+	}
 }
 
 type NullableInt struct {
@@ -376,10 +406,11 @@ func (v NullableText) TruthyArr() []bool {
 type NullableTimestamp struct {
 	NullableVector
 	Values []int64
+	TsType BaseType //one of Timestamp,Date,Time
 }
 
 func (v NullableTimestamp) Type() BaseType {
-	return Timestamp
+	return v.TsType
 }
 
 func (v NullableTimestamp) Set(i int, val int64, isNull bool) {

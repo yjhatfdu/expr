@@ -1,6 +1,9 @@
 package types
 
-import "math"
+import (
+	"math"
+	"strconv"
+)
 
 var pow10 = [16]int64{
 	1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14, 1e15,
@@ -16,6 +19,14 @@ func Float2numeric(f float64, scale int) int64 {
 
 func Numeric2Float(n int64, scale int) float64 {
 	return float64(n) / float64(pow10[scale])
+}
+
+func Numeric2Int(n int64, scale int) int64 {
+	return n / pow10[scale]
+}
+
+func Numeric2Text(n int64, scale int) string {
+	return strconv.FormatInt(n/pow10[scale], 10) + "." + strconv.FormatInt(n%pow10[scale], 10)
 }
 
 func CompareNumeric(n1 int64, scale1 int, n2 int64, scale2 int) int64 {
