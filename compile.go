@@ -159,7 +159,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 					Values: []string{an.Value},
 				},
 			})
-			an.OutType = types.Float
+			an.OutType = types.Text
 		case types.Bool:
 			v, err := strconv.ParseBool(an.Value)
 			if err != nil {
@@ -176,7 +176,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 					Values: []bool{v},
 				},
 			})
-			an.OutType = types.Float
+			an.OutType = types.Bool
 		}
 	case VAR:
 		if len(inputType) == 0 {

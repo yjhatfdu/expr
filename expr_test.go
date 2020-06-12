@@ -43,8 +43,21 @@ func TestExpr3(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 
-func TestExpr4(t *testing.T) {
+func TestExprCoalesce(t *testing.T) {
 	code := "coalesce($1,$2,1)"
+	p, err := Compile(code, []types.BaseType{types.Int,types.Int})
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10, ),types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10, )})
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
+func TestExprMultiIf(t *testing.T) {
+	code := `multiIf($1==2,"is2",$1==3,"is3","err")`
 	p, err := Compile(code, []types.BaseType{types.Int,types.Int})
 	if err != nil {
 		panic(err)

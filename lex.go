@@ -41,11 +41,13 @@ var keywords = map[string]int{
 	")":        RP,
 	"null":     NULL,
 	"$":        DOLLAR,
+	"CAST":     CAST,
 }
 
 var replaceMap = map[string]string{
 	"==": " EQ ",
 	"!=": " NOT_EQ ",
+	"::": " CAST",
 }
 var replacer = regexp.MustCompile("(==|!=|!==)")
 

@@ -38,6 +38,7 @@ import "strconv"
 %token RP
 %token DOLLAR
 %token VAR
+%token CAST
 %left OR
 %left AND
 %left NOT
@@ -45,6 +46,7 @@ import "strconv"
 %left LIKE CONTAINS
 %left ADD MINUS
 %left MUL DIV
+%left CAST
 %right LP
 %right DOLLAR
 %%
@@ -73,6 +75,7 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int);
     | LP e RP          { $$.node =$2.node ;}
     | IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$3.node.Children...);}
     | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any);}
+    | e CAST IDD       { $$.node =newAst(FUNC,"to"+$1.node.Value,types.Any);}
 ;
 
 IDD: ID {$$.node=newAst(NULL,yylex.(*Lexer).Text(),types.Any);};

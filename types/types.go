@@ -266,6 +266,7 @@ func (v NullableBool) Index(i int) interface{} {
 type NullableNumeric struct {
 	NullableVector
 	Values []int64
+	Scale  int
 }
 
 func (v NullableNumeric) Set(i int, val int64, isNull bool) {

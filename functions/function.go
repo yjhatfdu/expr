@@ -30,7 +30,10 @@ var functions = map[string]*Function{}
 
 func GetFunction(name string, inputTypes []types.BaseType) (*handlerFunction, error) {
 	if f, ok := functions[name]; ok {
-		h := f.Match(inputTypes)
+		h, err := f.Match(inputTypes)
+		if err != nil {
+			return nil,err
+		}
 		if h == nil {
 			return nil, fmt.Errorf("function overload %s(%s) not found, avaliables:\n%s", name, strings.Join(types2Names(inputTypes), ", "), f.Print())
 		} else {
@@ -91,7 +94,7 @@ func (f *Function) Generic(typeValidator func([]types.BaseType) (types.BaseType,
 	f.genericHandler = implementation
 }
 
-func (f *Function) Match(inputTypes []types.BaseType) *handlerFunction {
+func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) {
 	for i, tr := range f.typeRules {
 		if len(tr.input) != len(inputTypes) {
 			continue
@@ -105,21 +108,21 @@ func (f *Function) Match(inputTypes []types.BaseType) *handlerFunction {
 			OutputType: tr.output,
 			Handler:    f.handlers[i],
 			Argc:       len(tr.input),
-		}
+		}, nil
 	next:
 	}
 	if f.genericValidator != nil {
 		t, err := f.genericValidator(inputTypes)
 		if err != nil {
-			return nil
+			return nil, err
 		}
 		return &handlerFunction{
 			OutputType: t,
 			Handler:    f.genericHandler,
 			Argc:       len(inputTypes),
-		}
+		}, nil
 	}
-	return nil
+	return nil, nil
 }
 func BroadCast2Bool(left, right types.INullableVector, f func(i, j bool) (bool, error)) (types.INullableVector, error) {
 	var ll = left.Length()
