@@ -25,7 +25,7 @@ const (
 	Time
 	Interval
 	Blob
-	ScalaTypes=Any+ScalaOffset
+	ScalaTypes = Any+ScalaOffset
 	IntS       = Int + ScalaOffset
 	FloatS     = Float + ScalaOffset
 	TextS      = Text + ScalaOffset

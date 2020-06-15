@@ -7,7 +7,7 @@ import (
 
 func init() {
 	now, _ := NewFunction("now")
-	now.Overload([]types.BaseType{}, types.Timestamp, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	now.Overload([]types.BaseType{}, types.TimestampS, func(vectors []types.INullableVector) (types.INullableVector, error) {
 		out := &types.NullableTimestamp{
 			TsType: types.Timestamp,
 		}
