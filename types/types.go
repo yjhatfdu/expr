@@ -48,6 +48,11 @@ func GetTypeName(t BaseType) string {
 	}
 }
 
+type VectorError struct {
+	Index int
+	Error error
+}
+
 type INullableVector interface {
 	IsNull(i int) bool
 	GetIsNullArr() []bool
@@ -61,11 +66,22 @@ type INullableVector interface {
 	Init(length int)
 	SetScala(isScala bool)
 	Seti(i int, v interface{})
+	AddError(err *VectorError)
+	GetErrors() []*VectorError
 }
 
 type NullableVector struct {
 	IsNullArr []bool
 	IsScalaV  bool
+	errors    []*VectorError
+}
+
+func (v *NullableVector) AddError(err *VectorError) {
+	v.errors = append(v.errors, err)
+}
+
+func (v *NullableVector) GetErrors() []*VectorError {
+	return v.GetErrors()
 }
 
 func (v *NullableVector) SetNull(i int, isNull bool) {

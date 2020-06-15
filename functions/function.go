@@ -32,7 +32,7 @@ func GetFunction(name string, inputTypes []types.BaseType) (*handlerFunction, er
 	if f, ok := functions[name]; ok {
 		h, err := f.Match(inputTypes)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		if h == nil {
 			return nil, fmt.Errorf("function overload %s(%s) not found, avaliables:\n%s", name, strings.Join(types2Names(inputTypes), ", "), f.Print())
@@ -136,8 +136,10 @@ func BroadCast2Bool(left, right types.INullableVector, f func(i, j bool) (bool, 
 	if rl > ll {
 		length = rl
 	}
-	values := make([]bool, length)
-	isNull := make([]bool, length)
+	output := &types.NullableBool{}
+	output.Init(length)
+	//values := make([]bool, length)
+	//isNull := make([]bool, length)
 	leftTruty := left.TruthyArr()
 	rightTruty := right.TruthyArr()
 	for i := 0; i < length; i++ {
@@ -153,17 +155,15 @@ func BroadCast2Bool(left, right types.INullableVector, f func(i, j bool) (bool, 
 		rightv := rightTruty[ri]
 		out, err := f(leftv, rightv)
 		if err != nil {
-			return nil, err
+			output.SetNull(i, true)
+			output.AddError(&types.VectorError{
+				Index: i,
+				Error: err,
+			})
 		}
-		values[i] = out
+		output.Values[i] = out
 	}
-	return &types.NullableBool{
-		Values: values,
-		NullableVector: types.NullableVector{
-			IsNullArr: isNull,
-			IsScalaV:  rIsScala && lIsScala,
-		},
-	}, nil
+	return output, nil
 }
 
 func BroadCast2(left, right, output types.INullableVector, f func(index, i, j int) error) (types.INullableVector, error) {
@@ -199,7 +199,11 @@ func BroadCast2(left, right, output types.INullableVector, f func(index, i, j in
 		} else {
 			err := f(i, li, ri)
 			if err != nil {
-				return nil, err
+				output.SetNull(i, true)
+				output.AddError(&types.VectorError{
+					Index: i,
+					Error: err,
+				})
 			}
 		}
 	}
@@ -220,7 +224,11 @@ func BroadCast1(in types.INullableVector, output types.INullableVector, handler 
 		} else {
 			err := handler(i)
 			if err != nil {
-				return nil, err
+				output.SetNull(i, true)
+				output.AddError(&types.VectorError{
+					Index: i,
+					Error: err,
+				})
 			}
 		}
 	}
@@ -259,9 +267,14 @@ func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseT
 		}
 		out, err := handler(row)
 		if err != nil {
-			return nil, err
+			output.SetNull(i, true)
+			output.AddError(&types.VectorError{
+				Index: i,
+				Error: err,
+			})
+		} else {
+			output.Seti(i, out)
 		}
-		output.Seti(i, out)
 	}
 	return output, nil
 }
