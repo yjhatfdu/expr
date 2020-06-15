@@ -40,6 +40,18 @@ func CompareNumeric(n1 int64, scale1 int, n2 int64, scale2 int) int64 {
 	return n2 - n1
 }
 
+func NumericScale(s1, s2 int) int {
+	if s1 > s2 {
+		return s1
+	} else {
+		return s2
+	}
+}
+
+func NormalizeNumeric(n int64, fromScale int, toScale int) int64 {
+	return n * pow10[toScale-fromScale]
+}
+
 func CompareNumericInt(n int64, scale int, intV int64) int64 {
 	return CompareNumeric(n, scale, Int2numeric(intV, scale), scale)
 }

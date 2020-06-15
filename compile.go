@@ -6,6 +6,7 @@ import (
 	"expr/types"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type Program struct {
@@ -73,7 +74,8 @@ type operation struct {
 }
 
 type context struct {
-	ops []operation
+	ops  []operation
+	code string
 }
 
 func (ct *context) addOperation(op operation) {
@@ -91,7 +93,7 @@ func Compile(code string, inputType []types.BaseType) (p *Program, err error) {
 	yyErrorVerbose = true
 	yyParse(l)
 	ast := l.parseResult
-	ctx := &context{ops: []operation{}}
+	ctx := &context{ops: []operation{}, code: code}
 	err = compile(ast, ctx, inputType)
 	if err != nil {
 		return
@@ -102,6 +104,10 @@ func Compile(code string, inputType []types.BaseType) (p *Program, err error) {
 		opCode:     ctx.ops,
 	}
 	return
+}
+
+func buildErrInfo(node *AstNode, code string) string {
+	return fmt.Sprintf("\n%s\n%s", code, strings.Repeat(" ", node.Offset)+"^")
 }
 
 func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
@@ -116,7 +122,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 		case types.Int:
 			v, err := strconv.ParseInt(an.Value, 10, 64)
 			if err != nil {
-				return err
+				return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 			}
 			ctx.addOperation(operation{
 				op:   CONST,
@@ -129,11 +135,11 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 					Values: []int64{v},
 				},
 			})
-			an.OutType = types.Int
+			an.OutType = types.IntS
 		case types.Float:
 			v, err := strconv.ParseFloat(an.Value, 64)
 			if err != nil {
-				return err
+				return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 			}
 			ctx.addOperation(operation{
 				op:   CONST,
@@ -146,8 +152,25 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 					Values: []float64{v},
 				},
 			})
-			an.OutType = types.Float
+			an.OutType = types.FloatS
 		case types.Text:
+			str, err := strconv.Unquote(an.Value)
+			if err != nil {
+				return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
+			}
+			ctx.addOperation(operation{
+				op:   CONST,
+				argc: 0,
+				v: &types.NullableText{
+					NullableVector: types.NullableVector{
+						IsScalaV:  true,
+						IsNullArr: []bool{false},
+					},
+					Values: []string{str},
+				},
+			})
+			an.OutType = types.TextS
+		case RAWSTR:
 			ctx.addOperation(operation{
 				op:   CONST,
 				argc: 0,
@@ -159,11 +182,11 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 					Values: []string{an.Value},
 				},
 			})
-			an.OutType = types.Text
+			an.OutType = types.TextS
 		case types.Bool:
 			v, err := strconv.ParseBool(an.Value)
 			if err != nil {
-				return err
+				return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 			}
 			ctx.addOperation(operation{
 				op:   CONST,
@@ -176,18 +199,21 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 					Values: []bool{v},
 				},
 			})
-			an.OutType = types.Bool
+			an.OutType = types.BoolS
 		}
 	case VAR:
 		if len(inputType) == 0 {
-			return fmt.Errorf("cannot reference '$%s' of zero input arguments expression", an.Value)
+			err := fmt.Errorf("cannot reference '$%s' of zero input arguments expression", an.Value)
+			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 		}
 		varIndex, err := strconv.Atoi(an.Value)
 		if err != nil {
-			return fmt.Errorf("invalid variable syntax '$%s'", an.Value)
+			err := fmt.Errorf("invalid variable syntax '$%s'", an.Value)
+			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 		}
 		if varIndex > len(inputType) {
-			return fmt.Errorf("variable index '$%s' out of input argument range '$1-$%d'", an.Value, len(inputType))
+			err := fmt.Errorf("variable index '$%s' out of input argument range '$1-$%d'", an.Value, len(inputType))
+			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 		}
 		ctx.addOperation(operation{
 			op:       VAR,
@@ -203,7 +229,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 		}
 		f, err := functions.GetFunction(an.Value, inputTypes)
 		if err != nil {
-			return err
+			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 		}
 		ctx.addOperation(operation{
 			op:      FUNC,

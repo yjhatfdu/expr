@@ -1,6 +1,7 @@
 package expr
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"text/scanner"
@@ -20,7 +21,7 @@ var keywords = map[string]int{
 	"eq":       EQ,
 	"<":        LT,
 	"!=":       NEQ,
-	"not_eq":   NEQ,
+	"ne":       NEQ,
 	"!==":      NEQ,
 	"and":      AND,
 	"AND":      AND,
@@ -41,21 +42,20 @@ var keywords = map[string]int{
 	")":        RP,
 	"null":     NULL,
 	"$":        DOLLAR,
-	"cast":     CAST,
-	"::":       CAST,
+	":":       CAST,
 }
 
 var replaceMap = map[string]string{
-	"==": " EQ ",
-	"!=": " NOT_EQ ",
-	"::": " CAST ",
+	"==": "EQ",
+	"!=": "NE",
 }
-var replacer = regexp.MustCompile("(==|!=|!==|::)")
+var replacer = regexp.MustCompile("(==|!=|!==)")
 
 type Lexer struct {
 	s           scanner.Scanner
 	parseResult *AstNode
 	buffer      string
+	code        string
 }
 
 func NewLexer(str string) *Lexer {
@@ -65,6 +65,7 @@ func NewLexer(str string) *Lexer {
 	})
 	l.s.Init(strings.NewReader(str))
 	l.s.Mode = scanner.ScanStrings | scanner.ScanFloats | scanner.ScanInts | scanner.ScanIdents | scanner.SkipComments | scanner.ScanRawStrings
+	l.code = str
 	return &l
 }
 func (l *Lexer) Text() string {
@@ -72,8 +73,14 @@ func (l *Lexer) Text() string {
 	return r
 }
 
+func (l *Lexer) Offset() int {
+	return l.s.Offset
+}
+
 func (l *Lexer) Lex(lval *yySymType) int {
 	token := l.s.Scan()
+	lval.offset = l.s.Offset
+
 	switch token {
 	case scanner.EOF:
 		return 0
@@ -106,7 +113,8 @@ func (l *Lexer) Lex(lval *yySymType) int {
 }
 
 func (l *Lexer) Error(s string) {
-	panic(s)
+	errInfo := fmt.Sprintf("\n%s\n%s\n", l.code, strings.Repeat(" ", l.s.Offset)+strings.Repeat("^", len(l.s.TokenText())))
+	panic(errInfo+s)
 }
 
 func unquoteRawString(s string) string {

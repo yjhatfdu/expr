@@ -77,6 +77,26 @@ func init() {
 			return nil
 		})
 	})
+	toFloat.Overload([]types.BaseType{types.Numeric}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableFloat{}
+		input := vectors[0].(*types.NullableNumeric)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, types.Numeric2Float(input.Values[i], input.Scale), false)
+			return nil
+		})
+	})
+	toFloat.Overload([]types.BaseType{types.Text}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableFloat{}
+		input := vectors[0].(*types.NullableText)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			f, err := strconv.ParseFloat(input.Values[i], 64)
+			if err != nil {
+				return err
+			}
+			output.Set(i, f, false)
+			return nil
+		})
+	})
 }
 
 func init() {
@@ -97,6 +117,14 @@ func init() {
 		input := vectors[0].(*types.NullableFloat)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			output.Set(i, strconv.FormatFloat(input.Values[i], 'f', -1, 64), false)
+			return nil
+		})
+	})
+	toText.Overload([]types.BaseType{types.Numeric}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableNumeric)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, types.Numeric2Text(input.Values[i], input.Scale), false)
 			return nil
 		})
 	})
@@ -131,6 +159,24 @@ func init() {
 			t := input.Values[i] + types.LocalOffsetNano
 			dt := t % (24 * 3600 * 1e9)
 			output.Set(i, dt, false)
+			return nil
+		})
+	})
+}
+
+func init() {
+	// default format is Numeric(12,4), use toNumeric(_,int) to specify scale
+	toNumeric, _ := NewFunction("toNumeric")
+	toNumeric.Overload([]types.BaseType{types.Numeric}, types.Numeric, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		return vectors[0], nil
+	})
+	toNumeric.Overload([]types.BaseType{types.Numeric, types.IntS}, types.Numeric, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableNumeric{}
+		input := vectors[0].(*types.NullableNumeric)
+		scale := int(vectors[1].(*types.NullableInt).Values[0])
+		output.Scale = scale
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, types.NormalizeNumeric(input.Values[i], input.Scale, scale), false)
 			return nil
 		})
 	})

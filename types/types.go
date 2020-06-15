@@ -13,10 +13,11 @@ var _, LocalOffsetSec = time.Now().Local().Zone()
 var LocalOffsetNano = int64(LocalOffsetSec) * int64(time.Second)
 
 const (
-	Any BaseType = iota + 1000
+	ScalaOffset          = 1000
+	Any         BaseType = iota + 1000
 	Int
 	Float
-	Numeric //only support Numeric(12,4)
+	Numeric
 	Text
 	Bool
 	Timestamp
@@ -24,20 +25,41 @@ const (
 	Time
 	Interval
 	Blob
+	ScalaTypes=Any+ScalaOffset
+	IntS       = Int + ScalaOffset
+	FloatS     = Float + ScalaOffset
+	TextS      = Text + ScalaOffset
+	BoolS      = Bool + ScalaOffset
+	NumericS   = Numeric + ScalaOffset
+	TimestampS = Timestamp + ScalaOffset
+	DateS      = Date + ScalaOffset
+	TimeS      = Time + ScalaOffset
+	IntervalS  = Interval + ScalaOffset
+	BlobS      = Blob + ScalaOffset
 )
 
 var typeNames = map[BaseType]string{
-	Any:       "Any",
-	Int:       "Int",
-	Float:     "Float",
-	Numeric:   "Numeric",
-	Text:      "Text",
-	Bool:      "Bool",
-	Timestamp: "Timestamp",
-	Date:      "Date",
-	Time:      "Time",
-	Interval:  "Interval",
-	Blob:      "Blob",
+	Any:        "Any",
+	Int:        "Int",
+	Float:      "Float",
+	Numeric:    "Numeric",
+	Text:       "Text",
+	Bool:       "Bool",
+	Timestamp:  "Timestamp",
+	Date:       "Date",
+	Time:       "Time",
+	Interval:   "Interval",
+	Blob:       "Blob",
+	BlobS:      "BlobS",
+	IntS:       "IntS",
+	FloatS:     "FloatS",
+	NumericS:   "NumericS",
+	TextS:      "TextS",
+	BoolS:      "BoolS",
+	TimestampS: "TimestampS",
+	DateS:      "DateS",
+	TimeS:      "TimeS",
+	IntervalS:  "IntervalS",
 }
 
 func GetTypeName(t BaseType) string {
@@ -122,19 +144,19 @@ func ToString(v INullableVector) string {
 			time.Now().Month()
 			val := v.Index(i)
 			switch v.Type() {
-			case Int, Float, Bool:
+			case Int, Float, Bool,IntS, FloatS, BoolS:
 				retSegs = append(retSegs, fmt.Sprintf("%v", val))
-			case Text:
+			case Text,TextS:
 				retSegs = append(retSegs, strconv.Quote(val.(string)))
-			case Numeric:
+			case Numeric,NumericS:
 				retSegs = append(retSegs, Numeric2Text(val.(int64), v.(*NullableNumeric).Scale))
-			case Timestamp:
+			case Timestamp,TimestampS:
 				t := time.Unix(0, val.(int64)).In(time.Local)
 				retSegs = append(retSegs, t.Format(time.RFC3339))
-			case Time:
+			case Time,TimeS:
 				t := time.Unix(0, val.(int64)).In(time.UTC)
 				retSegs = append(retSegs, t.Format("15:04:05"))
-			case Date:
+			case Date,DateS:
 				t := time.Unix(0, val.(int64)).In(time.UTC)
 				retSegs = append(retSegs, t.Format("2006-01-02"))
 			}

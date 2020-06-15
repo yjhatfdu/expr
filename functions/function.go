@@ -50,6 +50,7 @@ type Function struct {
 	handlers         []Handler
 	genericValidator func([]types.BaseType) (types.BaseType, error)
 	genericHandler   Handler
+	isAggregation    bool
 }
 
 func NewFunction(name string) (*Function, error) {
@@ -99,16 +100,26 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 		if len(tr.input) != len(inputTypes) {
 			continue
 		}
+		isAllScala := true
 		for j := range tr.input {
-			if tr.input[j] != types.Any && tr.input[j] != inputTypes[j] {
+			isAllScala = isAllScala && inputTypes[j] > types.ScalaOffset
+			if tr.input[j] != types.Any && tr.input[j] != inputTypes[j] && tr.input[j]+types.ScalaOffset != inputTypes[j] {
 				goto next
 			}
 		}
-		return &handlerFunction{
-			OutputType: tr.output,
-			Handler:    f.handlers[i],
-			Argc:       len(tr.input),
-		}, nil
+		if isAllScala {
+			return &handlerFunction{
+				OutputType: tr.output + types.ScalaOffset,
+				Handler:    f.handlers[i],
+				Argc:       len(tr.input),
+			}, nil
+		} else {
+			return &handlerFunction{
+				OutputType: tr.output,
+				Handler:    f.handlers[i],
+				Argc:       len(tr.input),
+			}, nil
+		}
 	next:
 	}
 	if f.genericValidator != nil {

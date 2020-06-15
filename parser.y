@@ -1,13 +1,13 @@
 %{
 package expr
 import "expr/types"
-import "strconv"
-import "fmt"
 %}
 
 %union {
+  offset int
   node *AstNode
 }
+
 %token NULL
 %token INT
 %token STR
@@ -48,44 +48,43 @@ import "fmt"
 %left ADD MINUS
 %left MUL DIV
 %right LP
-%right CAST
 %right DOLLAR
+%right CAST
 %%
 
 input:    e  { yylex.(*Lexer).parseResult=$1.node;};
 
-e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int); }
-    | STR              { $$.node =newAst(CONST,str,types.Text); }
-    | RAWSTR           { $$.node =newAst(CONST,unquoteRawString(yylex.(*Lexer).Text()),types.Text); }
-    | FLOAT            { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Float); }
-    | BOOL             { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Bool); }
-    | e binary_op e    { $$.node =newAst(FUNC,$2.node.Value,types.Any,$1.node,$3.node).SetOffset($2.node.Offset,$2.node.Length);}
-    | NOT e            { $$.node =newAst(FUNC,"not",types.Any,$1.node); }
-    | DOLLAR INT       { $$.node =newAst(VAR,yylex.(*Lexer).Text(),types.Any).setOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
+e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$1.offset); }
+    | STR              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Text,$1.offset); }
+    | RAWSTR           { $$.node =newAst(CONST,unquoteRawString(yylex.(*Lexer).Text()),RAWSTR,$1.offset); }
+    | FLOAT            { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Float,$1.offset); }
+    | BOOL             { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Bool,$1.offset); }
+    | e AND e          { $$.node =newAst(FUNC,"and",types.Any,$2.offset,$1.node,$3.node).SetOffset($2.yys); }
+    | e OR e           { $$.node =newAst(FUNC,"or",types.Any,$2.offset,$1.node,$3.node); }
+    | e ADD e          { $$.node =newAst(FUNC,"add",types.Any,$2.offset,$1.node,$3.node); }
+    | e MINUS e        { $$.node =newAst(FUNC,"minus",types.Any,$2.offset,$1.node,$3.node); }
+    | e DIV e          { $$.node =newAst(FUNC,"div",types.Any,$2.offset,$1.node,$3.node); }
+    | e MUL e          { $$.node =newAst(FUNC,"mul",types.Any,$2.offset,$1.node,$3.node); }
+    | NOT e            { $$.node =newAst(FUNC,"not",types.Any,$2.offset,$1.node); }
+    | e GT e           { $$.node =newAst(FUNC,"gt",types.Any,$2.offset,$1.node,$3.node); }
+    | e GTE e          { $$.node =newAst(FUNC,"gte",types.Any,$2.offset,$1.node,$3.node); }
+    | e LT e           { $$.node =newAst(FUNC,"lt",types.Any,$2.offset,$1.node,$3.node); }
+    | e LTE e          { $$.node =newAst(FUNC,"lte",types.Any,$2.offset,$1.node,$3.node); }
+    | e EQ e           { $$.node =newAst(FUNC,"eq",types.Any,$2.offset,$1.node,$3.node); }
+    | e NEQ e          { $$.node =newAst(FUNC,"neq",types.Any,$2.offset,$1.node,$3.node); }
+    | DOLLAR INT       { $$.node =newAst(VAR,yylex.(*Lexer).Text(),types.Any,$1.offset);}
     | LP e RP          { $$.node =$2.node ;}
-    | IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$3.node.Children...);}
-    | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any);}
-    | e cast_func      { $$.node =newAst(FUNC,$2.node.Value,types.Any,$1.node);}
+    | IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset,$3.node.Children...);}
+    | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset);}
+    | e cast_func      { $$.node =newAst(FUNC,$2.node.Value,types.Any,$2.offset,$1.node);}
 ;
 
-binary_op: AND         {$$.node=newAst(FUNC,"and",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | OR          {$$.node=newAst(FUNC,"or",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | ADD         {$$.node=newAst(FUNC,"add",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | MINUS       {$$.node=newAst(FUNC,"MINUS",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | DIV         {$$.node=newAst(FUNC,"DIV",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | MUL         {$$.node=newAst(FUNC,"MUL",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | GT          {$$.node=newAst(FUNC,"GT",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | GTE         {$$.node=newAst(FUNC,"GTE",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | LT          {$$.node=newAst(FUNC,"LT",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | LTE         {$$.node=newAst(FUNC,"LTE",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | EQ          {$$.node=newAst(FUNC,"EQ",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-         | NEQ         {$$.node=newAst(FUNC,"NEQ",types.Any).SetOffset(yylex.(*Lexer).Offset,len(yylex.(*Lexer).Text()));}
-;
-IDD: ID {$$.node=newAst(NULL,yylex.(*Lexer).Text(),types.Any);};
 
-cast_func: CAST IDD    { $$.node =newAst(FUNC,"to"+$2.node.Value,types.Any);}
+IDD: ID {$$.node=newAst(NULL,yylex.(*Lexer).Text(),types.Any,$1.offset);};
 
-e_list:   e  {$$.node =newAst(NULL,"",types.Any,$1.node);}
-        | e_list COMMA e  {$$.node=newAst(NULL,"",types.Any,append($1.node.Children,$3.node)...);}
+cast_func: CAST IDD    { $$.node =newAst(FUNC,"to"+$2.node.Value,types.Any,$2.offset);}
+
+e_list:   e  {$$.node =newAst(NULL,"",types.Any,$1.offset,$1.node);}
+        | e_list COMMA e  {$$.node=newAst(NULL,"",types.Any,$3.offset,append($1.node.Children,$3.node)...);}
 
 

@@ -18,7 +18,7 @@ func TestExpr(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 func TestExpr2(t *testing.T) {
-	code := "$1 or $1 and $1"
+	code := `1>1>1`
 	p, err := Compile(code, []types.BaseType{types.Int})
 	if err != nil {
 		panic(err)
@@ -31,7 +31,7 @@ func TestExpr2(t *testing.T) {
 }
 
 func TestExpr3(t *testing.T) {
-	code := "($1+$1*0.1)::Float::Text"
+	code := "($1+$1*0.1):Float:Text"
 	p, err := Compile(code, []types.BaseType{types.Int})
 	if err != nil {
 		panic(err)
@@ -95,7 +95,7 @@ func TestExprNow(t *testing.T) {
 }
 
 func TestExprNowDate(t *testing.T) {
-	code := `now()::Text`
+	code := `now():Text`
 	p, err := Compile(code, []types.BaseType{})
 	if err != nil {
 		panic(err)
@@ -108,7 +108,7 @@ func TestExprNowDate(t *testing.T) {
 }
 
 func TestExprNowTime(t *testing.T) {
-	code := `now()::Time`
+	code := `now():Time`
 	p, err := Compile(code, []types.BaseType{})
 	if err != nil {
 		panic(err)
