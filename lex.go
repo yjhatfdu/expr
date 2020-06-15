@@ -42,7 +42,8 @@ var keywords = map[string]int{
 	")":        RP,
 	"null":     NULL,
 	"$":        DOLLAR,
-	":":       CAST,
+	":":        CAST,
+	"|":        PIPE,
 }
 
 var replaceMap = map[string]string{
@@ -114,7 +115,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 
 func (l *Lexer) Error(s string) {
 	errInfo := fmt.Sprintf("\n%s\n%s\n", l.code, strings.Repeat(" ", l.s.Offset)+strings.Repeat("^", len(l.s.TokenText())))
-	panic(errInfo+s)
+	panic(errInfo + s)
 }
 
 func unquoteRawString(s string) string {

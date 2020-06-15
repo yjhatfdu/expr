@@ -63,11 +63,20 @@ var typeNames = map[BaseType]string{
 }
 
 func GetTypeName(t BaseType) string {
-	if name, ok := typeNames[t]; ok {
-		return name
-	} else {
-		return "undefined type"
+	if t<ScalaTypes{
+		if name, ok := typeNames[t]; ok {
+			return name+"[S]"
+		} else {
+			return "undefined type"
+		}
+	}else {
+		if name, ok := typeNames[t]; ok {
+			return name
+		} else {
+			return "undefined type"
+		}
 	}
+
 }
 
 type VectorError struct {

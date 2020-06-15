@@ -107,7 +107,7 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 				goto next
 			}
 		}
-		if isAllScala {
+		if isAllScala && tr.output < types.ScalaTypes {
 			return &handlerFunction{
 				OutputType: tr.output + types.ScalaOffset,
 				Handler:    f.handlers[i],

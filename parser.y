@@ -40,6 +40,7 @@ import "expr/types"
 %token DOLLAR
 %token VAR
 %token CAST
+%token PIPE
 %left OR
 %left AND
 %left NOT
@@ -47,19 +48,20 @@ import "expr/types"
 %left LIKE CONTAINS
 %left ADD MINUS
 %left MUL DIV
+%left PIPE
 %right LP
 %right DOLLAR
 %right CAST
 %%
 
-input:    e  { yylex.(*Lexer).parseResult=$1.node;};
+input:    e       { yylex.(*Lexer).parseResult=$1.node;};
 
 e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$1.offset); }
     | STR              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Text,$1.offset); }
     | RAWSTR           { $$.node =newAst(CONST,unquoteRawString(yylex.(*Lexer).Text()),RAWSTR,$1.offset); }
     | FLOAT            { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Float,$1.offset); }
     | BOOL             { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Bool,$1.offset); }
-    | e AND e          { $$.node =newAst(FUNC,"and",types.Any,$2.offset,$1.node,$3.node).SetOffset($2.yys); }
+    | e AND e          { $$.node =newAst(FUNC,"and",types.Any,$2.offset,$1.node,$3.node); }
     | e OR e           { $$.node =newAst(FUNC,"or",types.Any,$2.offset,$1.node,$3.node); }
     | e ADD e          { $$.node =newAst(FUNC,"add",types.Any,$2.offset,$1.node,$3.node); }
     | e MINUS e        { $$.node =newAst(FUNC,"minus",types.Any,$2.offset,$1.node,$3.node); }
@@ -73,18 +75,21 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$
     | e EQ e           { $$.node =newAst(FUNC,"eq",types.Any,$2.offset,$1.node,$3.node); }
     | e NEQ e          { $$.node =newAst(FUNC,"neq",types.Any,$2.offset,$1.node,$3.node); }
     | DOLLAR INT       { $$.node =newAst(VAR,yylex.(*Lexer).Text(),types.Any,$1.offset);}
-    | LP e RP          { $$.node =$2.node ;}
-    | IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset,$3.node.Children...);}
-    | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset);}
-    | e cast_func      { $$.node =newAst(FUNC,$2.node.Value,types.Any,$2.offset,$1.node);}
-;
+    | LP e RP          { $$.node =$2.node;}
+    | func_call        { $$.node =$1.node;}
 
+func_call :     IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset,$3.node.Children...);}
+              | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset);}
+              | IDD              { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset);}
+              | e cast_func      { $$.node =newAst(FUNC,$2.node.Value,types.Any,$2.offset,$1.node);};
+              | e PIPE IDD       { $3.node.Children=append([]*AstNode{$1.node},$3.node.Children...);$$.node=$3.node}
+              | e PIPE IDD LP RP { $3.node.Children=append([]*AstNode{$1.node},$3.node.Children...);$$.node=$3.node}
+              | e PIPE IDD LP e_list RP { $$.node =newAst(FUNC,$3.node.Value,types.Any,$3.offset,append([]*AstNode{$1.node},$5.node.Children...)...);}
 
-IDD: ID {$$.node=newAst(NULL,yylex.(*Lexer).Text(),types.Any,$1.offset);};
+IDD: ID {$$.node=newAst(FUNC,yylex.(*Lexer).Text(),types.Any,$1.offset);};
 
 cast_func: CAST IDD    { $$.node =newAst(FUNC,"to"+$2.node.Value,types.Any,$2.offset);}
 
 e_list:   e  {$$.node =newAst(NULL,"",types.Any,$1.offset,$1.node);}
         | e_list COMMA e  {$$.node=newAst(NULL,"",types.Any,$3.offset,append($1.node.Children,$3.node)...);}
-
 
