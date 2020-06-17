@@ -1,4 +1,4 @@
-module expr
+module github.com/yjhatfdu/expr
 
 go 1.14
 
