@@ -1,7 +1,7 @@
 package expr
 
 import (
-	"expr/types"
+	"github.com/yjhatfdu/expr/types"
 	"testing"
 )
 

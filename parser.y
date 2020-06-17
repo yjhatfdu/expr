@@ -1,6 +1,6 @@
 %{
 package expr
-import "expr/types"
+import "github.com/yjhatfdu/expr/types"
 %}
 
 %union {
