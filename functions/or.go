@@ -1,6 +1,6 @@
 package functions
 
-import "expr/types"
+import "github.com/yjhatfdu/expr/types"
 
 func orBool(data1, data2, out []bool)
 func orBoolS(data1, out []bool, bools bool)

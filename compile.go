@@ -2,8 +2,8 @@ package expr
 
 import (
 	"errors"
-	"expr/functions"
-	"expr/types"
+	"github.com/yjhatfdu/expr/functions"
+	"github.com/yjhatfdu/expr/types"
 	"fmt"
 	"strconv"
 	"strings"

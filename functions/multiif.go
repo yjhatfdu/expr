@@ -1,7 +1,7 @@
 package functions
 
 import (
-	"expr/types"
+	"github.com/yjhatfdu/expr/types"
 	"fmt"
 )
 

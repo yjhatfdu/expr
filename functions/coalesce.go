@@ -2,7 +2,7 @@ package functions
 
 import (
 	"errors"
-	"expr/types"
+	"github.com/yjhatfdu/expr/types"
 )
 
 func init() {

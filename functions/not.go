@@ -1,6 +1,6 @@
 package functions
 
-import "expr/types"
+import "github.com/yjhatfdu/expr/types"
 
 func not(arr []bool) {
 	for i := 0; i < len(arr); i++ {

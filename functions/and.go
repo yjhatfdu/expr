@@ -1,6 +1,6 @@
 package functions
 
-import "expr/types"
+import "github.com/yjhatfdu/expr/types"
 
 func andBool(data1, data2, out []bool)
 func andBoolS(data1, out []bool, bools bool)

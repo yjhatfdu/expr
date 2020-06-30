@@ -1,9 +1,13 @@
 package functions
 
+<<<<<<< HEAD
 import (
 	"expr/types"
 	"strings"
 )
+=======
+import "github.com/yjhatfdu/expr/types"
+>>>>>>> ddfb2a8a1e9a7d96517e90c538a0132778f00c35
 
 func init() {
 	addFunc, _ := NewFunction("mul")

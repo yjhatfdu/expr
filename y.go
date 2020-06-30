@@ -6,7 +6,7 @@ package expr
 import __yyfmt__ "fmt"
 
 //line parser.y:2
-import "expr/types"
+import "github.com/yjhatfdu/expr/types"
 
 //line parser.y:6
 type yySymType struct {

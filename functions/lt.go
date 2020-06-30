@@ -1,6 +1,6 @@
 package functions
 
-import "expr/types"
+import "github.com/yjhatfdu/expr/types"
 
 func init() {
 	addFunc, _ := NewFunction("lt")

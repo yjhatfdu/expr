@@ -1,6 +1,6 @@
 package functions
 
-import "expr/types"
+import "github.com/yjhatfdu/expr/types"
 
 func addIntInt(data1, data2, out []int64)
 func addIntS(data1, out []int64, intS int64)
