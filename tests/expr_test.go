@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"expr"
-	"expr/functions"
-	"expr/types"
+	"github.com/yjhatfdu/expr"
+	"github.com/yjhatfdu/expr/functions"
+	"github.com/yjhatfdu/expr/types"
 	"os"
 	"path/filepath"
 	"testing"
