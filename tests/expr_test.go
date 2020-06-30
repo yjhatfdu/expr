@@ -7,10 +7,17 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func TestCase(t *testing.T) {
-	_, err := functions.NewFunction("add")
+	var err error
+	types.LocalOffsetNano = 8 * 3600 * 1e9
+	time.Local, err = time.LoadLocation("Asia/Shanghai")
+	if err != nil {
+		panic(err)
+	}
+	_, err = functions.NewFunction("add")
 	if err == nil {
 		panic("should error")
 	}

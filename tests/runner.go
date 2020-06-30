@@ -271,7 +271,7 @@ func buildDateVec(d []string, isScalar bool) types.INullableVector {
 		if s == `\N` || s == "" {
 			val.Set(i, 0, true)
 		} else {
-			v, err := time.Parse("2006-01-02", s)
+			v, err := time.ParseInLocation("2006-01-02", s, time.UTC)
 			if err != nil {
 				panic(err)
 			}
