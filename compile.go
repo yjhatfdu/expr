@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Program struct {
@@ -35,6 +36,12 @@ func (s *stack) push(v types.INullableVector) {
 	s.n++
 }
 
+var stackPool = sync.Pool{
+	New: func() interface{} {
+		return make([]types.INullableVector, 8)
+	},
+}
+
 func (p *Program) Run(input []types.INullableVector) (types.INullableVector, error) {
 	if len(input) != len(p.InputTypes) {
 		return nil, errors.New("input argument length not match")
@@ -43,9 +50,10 @@ func (p *Program) Run(input []types.INullableVector) (types.INullableVector, err
 	//	if input[i].Type()
 	//}
 	s := stack{
-		list: make([]types.INullableVector, 8),
+		list: stackPool.Get().([]types.INullableVector),
 		n:    0,
 	}
+	defer stackPool.Put(s.list)
 	for i := range p.opCode {
 		op := p.opCode[i]
 		switch op.op {

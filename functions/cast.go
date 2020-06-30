@@ -3,7 +3,12 @@ package functions
 import (
 	"expr/types"
 	"strconv"
+	"time"
 )
+
+func cvtInt2Float([]int64, []float64)
+func cvtFloat2Int([]float64, []int64)
+func cvtInt2Numeric([]int64, []int64, int64)
 
 func init() {
 	toInt, _ := NewFunction("toInt")
@@ -13,10 +18,11 @@ func init() {
 	toInt.Overload([]types.BaseType{types.Float}, types.Int, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := &types.NullableInt{}
 		input := vectors[0].(*types.NullableFloat)
-		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, int64(input.Values[i]), false)
-			return nil
-		})
+		output.Init(input.Length())
+		output.IsScalaV = input.IsScalaV
+		cvtFloat2Int(input.Values, output.Values)
+		output.IsNullArr = input.IsNullArr
+		return output, nil
 	})
 	toInt.Overload([]types.BaseType{types.Text}, types.Int, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := &types.NullableInt{}
@@ -31,28 +37,38 @@ func init() {
 		})
 	})
 	toInt.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
-		output := &types.NullableInt{}
+
 		input := vectors[0].(*types.NullableTimestamp)
-		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, input.Values[i], false)
-			return nil
-		})
+		output := &types.NullableInt{
+			NullableVector: types.NullableVector{
+				IsNullArr: input.IsNullArr,
+				IsScalaV:  input.IsScalaV,
+			},
+			Values: input.Values,
+		}
+		return output, nil
 	})
 	toInt.Overload([]types.BaseType{types.Time}, types.Int, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
-		output := &types.NullableInt{}
 		input := vectors[0].(*types.NullableTimestamp)
-		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, input.Values[i], false)
-			return nil
-		})
+		output := &types.NullableInt{
+			NullableVector: types.NullableVector{
+				IsNullArr: input.IsNullArr,
+				IsScalaV:  input.IsScalaV,
+			},
+			Values: input.Values,
+		}
+		return output, nil
 	})
 	toInt.Overload([]types.BaseType{types.Date}, types.Int, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
-		output := &types.NullableInt{}
 		input := vectors[0].(*types.NullableTimestamp)
-		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, input.Values[i], false)
-			return nil
-		})
+		output := &types.NullableInt{
+			NullableVector: types.NullableVector{
+				IsNullArr: input.IsNullArr,
+				IsScalaV:  input.IsScalaV,
+			},
+			Values: input.Values,
+		}
+		return output, nil
 	})
 	toInt.Overload([]types.BaseType{types.Numeric}, types.Int, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := &types.NullableInt{}
@@ -72,10 +88,11 @@ func init() {
 	toFloat.Overload([]types.BaseType{types.Int}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := &types.NullableFloat{}
 		input := vectors[0].(*types.NullableInt)
-		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, float64(input.Values[i]), false)
-			return nil
-		})
+		output.Init(input.Length())
+		output.IsScalaV = input.IsScalaV
+		cvtInt2Float(input.Values, output.Values)
+		output.IsNullArr = input.IsNullArr
+		return output, nil
 	})
 	toFloat.Overload([]types.BaseType{types.Numeric}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := &types.NullableFloat{}
@@ -125,6 +142,22 @@ func init() {
 		input := vectors[0].(*types.NullableNumeric)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			output.Set(i, types.Numeric2Text(input.Values[i], input.Scale), false)
+			return nil
+		})
+	})
+	toText.Overload([]types.BaseType{types.Timestamp}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableTimestamp)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, time.Unix(0, input.Values[i]).In(time.Local).Format(time.RFC3339), false)
+			return nil
+		})
+	})
+	toText.Overload([]types.BaseType{types.Date}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableTimestamp)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, time.Unix(0, input.Values[i]).In(time.Local).Format("2006-01-02"), false)
 			return nil
 		})
 	})

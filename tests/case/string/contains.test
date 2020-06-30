@@ -1,0 +1,5 @@
+Text,Text,Bool
+$1|contains($2)
+12345,23,true
+12345,56,false
+12345,12345,true

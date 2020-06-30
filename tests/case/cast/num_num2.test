@@ -1,0 +1,4 @@
+Numeric,Text
+$1|toNumeric(2)|toText
+1,"1.00"
+1.2345,"1.23"

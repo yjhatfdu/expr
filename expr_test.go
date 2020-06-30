@@ -6,7 +6,7 @@ import (
 )
 
 func TestExpr(t *testing.T) {
-	code := `1+1+"text"`
+	code := `1+1`
 	p, err := Compile(code, nil)
 	if err != nil {
 		panic(err)
@@ -120,7 +120,7 @@ func TestExprNowTime(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 func TestExprNowYear(t *testing.T) {
-	code := `getYear(now())`
+	code := `now|getYear|add(10)`
 	p, err := Compile(code, []types.BaseType{})
 	if err != nil {
 		panic(err)
@@ -133,7 +133,7 @@ func TestExprNowYear(t *testing.T) {
 }
 
 func TestExprNowYearWithoutP(t *testing.T) {
-	code := `" nihao   "|trim()|length()`
+	code := `" nihao   "|trim|length`
 	p, err := Compile(code, []types.BaseType{})
 	if err != nil {
 		panic(err)
@@ -146,19 +146,50 @@ func TestExprNowYearWithoutP(t *testing.T) {
 }
 
 func BenchmarkExpr(b *testing.B) {
-	code := "$1 > 1"
+	code := "!$1"
+	p, err := Compile(code, []types.BaseType{types.Int})
+	if err != nil {
+		panic(err)
+	}
+	input := []types.INullableVector{types.BuildValue(types.Int, 0, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10)}
+	b.ReportAllocs()
+	b.ResetTimer()
+	var ret types.INullableVector
+	for i := 0; i < b.N; i++ {
+		ret, _ = p.Run(input)
+
+	}
+	b.Log(types.ToString(ret))
+}
+
+func BenchmarkExprShort(b *testing.B) {
+	code := "1 + $1:Float"
+	p, err := Compile(code, []types.BaseType{types.Int})
+	if err != nil {
+		panic(err)
+	}
+	input := []types.INullableVector{types.BuildValue(types.Int, 1, 2, 3)}
+	b.ReportAllocs()
+	b.ResetTimer()
+	var ret types.INullableVector
+	for i := 0; i < b.N; i++ {
+		ret, _ = p.Run(input)
+
+	}
+	b.Log(types.ToString(ret))
+}
+
+func TestExprSIMD(t *testing.T) {
+	code := "$1 + $1"
 	p, err := Compile(code, []types.BaseType{types.Int})
 	if err != nil {
 		panic(err)
 	}
 	input := []types.INullableVector{types.BuildValue(types.Int, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10)}
-
-	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for i := 0; i < 1000000; i++ {
 		_, _ = p.Run(input)
-
 	}
+
 }
 
 func BenchmarkParse(b *testing.B) {

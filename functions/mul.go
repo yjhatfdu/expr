@@ -1,6 +1,9 @@
 package functions
 
-import "expr/types"
+import (
+	"expr/types"
+	"strings"
+)
 
 func init() {
 	addFunc, _ := NewFunction("mul")
@@ -88,6 +91,15 @@ func init() {
 		output.Scale = right.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, types.Float2numeric(left.Values[i], right.Scale)*right.Values[j], false)
+			return nil
+		})
+	})
+	addFunc.Overload([]types.BaseType{types.Text, types.IntS}, types.Text, func(vectors []types.INullableVector) (types.INullableVector, error) {
+		output := types.NullableText{}
+		left := vectors[0].(*types.NullableText)
+		right := vectors[1].(*types.NullableInt)
+		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
+			output.Set(index, strings.Repeat(left.Values[i], int(right.Values[j])), false)
 			return nil
 		})
 	})

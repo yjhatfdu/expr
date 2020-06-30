@@ -25,7 +25,7 @@ const (
 	Time
 	Interval
 	Blob
-	ScalaTypes = Any+ScalaOffset
+	ScalaTypes = Any + ScalaOffset
 	IntS       = Int + ScalaOffset
 	FloatS     = Float + ScalaOffset
 	TextS      = Text + ScalaOffset
@@ -62,14 +62,38 @@ var typeNames = map[BaseType]string{
 	IntervalS:  "IntervalS",
 }
 
+var typeMapping = map[string]BaseType{
+	"Any":        Any,
+	"Int":        Int,
+	"Float":      Float,
+	"Numeric":    Numeric,
+	"Text":       Text,
+	"Bool":       Bool,
+	"Timestamp":  Timestamp,
+	"Date":       Date,
+	"Time":       Time,
+	"Interval":   Interval,
+	"Blob":       Blob,
+	"BlobS":      BlobS,
+	"IntS":       IntS,
+	"FloatS":     FloatS,
+	"NumericS":   NumericS,
+	"TextS":      TextS,
+	"BoolS":      BoolS,
+	"TimestampS": TimestampS,
+	"DateS":      DateS,
+	"TimeS":      TimeS,
+	"IntervalS":  IntervalS,
+}
+
 func GetTypeName(t BaseType) string {
-	if t<ScalaTypes{
+	if t < ScalaTypes {
 		if name, ok := typeNames[t]; ok {
-			return name+"[S]"
+			return name + "[S]"
 		} else {
 			return "undefined type"
 		}
-	}else {
+	} else {
 		if name, ok := typeNames[t]; ok {
 			return name
 		} else {
@@ -77,6 +101,11 @@ func GetTypeName(t BaseType) string {
 		}
 	}
 
+}
+
+func GetTypeByName(n string) (BaseType, bool) {
+	t, ok := typeMapping[n]
+	return t, ok
 }
 
 type VectorError struct {
@@ -112,7 +141,7 @@ func (v *NullableVector) AddError(err *VectorError) {
 }
 
 func (v *NullableVector) GetErrors() []*VectorError {
-	return v.GetErrors()
+	return v.errors
 }
 
 func (v *NullableVector) SetNull(i int, isNull bool) {
@@ -153,28 +182,30 @@ func ToString(v INullableVector) string {
 			time.Now().Month()
 			val := v.Index(i)
 			switch v.Type() {
-			case Int, Float, Bool,IntS, FloatS, BoolS:
+			case Int, Float, Bool, IntS, FloatS, BoolS:
 				retSegs = append(retSegs, fmt.Sprintf("%v", val))
-			case Text,TextS:
+			case Text, TextS:
 				retSegs = append(retSegs, strconv.Quote(val.(string)))
-			case Numeric,NumericS:
+			case Numeric, NumericS:
 				retSegs = append(retSegs, Numeric2Text(val.(int64), v.(*NullableNumeric).Scale))
-			case Timestamp,TimestampS:
+			case Timestamp, TimestampS:
 				t := time.Unix(0, val.(int64)).In(time.Local)
 				retSegs = append(retSegs, t.Format(time.RFC3339))
-			case Time,TimeS:
+			case Time, TimeS:
 				t := time.Unix(0, val.(int64)).In(time.UTC)
 				retSegs = append(retSegs, t.Format("15:04:05"))
-			case Date,DateS:
+			case Date, DateS:
 				t := time.Unix(0, val.(int64)).In(time.UTC)
 				retSegs = append(retSegs, t.Format("2006-01-02"))
 			}
 		}
 	}
+	tname := GetTypeName(v.Type())
+	tname = tname[:len(tname)-3]
 	if v.IsScala() {
-		return GetTypeName(v.Type()) + "(" + strings.Join(retSegs, ",") + ")"
+		return tname + "S(" + strings.Join(retSegs, ",") + ")"
 	} else {
-		return GetTypeName(v.Type()) + "[" + strings.Join(retSegs, ",") + "]"
+		return tname + "V[" + strings.Join(retSegs, ",") + "]"
 	}
 }
 
@@ -184,10 +215,13 @@ type NullableInt struct {
 }
 
 func (v *NullableInt) Init(length int) {
-	v.IsNullArr = make([]bool, length)
-	v.Values = make([]int64, length)
+	v.IsNullArr = make([]bool, length, 32*(length/32+1))
+	v.Values = make([]int64, length, 8*(length/8+1))
 }
 func (v NullableInt) Set(i int, val int64, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
 	v.Values[i] = val
 	v.IsNullArr[i] = isNull
 }
@@ -208,10 +242,13 @@ func (v NullableInt) Truthy(i int) bool {
 	return v.IsNullArr[i] == false && v.Values[i] != 0
 }
 func (v NullableInt) TruthyArr() []bool {
-	arr := make([]bool, len(v.IsNullArr))
-	for i := 0; i < len(v.IsNullArr); i++ {
-		arr[i] = v.IsNullArr[i] == false && v.Values[i] != 0
-	}
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	int2bool(v.Values, arr)
+	//boolAnd(v.IsNullArr, arr)
+
+	//for i := 0; i < len(v.IsNullArr); i++ {
+	//	arr[i] = v.IsNullArr[i] == false && v.Values[i] != 0
+	//}
 	return arr
 }
 
@@ -238,11 +275,14 @@ type NullableFloat struct {
 }
 
 func (v *NullableFloat) Init(length int) {
-	v.IsNullArr = make([]bool, length)
-	v.Values = make([]float64, length)
+	v.IsNullArr = make([]bool, length, 32*(length/32+1))
+	v.Values = make([]float64, length, 4*(length/4+1))
 }
 
 func (v NullableFloat) Set(i int, val float64, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
 	v.Values[i] = val
 	v.IsNullArr[i] = isNull
 }
@@ -292,6 +332,9 @@ type NullableBool struct {
 }
 
 func (v NullableBool) Set(i int, val bool, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
 	v.Values[i] = val
 	v.IsNullArr[i] = isNull
 }
@@ -305,8 +348,8 @@ func (v NullableBool) Seti(i int, val interface{}) {
 }
 
 func (v *NullableBool) Init(length int) {
-	v.IsNullArr = make([]bool, length)
-	v.Values = make([]bool, length)
+	v.IsNullArr = make([]bool, length, 32*(length/32+1))
+	v.Values = make([]bool, length, 32*(length/32+1))
 }
 
 func (v NullableBool) Type() BaseType {
@@ -347,6 +390,9 @@ type NullableNumeric struct {
 }
 
 func (v NullableNumeric) Set(i int, val int64, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
 	v.Values[i] = val
 	v.IsNullArr[i] = isNull
 }
@@ -402,6 +448,9 @@ type NullableText struct {
 }
 
 func (v NullableText) Set(i int, val string, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
 	v.Values[i] = val
 	v.IsNullArr[i] = isNull
 }
@@ -461,6 +510,9 @@ func (v NullableTimestamp) Type() BaseType {
 }
 
 func (v NullableTimestamp) Set(i int, val int64, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
 	v.Values[i] = val
 	v.IsNullArr[i] = isNull
 }
@@ -510,13 +562,8 @@ func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
 	l := len(values)
 	switch valueType {
 	case Int:
-		v := &NullableInt{
-			NullableVector: NullableVector{
-				IsNullArr: make([]bool, l),
-				IsScalaV:  false,
-			},
-			Values: make([]int64, l),
-		}
+		v := &NullableInt{}
+		v.Init(l)
 		for i := 0; i < l; i++ {
 			if values[i] == nil {
 				v.IsNullArr[i] = true
@@ -532,13 +579,8 @@ func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
 		}
 		return v
 	case Float:
-		v := &NullableFloat{
-			NullableVector: NullableVector{
-				IsNullArr: make([]bool, l),
-				IsScalaV:  false,
-			},
-			Values: make([]float64, l),
-		}
+		v := &NullableFloat{}
+		v.Init(l)
 		for i := 0; i < l; i++ {
 			if values[i] == nil {
 				v.IsNullArr[i] = true
@@ -548,13 +590,8 @@ func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
 		}
 		return v
 	case Text:
-		v := &NullableText{
-			NullableVector: NullableVector{
-				IsNullArr: make([]bool, l),
-				IsScalaV:  false,
-			},
-			Values: make([]string, l),
-		}
+		v := &NullableText{}
+		v.Init(l)
 		for i := 0; i < l; i++ {
 			if values[i] == nil {
 				v.IsNullArr[i] = true
@@ -564,13 +601,8 @@ func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
 		}
 		return v
 	case Bool:
-		v := &NullableBool{
-			NullableVector: NullableVector{
-				IsNullArr: make([]bool, l),
-				IsScalaV:  false,
-			},
-			Values: make([]bool, l),
-		}
+		v := &NullableBool{}
+		v.Init(l)
 		for i := 0; i < l; i++ {
 			if values[i] == nil {
 				v.IsNullArr[i] = true

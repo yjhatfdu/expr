@@ -18,7 +18,7 @@ var keywords = map[string]int{
 	">":        GT,
 	"=":        EQ,
 	"==":       EQ,
-	"eq":       EQ,
+	"aeq":      EQ,
 	"<":        LT,
 	"!=":       NEQ,
 	"ne":       NEQ,
@@ -27,12 +27,11 @@ var keywords = map[string]int{
 	"AND":      AND,
 	"or":       OR,
 	"OR":       OR,
+	"!":        NOT,
 	"not":      NOT,
 	"NOT":      NOT,
 	"like":     LIKE,
 	"LIKE":     LIKE,
-	"contains": CONTAINS,
-	"CONTAINS": CONTAINS,
 	"true":     BOOL,
 	"TRUE":     BOOL,
 	"FALSE":    BOOL,
@@ -47,8 +46,8 @@ var keywords = map[string]int{
 }
 
 var replaceMap = map[string]string{
-	"==": "EQ",
-	"!=": "NE",
+	"==": "=",
+	"!=": "_NE",
 }
 var replacer = regexp.MustCompile("(==|!=|!==)")
 

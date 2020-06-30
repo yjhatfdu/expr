@@ -2,25 +2,69 @@ package functions
 
 import "expr/types"
 
+func addIntInt(data1, data2, out []int64)
+func addIntS(data1, out []int64, intS int64)
+func addIntFloat(data1 []int64, data2 []float64, out []float64)
+func addIntSFloat([]float64, []float64, int64)
+func addIntFloatS([]int64, []float64, float64)
+
 func init() {
 	addFunc, _ := NewFunction("add")
 	addFunc.Overload([]types.BaseType{types.Int, types.Int}, types.Int, func(vectors []types.INullableVector) (types.INullableVector, error) {
 		output := types.NullableInt{}
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableInt)
-		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i]+right.Values[j], false)
-			return nil
-		})
+		if left.IsScalaV && right.IsScalaV {
+			output.Init(1)
+			output.SetScala(true)
+			output.IsNullArr[0] = left.IsNullArr[0] || right.IsNullArr[0]
+			output.Values[0] = left.Values[0] + right.Values[0]
+			return &output, nil
+		}
+		if len(left.Values) > len(right.Values) {
+			output.Init(len(left.Values))
+		} else {
+			output.Init(len(right.Values))
+		}
+		if left.IsScalaV {
+			addIntS(right.Values, output.Values, left.Values[0])
+			orBoolS(right.IsNullArr, output.IsNullArr, left.IsNullArr[0])
+		} else if right.IsScalaV {
+			addIntS(left.Values, output.Values, right.Values[0])
+			orBoolS(left.IsNullArr, output.IsNullArr, right.IsNullArr[0])
+		} else {
+			addIntInt(left.Values, right.Values, output.Values)
+			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
+		}
+		return &output, nil
 	})
 	addFunc.Overload([]types.BaseType{types.Int, types.Float}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := types.NullableFloat{}
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableFloat)
-		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, float64(left.Values[i])+right.Values[j], false)
-			return nil
-		})
+		if left.IsScalaV && right.IsScalaV {
+			output.Init(1)
+			output.SetScala(true)
+			output.IsNullArr[0] = left.IsNullArr[0] || right.IsNullArr[0]
+			output.Values[0] = float64(left.Values[0]) + right.Values[0]
+			return &output, nil
+		}
+		if len(left.Values) > len(right.Values) {
+			output.Init(len(left.Values))
+		} else {
+			output.Init(len(right.Values))
+		}
+		if left.IsScalaV {
+			addIntSFloat(right.Values, output.Values, left.Values[0])
+			orBoolS(right.IsNullArr, output.IsNullArr, left.IsNullArr[0])
+		} else if right.IsScalaV {
+			addIntFloatS(left.Values, output.Values, right.Values[0])
+			orBoolS(left.IsNullArr, output.IsNullArr, right.IsNullArr[0])
+		} else {
+			addIntFloat(left.Values, right.Values, output.Values)
+			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
+		}
+		return &output, nil
 	})
 	addFunc.Overload([]types.BaseType{types.Float, types.Int}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := types.NullableFloat{}
@@ -51,6 +95,7 @@ func init() {
 	})
 	addFunc.Overload([]types.BaseType{types.Timestamp, types.Interval}, types.Timestamp, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := types.NullableTimestamp{}
+		output.TsType = types.Timestamp
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
@@ -60,6 +105,7 @@ func init() {
 	})
 	addFunc.Overload([]types.BaseType{types.Time, types.Interval}, types.Time, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := types.NullableTimestamp{}
+		output.TsType = types.Time
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
@@ -67,8 +113,9 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Date, types.Interval}, types.Timestamp, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	addFunc.Overload([]types.BaseType{types.Date, types.Interval}, types.Date, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := types.NullableTimestamp{}
+		output.TsType = types.Date
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {

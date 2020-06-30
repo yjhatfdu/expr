@@ -1,0 +1,5 @@
+Bool,Bool
+not $1
+true,false
+false,true
+,true

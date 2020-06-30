@@ -1,0 +1,4 @@
+IntS,Int,Int,Int
+coalesce($1,$2,$3)
+1,1,,1
+,,,1

@@ -1,0 +1,7 @@
+BoolS,Bool,Bool
+$1 and $2
+true,false,false
+,false,false
+,true,true
+,true,true
+,,false
