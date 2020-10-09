@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"github.com/yjhatfdu/expr/functions"
 	"strconv"
 	"strings"
 	"time"
@@ -128,12 +129,16 @@ type INullableVector interface {
 	Seti(i int, v interface{})
 	AddError(err *VectorError)
 	GetErrors() []*VectorError
+	GetFilterArr() []bool
+	SetFilterArr(arr []bool)
+	InitFilterArr() []bool
 }
 
 type NullableVector struct {
 	IsNullArr []bool
 	IsScalaV  bool
 	errors    []*VectorError
+	FilterArr []bool
 }
 
 func (v *NullableVector) AddError(err *VectorError) {
@@ -169,6 +174,18 @@ func (v NullableVector) IsScala() bool {
 
 func (v NullableVector) Length() int {
 	return len(v.IsNullArr)
+}
+
+func (v NullableVector) GetFilterArr() []bool {
+	return v.FilterArr
+}
+func (v *NullableVector) SetFilterArr(arr []bool) {
+	v.FilterArr = arr
+}
+
+func (v *NullableVector) InitFilterArr() []bool {
+	v.FilterArr = make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	return v.FilterArr
 }
 
 // for debug
@@ -613,4 +630,17 @@ func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
 		return v
 	}
 	return nil
+}
+
+func GetFilteredMaskOfVectors(vec []INullableVector) []bool {
+	v0 := vec[0]
+	l := v0.Length()
+	out := make([]bool, l, 32*(l/32+1))
+	for _, v := range vec {
+		farr := v.GetFilterArr()
+		if farr != nil {
+			functions.OrBool(out, farr, out)
+		}
+	}
+	return out
 }
