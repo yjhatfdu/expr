@@ -295,11 +295,7 @@ func (v NullableInt) FalseArr() []bool {
 }
 
 func (v NullableInt) Copy() INullableVector {
-	v2 := NullableInt{}
-	v2.NullableVector = v.copy()
-	v2.Values = make([]int64, len(v.Values), cap(v.Values))
-	copy(v2.Values, v.Values)
-	return &v2
+	return &v
 }
 
 func (v NullableInt) Index(i int) interface{} {
@@ -370,11 +366,7 @@ func (v NullableFloat) FalseArr() []bool {
 }
 
 func (v NullableFloat) Copy() INullableVector {
-	v2 := NullableFloat{}
-	v2.NullableVector = v.copy()
-	v2.Values = make([]float64, len(v.Values), cap(v.Values))
-	copy(v2.Values, v.Values)
-	return &v2
+	return &v
 }
 
 func (v NullableFloat) Index(i int) interface{} {
@@ -442,11 +434,7 @@ func (v NullableBool) FalseArr() []bool {
 	return arr
 }
 func (v NullableBool) Copy() INullableVector {
-	v2 := NullableBool{}
-	v2.NullableVector = v.copy()
-	v2.Values = make([]bool, len(v.Values), cap(v.Values))
-	copy(v2.Values, v.Values)
-	return &v2
+	return &v
 }
 
 func (v NullableBool) Index(i int) interface{} {
@@ -525,12 +513,7 @@ func (v NullableNumeric) TruthyArr() []bool {
 }
 
 func (v NullableNumeric) Copy() INullableVector {
-	v2 := NullableNumeric{}
-	v2.NullableVector = v.copy()
-	v2.Values = make([]int64, len(v.Values), cap(v.Values))
-	v2.Scale = v.Scale
-	copy(v2.Values, v.Values)
-	return &v2
+	return &v
 }
 
 func (v NullableNumeric) FalseArr() []bool {
@@ -607,11 +590,7 @@ func (v NullableText) FalseArr() []bool {
 }
 
 func (v NullableText) Copy() INullableVector {
-	v2 := NullableText{}
-	v2.NullableVector = v.copy()
-	v2.Values = make([]string, len(v.Values), cap(v.Values))
-	copy(v2.Values, v.Values)
-	return &v2
+	return &v
 }
 
 type NullableTimestamp struct {
@@ -682,12 +661,7 @@ func (v NullableTimestamp) FalseArr() []bool {
 }
 
 func (v NullableTimestamp) Copy() INullableVector {
-	v2 := NullableTimestamp{}
-	v2.NullableVector = v.copy()
-	v2.TsType = v.TsType
-	v2.Values = make([]int64, len(v.Values), cap(v.Values))
-	copy(v2.Values, v.Values)
-	return &v2
+	return &v
 }
 
 func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
