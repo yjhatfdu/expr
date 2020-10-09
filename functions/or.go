@@ -2,7 +2,7 @@ package functions
 
 import "github.com/yjhatfdu/expr/types"
 
-func OrBool(data1, data2, out []bool)
+func orBool(data1, data2, out []bool)
 func orBoolS(data1, out []bool, bools bool)
 func init() {
 	addFunc, _ := NewFunction("or")
@@ -25,7 +25,7 @@ func init() {
 		} else if rightIsScalar {
 			orBoolS(truty1, out.Values, truty2[0])
 		} else {
-			OrBool(truty1, truty2, out.Values)
+			orBool(truty1, truty2, out.Values)
 		}
 		return out, nil
 	})

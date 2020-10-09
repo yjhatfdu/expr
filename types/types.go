@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"github.com/yjhatfdu/expr/functions"
 	"strconv"
 	"strings"
 	"time"
@@ -639,7 +638,7 @@ func GetFilteredMaskOfVectors(vec []INullableVector) []bool {
 	for _, v := range vec {
 		farr := v.GetFilterArr()
 		if farr != nil {
-			functions.OrBool(out, farr, out)
+			orBool(out, farr, out)
 		}
 	}
 	return out
