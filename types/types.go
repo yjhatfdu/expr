@@ -121,6 +121,7 @@ type INullableVector interface {
 	Index(i int) interface{}
 	Truthy(i int) bool
 	TruthyArr() []bool
+	FalseArr() []bool
 	Type() BaseType
 	SetNull(i int, isNull bool)
 	Init(length int)
@@ -259,12 +260,17 @@ func (v NullableInt) Truthy(i int) bool {
 }
 func (v NullableInt) TruthyArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
-	int2bool(v.Values, arr)
-	//boolAnd(v.IsNullArr, arr)
+	for i := range v.IsNullArr {
+		arr[i] = v.Values[i] != 0 && (v.IsNullArr[i] == false)
+	}
+	return arr
+}
 
-	//for i := 0; i < len(v.IsNullArr); i++ {
-	//	arr[i] = v.IsNullArr[i] == false && v.Values[i] != 0
-	//}
+func (v NullableInt) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = v.Values[i] == 0 || v.IsNullArr[i]
+	}
 	return arr
 }
 
@@ -319,9 +325,18 @@ func (v NullableFloat) Truthy(i int) bool {
 }
 
 func (v NullableFloat) TruthyArr() []bool {
-	arr := make([]bool, len(v.IsNullArr))
-	for i := 0; i < len(v.IsNullArr); i++ {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	l := len(v.IsNullArr)
+	for i := 0; i < l; i++ {
 		arr[i] = v.IsNullArr[i] == false && v.Values[i] != 0
+	}
+	return arr
+}
+
+func (v NullableFloat) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = v.Values[i] == 0 || v.IsNullArr[i]
 	}
 	return arr
 }
@@ -376,9 +391,17 @@ func (v NullableBool) Truthy(i int) bool {
 	return v.IsNullArr[i] == false && v.Values[i]
 }
 func (v NullableBool) TruthyArr() []bool {
-	arr := make([]bool, len(v.IsNullArr))
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := 0; i < len(v.IsNullArr); i++ {
 		arr[i] = v.IsNullArr[i] == false && v.Values[i]
+	}
+	return arr
+}
+
+func (v NullableBool) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = v.Values[i] == false || v.IsNullArr[i]
 	}
 	return arr
 }
@@ -451,9 +474,16 @@ func (v NullableNumeric) Truthy(i int) bool {
 }
 
 func (v NullableNumeric) TruthyArr() []bool {
-	arr := make([]bool, len(v.IsNullArr))
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := 0; i < len(v.IsNullArr); i++ {
 		arr[i] = v.IsNullArr[i] == false && v.Values[i] != 0
+	}
+	return arr
+}
+func (v NullableNumeric) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = v.Values[i] == 0 || v.IsNullArr[i]
 	}
 	return arr
 }
@@ -508,9 +538,17 @@ func (v NullableText) Truthy(i int) bool {
 }
 
 func (v NullableText) TruthyArr() []bool {
-	arr := make([]bool, len(v.IsNullArr))
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := 0; i < len(v.IsNullArr); i++ {
 		arr[i] = v.IsNullArr[i] == false && v.Values[i] != ""
+	}
+	return arr
+}
+
+func (v NullableText) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = v.Values[i] == "" || v.IsNullArr[i]
 	}
 	return arr
 }
@@ -567,9 +605,17 @@ func (v NullableTimestamp) Truthy(i int) bool {
 }
 
 func (v NullableTimestamp) TruthyArr() []bool {
-	arr := make([]bool, len(v.IsNullArr))
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := 0; i < len(v.IsNullArr); i++ {
 		arr[i] = v.IsNullArr[i] == false
+	}
+	return arr
+}
+
+func (v NullableTimestamp) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = v.IsNullArr[i]
 	}
 	return arr
 }
