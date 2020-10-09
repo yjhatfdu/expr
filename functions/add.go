@@ -34,7 +34,7 @@ func init() {
 			orBoolS(left.IsNullArr, output.IsNullArr, right.IsNullArr[0])
 		} else {
 			addIntInt(left.Values, right.Values, output.Values)
-			OrBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
+			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
 		}
 		return &output, nil
 	})
@@ -62,7 +62,7 @@ func init() {
 			orBoolS(left.IsNullArr, output.IsNullArr, right.IsNullArr[0])
 		} else {
 			addIntFloat(left.Values, right.Values, output.Values)
-			OrBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
+			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
 		}
 		return &output, nil
 	})
