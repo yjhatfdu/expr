@@ -36,6 +36,7 @@ func init() {
 			addIntInt(left.Values, right.Values, output.Values)
 			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
 		}
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return &output, nil
 	})
 	addFunc.Overload([]types.BaseType{types.Int, types.Float}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
@@ -64,12 +65,14 @@ func init() {
 			addIntFloat(left.Values, right.Values, output.Values)
 			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
 		}
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return &output, nil
 	})
 	addFunc.Overload([]types.BaseType{types.Float, types.Int}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
 		output := types.NullableFloat{}
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableInt)
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+float64(right.Values[j]), false)
 			return nil
@@ -79,6 +82,7 @@ func init() {
 		output := types.NullableFloat{}
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableFloat)
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+right.Values[j], false)
 			return nil
@@ -88,6 +92,7 @@ func init() {
 		output := types.NullableText{}
 		left := vectors[0].(*types.NullableText)
 		right := vectors[1].(*types.NullableText)
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+right.Values[j], false)
 			return nil
@@ -98,6 +103,7 @@ func init() {
 		output.TsType = types.Timestamp
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+right.Values[j], false)
 			return nil
@@ -108,6 +114,7 @@ func init() {
 		output.TsType = types.Time
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+right.Values[j], false)
 			return nil
@@ -118,6 +125,7 @@ func init() {
 		output.TsType = types.Date
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+right.Values[j], false)
 			return nil
@@ -129,6 +137,7 @@ func init() {
 		right := vectors[1].(*types.NullableNumeric)
 		s := types.NumericScale(left.Scale, right.Scale)
 		output.Scale = s
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, types.NormalizeNumeric(left.Values[i], left.Scale, s)+types.NormalizeNumeric(right.Values[j], left.Scale, s), false)
 			return nil
@@ -139,6 +148,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableInt)
 		output.Scale = left.Scale
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+types.Int2numeric(right.Values[j], left.Scale), false)
 			return nil
@@ -149,6 +159,7 @@ func init() {
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableNumeric)
 		output.Scale = right.Scale
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, types.Int2numeric(left.Values[i], right.Scale)+right.Values[j], false)
 			return nil
@@ -159,6 +170,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableFloat)
 		output.Scale = left.Scale
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, left.Values[i]+types.Float2numeric(right.Values[j], left.Scale), false)
 			return nil
@@ -169,6 +181,7 @@ func init() {
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableNumeric)
 		output.Scale = right.Scale
+		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
 			output.Set(index, types.Float2numeric(left.Values[i], right.Scale)+right.Values[j], false)
 			return nil

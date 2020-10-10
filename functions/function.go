@@ -1,8 +1,8 @@
 package functions
 
 import (
-	"github.com/yjhatfdu/expr/types"
 	"fmt"
+	"github.com/yjhatfdu/expr/types"
 	"strings"
 )
 
@@ -135,6 +135,7 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 	}
 	return nil, nil
 }
+
 //func BroadCast2Bool(left, right types.INullableVector, f func(i, j bool) (bool, error)) (types.INullableVector, error) {
 //	var ll = left.Length()
 //	var rl = right.Length()
@@ -288,4 +289,17 @@ func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseT
 		}
 	}
 	return output, nil
+}
+
+func calFilterMask(mask [][]bool) []bool {
+	var result []bool
+	for _, m := range mask {
+		if m != nil {
+			if result == nil {
+				result = make([]bool, len(m), cap(m))
+			}
+			orBool(result, m, result)
+		}
+	}
+	return result
 }
