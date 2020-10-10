@@ -219,6 +219,7 @@ func BroadCast2(left, right, output types.INullableVector, f func(index, i, j in
 			}
 		}
 	}
+	output.SetFilterArr(calFilterMask([][]bool{left.GetFilterArr(), right.GetFilterArr()}))
 	return output, nil
 }
 
@@ -244,6 +245,7 @@ func BroadCast1(in types.INullableVector, output types.INullableVector, handler 
 			}
 		}
 	}
+	output.SetFilterArr(in.GetFilterArr())
 	return output, nil
 }
 

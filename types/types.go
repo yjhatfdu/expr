@@ -14,6 +14,7 @@ var LocalOffsetNano = int64(LocalOffsetSec) * int64(time.Second)
 
 const (
 	ScalaOffset          = 1000
+	ArrayOffset          = 2000
 	Any         BaseType = iota + 1000
 	Int
 	Float
@@ -36,6 +37,8 @@ const (
 	TimeS      = Time + ScalaOffset
 	IntervalS  = Interval + ScalaOffset
 	BlobS      = Blob + ScalaOffset
+	ArrayTypes = Any + ArrayOffset
+	IntA       = Int + ArrayOffset
 )
 
 var typeNames = map[BaseType]string{
@@ -732,4 +735,73 @@ func GetFilteredMaskOfVectors(vec []INullableVector) []bool {
 		}
 	}
 	return out
+}
+
+type NullableIntArray struct {
+	NullableVector
+	Values [][]int64
+}
+
+func (v *NullableIntArray) Init(length int) {
+	v.IsNullArr = make([]bool, length, 32*(length/32+1))
+	v.Values = make([][]int64, length, 8*(length/8+1))
+}
+func (v NullableIntArray) Set(i int, val []int64, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
+	v.Values[i] = val
+	v.IsNullArr[i] = isNull
+}
+
+func (v NullableIntArray) Seti(i int, val interface{}) {
+	if vval, ok := val.([]int64); ok {
+		v.Set(i, vval, false)
+	} else {
+		v.SetNull(i, true)
+	}
+}
+
+func (v NullableIntArray) Type() BaseType {
+	return IntA
+}
+
+func (v NullableIntArray) Truthy(i int) bool {
+	return v.IsNullArr[i] == false && len(v.Values[i]) >0
+}
+func (v NullableIntArray) TruthyArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = len(v.Values[i]) >0 && (v.IsNullArr[i] == false)
+	}
+	return arr
+}
+
+func (v NullableIntArray) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = len(v.Values[i]) ==0 || v.IsNullArr[i]
+	}
+	return arr
+}
+
+func (v NullableIntArray) Copy() INullableVector {
+	return &v
+}
+
+func (v NullableIntArray) Index(i int) interface{} {
+
+	if v.IsScalaV {
+		if v.IsNullArr[0] {
+			return nil
+		} else {
+			return v.Values[0]
+		}
+	} else {
+		if v.IsNullArr[i] {
+			return nil
+		} else {
+			return v.Values[i]
+		}
+	}
 }

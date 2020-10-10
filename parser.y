@@ -75,6 +75,7 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$
     | e EQ e           { $$.node =newAst(FUNC,"eq",types.Any,$2.offset,$1.node,$3.node); }
     | e NEQ e          { $$.node =newAst(FUNC,"neq",types.Any,$2.offset,$1.node,$3.node); }
     | DOLLAR INT       { $$.node =newAst(VAR,yylex.(*Lexer).Text(),types.Any,$1.offset);}
+    | DOLLAR MUL       { $$.node =newAst(VAR,"ALL",types.Any,$1.offset);}
     | LP e RP          { $$.node =$2.node;}
     | func_call        { $$.node =$1.node;}
 

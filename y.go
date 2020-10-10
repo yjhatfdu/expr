@@ -102,73 +102,72 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 173
+const yyLast = 170
 
 var yyAct = [...]int{
 
-	50, 2, 53, 48, 28, 27, 57, 51, 53, 29,
-	32, 31, 52, 13, 30, 33, 34, 35, 36, 37,
-	38, 39, 40, 41, 42, 43, 44, 15, 14, 19,
+	51, 2, 54, 49, 28, 27, 58, 52, 54, 29,
+	33, 32, 53, 13, 26, 34, 35, 36, 37, 38,
+	39, 40, 41, 42, 43, 44, 45, 15, 14, 19,
 	18, 25, 20, 22, 21, 23, 24, 16, 17, 19,
-	18, 28, 27, 12, 16, 17, 19, 18, 47, 26,
-	11, 28, 27, 1, 56, 55, 15, 14, 28, 27,
-	25, 20, 22, 21, 23, 24, 16, 17, 19, 18,
-	0, 45, 46, 0, 0, 0, 0, 0, 0, 14,
-	28, 27, 25, 20, 22, 21, 23, 24, 16, 17,
-	19, 18, 25, 20, 22, 21, 23, 24, 16, 17,
-	19, 18, 28, 27, 0, 0, 3, 4, 5, 7,
-	6, 0, 28, 27, 8, 3, 4, 5, 7, 6,
-	0, 0, 0, 8, 0, 0, 0, 13, 0, 0,
-	0, 0, 10, 54, 9, 0, 13, 0, 0, 0,
-	0, 10, 49, 9, 3, 4, 5, 7, 6, 0,
-	0, 0, 8, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 13, 0, 0, 0, 0,
-	10, 0, 9,
+	18, 28, 27, 12, 11, 1, 0, 0, 48, 30,
+	0, 28, 27, 15, 14, 57, 56, 25, 20, 22,
+	21, 23, 24, 16, 17, 19, 18, 31, 0, 0,
+	0, 46, 47, 0, 0, 0, 14, 28, 27, 25,
+	20, 22, 21, 23, 24, 16, 17, 19, 18, 25,
+	20, 22, 21, 23, 24, 16, 17, 19, 18, 28,
+	27, 0, 0, 3, 4, 5, 7, 6, 0, 28,
+	27, 8, 3, 4, 5, 7, 6, 0, 0, 0,
+	8, 0, 0, 0, 13, 0, 0, 0, 0, 10,
+	55, 9, 0, 13, 0, 0, 0, 0, 10, 50,
+	9, 3, 4, 5, 7, 6, 0, 0, 0, 8,
+	16, 17, 19, 18, 0, 0, 0, 0, 0, 0,
+	0, 0, 13, 0, 28, 27, 0, 10, 0, 9,
 }
 var yyPact = [...]int{
 
-	139, -1000, 45, -1000, -1000, -1000, -1000, -1000, 139, 9,
-	139, -1000, -21, -1000, 139, 139, 139, 139, 139, 139,
-	139, 139, 139, 139, 139, 139, -1000, -13, -13, 77,
-	-1000, 16, 110, 77, 67, 6, 6, -31, -31, 23,
-	23, 23, 23, 23, 23, -24, -1000, -1000, -20, -1000,
-	45, 101, -1000, 139, -1000, -26, 45, -1000,
+	136, -1000, 42, -1000, -1000, -1000, -1000, -1000, 136, 44,
+	136, -1000, -21, -1000, 136, 136, 136, 136, 136, 136,
+	136, 136, 136, 136, 136, 136, -1000, -13, -13, 74,
+	-1000, -1000, 16, 107, 74, 64, 6, 6, -31, -31,
+	129, 129, 129, 129, 129, 129, -24, -1000, -1000, -20,
+	-1000, 42, 98, -1000, 136, -1000, -26, 42, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 53, 0, 50, 43, 3, 49,
+	0, 45, 0, 44, 43, 3, 14,
 }
 var yyR1 = [...]int{
 
 	0, 1, 2, 2, 2, 2, 2, 2, 2, 2,
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
-	4, 6, 5, 5,
+	2, 2, 2, 2, 3, 3, 3, 3, 3, 3,
+	3, 4, 6, 5, 5,
 }
 var yyR2 = [...]int{
 
 	0, 1, 1, 1, 1, 1, 1, 3, 3, 3,
 	3, 3, 3, 2, 3, 3, 3, 3, 3, 3,
-	2, 3, 1, 4, 3, 1, 2, 3, 5, 6,
-	1, 2, 1, 3,
+	2, 2, 3, 1, 4, 3, 1, 2, 3, 5,
+	6, 1, 2, 1, 3,
 }
 var yyChk = [...]int{
 
 	-1000, -1, -2, 5, 6, 7, 9, 8, 13, 33,
 	31, -3, -4, 26, 12, 11, 21, 22, 24, 23,
 	16, 18, 17, 19, 20, 15, -6, 36, 35, -2,
-	5, -2, 31, -2, -2, -2, -2, -2, -2, -2,
-	-2, -2, -2, -2, -2, -4, -4, 32, -5, 32,
-	-2, 31, 32, 28, 32, -5, -2, 32,
+	5, 23, -2, 31, -2, -2, -2, -2, -2, -2,
+	-2, -2, -2, -2, -2, -2, -4, -4, 32, -5,
+	32, -2, 31, 32, 28, 32, -5, -2, 32,
 }
 var yyDef = [...]int{
 
 	0, -2, 1, 2, 3, 4, 5, 6, 0, 0,
-	0, 22, 25, 30, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 26, 0, 0, 13,
-	20, 0, 0, 7, 8, 9, 10, 11, 12, 14,
-	15, 16, 17, 18, 19, 27, 31, 21, 0, 24,
-	32, 0, 23, 0, 28, 0, 33, 29,
+	0, 23, 26, 31, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 27, 0, 0, 13,
+	20, 21, 0, 0, 7, 8, 9, 10, 11, 12,
+	14, 15, 16, 17, 18, 19, 28, 32, 22, 0,
+	25, 33, 0, 24, 0, 29, 0, 34, 30,
 }
 var yyTok1 = [...]int{
 
@@ -643,82 +642,88 @@ yydefault:
 			yyVAL.node = newAst(VAR, yylex.(*Lexer).Text(), types.Any, yyDollar[1].offset)
 		}
 	case 21:
-		yyDollar = yyS[yypt-3 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
 //line parser.y:78
+		{
+			yyVAL.node = newAst(VAR, "ALL", types.Any, yyDollar[1].offset)
+		}
+	case 22:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line parser.y:79
 		{
 			yyVAL.node = yyDollar[2].node
 		}
-	case 22:
+	case 23:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line parser.y:79
+//line parser.y:80
 		{
 			yyVAL.node = yyDollar[1].node
 		}
-	case 23:
+	case 24:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line parser.y:81
+//line parser.y:82
 		{
 			yyVAL.node = newAst(FUNC, yyDollar[1].node.Value, types.Any, yyDollar[1].offset, yyDollar[3].node.Children...)
 		}
-	case 24:
-		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.y:82
-		{
-			yyVAL.node = newAst(FUNC, yyDollar[1].node.Value, types.Any, yyDollar[1].offset)
-		}
 	case 25:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 //line parser.y:83
 		{
 			yyVAL.node = newAst(FUNC, yyDollar[1].node.Value, types.Any, yyDollar[1].offset)
 		}
 	case 26:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-1 : yypt+1]
 //line parser.y:84
+		{
+			yyVAL.node = newAst(FUNC, yyDollar[1].node.Value, types.Any, yyDollar[1].offset)
+		}
+	case 27:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line parser.y:85
 		{
 			yyVAL.node = newAst(FUNC, yyDollar[2].node.Value, types.Any, yyDollar[2].offset, yyDollar[1].node)
 		}
-	case 27:
-		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.y:85
-		{
-			yyDollar[3].node.Children = append([]*AstNode{yyDollar[1].node}, yyDollar[3].node.Children...)
-			yyVAL.node = yyDollar[3].node
-		}
 	case 28:
-		yyDollar = yyS[yypt-5 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 //line parser.y:86
 		{
 			yyDollar[3].node.Children = append([]*AstNode{yyDollar[1].node}, yyDollar[3].node.Children...)
 			yyVAL.node = yyDollar[3].node
 		}
 	case 29:
-		yyDollar = yyS[yypt-6 : yypt+1]
+		yyDollar = yyS[yypt-5 : yypt+1]
 //line parser.y:87
+		{
+			yyDollar[3].node.Children = append([]*AstNode{yyDollar[1].node}, yyDollar[3].node.Children...)
+			yyVAL.node = yyDollar[3].node
+		}
+	case 30:
+		yyDollar = yyS[yypt-6 : yypt+1]
+//line parser.y:88
 		{
 			yyVAL.node = newAst(FUNC, yyDollar[3].node.Value, types.Any, yyDollar[3].offset, append([]*AstNode{yyDollar[1].node}, yyDollar[5].node.Children...)...)
 		}
-	case 30:
+	case 31:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line parser.y:89
+//line parser.y:90
 		{
 			yyVAL.node = newAst(FUNC, yylex.(*Lexer).Text(), types.Any, yyDollar[1].offset)
 		}
-	case 31:
+	case 32:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line parser.y:91
+//line parser.y:92
 		{
 			yyVAL.node = newAst(FUNC, "to"+yyDollar[2].node.Value, types.Any, yyDollar[2].offset)
 		}
-	case 32:
+	case 33:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line parser.y:93
+//line parser.y:94
 		{
 			yyVAL.node = newAst(NULL, "", types.Any, yyDollar[1].offset, yyDollar[1].node)
 		}
-	case 33:
+	case 34:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.y:94
+//line parser.y:95
 		{
 			yyVAL.node = newAst(NULL, "", types.Any, yyDollar[3].offset, append(yyDollar[1].node.Children, yyDollar[3].node)...)
 		}

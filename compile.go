@@ -2,9 +2,9 @@ package expr
 
 import (
 	"errors"
+	"fmt"
 	"github.com/yjhatfdu/expr/functions"
 	"github.com/yjhatfdu/expr/types"
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -214,26 +214,41 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 			err := fmt.Errorf("cannot reference '$%s' of zero input arguments expression", an.Value)
 			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 		}
-		varIndex, err := strconv.Atoi(an.Value)
-		if err != nil {
-			err := fmt.Errorf("invalid variable syntax '$%s'", an.Value)
-			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
+		if an.Value == "ALL" {
+			for i := range inputType {
+				ctx.addOperation(operation{
+					op:       VAR,
+					argc:     0,
+					v:        nil,
+					varIndex: i,
+				})
+			}
+		} else {
+			varIndex, err := strconv.Atoi(an.Value)
+			if err != nil {
+				err := fmt.Errorf("invalid variable syntax '$%s'", an.Value)
+				return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
+			}
+			if varIndex > len(inputType) {
+				err := fmt.Errorf("variable index '$%s' out of input argument range '$1-$%d'", an.Value, len(inputType))
+				return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
+			}
+			ctx.addOperation(operation{
+				op:       VAR,
+				argc:     0,
+				v:        nil,
+				varIndex: varIndex - 1,
+			})
+			an.OutType = inputType[varIndex-1]
 		}
-		if varIndex > len(inputType) {
-			err := fmt.Errorf("variable index '$%s' out of input argument range '$1-$%d'", an.Value, len(inputType))
-			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
-		}
-		ctx.addOperation(operation{
-			op:       VAR,
-			argc:     0,
-			v:        nil,
-			varIndex: varIndex - 1,
-		})
-		an.OutType = inputType[varIndex-1]
 	case FUNC:
 		inputTypes := make([]types.BaseType, len(an.Children))
-		for i, c := range an.Children {
-			inputTypes[i] = c.OutType
+		if len(an.Children) == 1 && an.Children[0].NodeType == VAR && an.Children[0].Value == "ALL" {
+			inputTypes = inputType
+		} else {
+			for i, c := range an.Children {
+				inputTypes[i] = c.OutType
+			}
 		}
 		f, err := functions.GetFunction(an.Value, inputTypes)
 		if err != nil {
@@ -241,7 +256,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 		}
 		ctx.addOperation(operation{
 			op:      FUNC,
-			argc:    f.Argc,
+			argc:    len(inputTypes),
 			handler: f.Handler,
 		})
 		an.OutType = f.OutputType
