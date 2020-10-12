@@ -34,7 +34,7 @@ func init() {
 		for i := range vectors {
 			filterMasks[i] = vectors[i].GetFilterArr()
 		}
-		out, err := BroadCastMultiGeneric(vectors, vectors[1].Type(), func(values []interface{}) (i interface{}, e error) {
+		out, err := BroadCastMultiGeneric(vectors, vectors[1].Type(), func(values []interface{},index int) (i interface{}, e error) {
 			for i := 0; i < l/2; i++ {
 				v := values[2*i]
 				var truthy bool
