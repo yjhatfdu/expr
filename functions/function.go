@@ -219,7 +219,7 @@ func BroadCast2(left, right, output types.INullableVector, f func(index, i, j in
 			}
 		}
 	}
-	output.SetFilterArr(calFilterMask([][]bool{left.GetFilterArr(), right.GetFilterArr()}))
+	output.SetFilterArr(CalFilterMask([][]bool{left.GetFilterArr(), right.GetFilterArr()}))
 	return output, nil
 }
 
@@ -293,7 +293,7 @@ func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseT
 	return output, nil
 }
 
-func calFilterMask(mask [][]bool) []bool {
+func CalFilterMask(mask [][]bool) []bool {
 	var result []bool
 	for _, m := range mask {
 		if m != nil {

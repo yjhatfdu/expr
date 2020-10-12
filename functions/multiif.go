@@ -64,7 +64,7 @@ func init() {
 		if err != nil {
 			return nil, err
 		}
-		out.SetFilterArr(calFilterMask(filterMasks))
+		out.SetFilterArr(CalFilterMask(filterMasks))
 		return out, nil
 	})
 }

@@ -36,7 +36,7 @@ func init() {
 			addIntInt(left.Values, right.Values, output.Values)
 			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
 		}
-		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
+		output.FilterArr = CalFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return &output, nil
 	})
 	addFunc.Overload([]types.BaseType{types.Int, types.Float}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
@@ -65,7 +65,7 @@ func init() {
 			addIntFloat(left.Values, right.Values, output.Values)
 			orBool(left.IsNullArr, right.IsNullArr, output.IsNullArr)
 		}
-		output.FilterArr = calFilterMask([][]bool{left.FilterArr, right.FilterArr})
+		output.FilterArr = CalFilterMask([][]bool{left.FilterArr, right.FilterArr})
 		return &output, nil
 	})
 	addFunc.Overload([]types.BaseType{types.Float, types.Int}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {

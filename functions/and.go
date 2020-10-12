@@ -28,7 +28,7 @@ func init() {
 		} else {
 			andBool(truty1, truty2, out.Values)
 		}
-		out.FilterArr = calFilterMask([][]bool{vectors[0].GetFilterArr(), vectors[1].GetFilterArr()})
+		out.FilterArr = CalFilterMask([][]bool{vectors[0].GetFilterArr(), vectors[1].GetFilterArr()})
 		return out, nil
 	})
 }
