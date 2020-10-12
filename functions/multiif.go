@@ -1,8 +1,8 @@
 package functions
 
 import (
-	"github.com/yjhatfdu/expr/types"
 	"fmt"
+	"github.com/yjhatfdu/expr/types"
 )
 
 func init() {
@@ -16,8 +16,8 @@ func init() {
 		}
 		outType := inputTypes[1]
 		for i := 0; i < len(inputTypes)/2; i++ {
-			if inputTypes[ 2*i+1] != outType {
-				return 0, fmt.Errorf("argument #%d should be %s, got %s", 2*i+1, types.GetTypeName(outType), types.GetTypeName(inputTypes[ 2*i+1]))
+			if inputTypes[2*i+1] != outType {
+				return 0, fmt.Errorf("argument #%d should be %s, got %s", 2*i+1, types.GetTypeName(outType), types.GetTypeName(inputTypes[2*i+1]))
 			}
 		}
 		if inputTypes[len(inputTypes)-1] != outType {
@@ -30,7 +30,11 @@ func init() {
 			hasDefault = true
 		}
 		l := len(vectors)
-		return BroadCastMultiGeneric(vectors, vectors[1].Type(), func(values []interface{}) (i interface{}, e error) {
+		filterMasks := make([][]bool, l)
+		for i := range vectors {
+			filterMasks[i] = vectors[i].GetFilterArr()
+		}
+		out, err := BroadCastMultiGeneric(vectors, vectors[1].Type(), func(values []interface{}) (i interface{}, e error) {
 			for i := 0; i < l/2; i++ {
 				v := values[2*i]
 				var truthy bool
@@ -57,5 +61,10 @@ func init() {
 				return nil, nil
 			}
 		})
+		if err != nil {
+			return nil, err
+		}
+		out.SetFilterArr(calFilterMask(filterMasks))
+		return out, nil
 	})
 }

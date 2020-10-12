@@ -249,7 +249,7 @@ func BroadCast1(in types.INullableVector, output types.INullableVector, handler 
 	return output, nil
 }
 
-func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseType, handler func(values []interface{}) (interface{}, error)) (types.INullableVector, error) {
+func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseType, handler func(values []interface{}, index int) (interface{}, error)) (types.INullableVector, error) {
 	var output types.INullableVector
 	switch outputType {
 	case types.Int:
@@ -279,7 +279,7 @@ func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseT
 		for j := 0; j < len(input); j++ {
 			row[j] = input[j].Index(i)
 		}
-		out, err := handler(row)
+		out, err := handler(row,i)
 		if err != nil {
 			output.SetNull(i, true)
 			output.AddError(&types.VectorError{
