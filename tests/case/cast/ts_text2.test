@@ -1,0 +1,3 @@
+Timestamp,Text
+$1|toText("yyyy-MM-dd HH:mm:ss.SSS")
+2020-01-01T12:00:00+08:00,"2020-01-01 12:00:00.000"

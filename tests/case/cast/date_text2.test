@@ -1,0 +1,3 @@
+Date,Text
+$1|toText("yyyy-MM-dd")
+2020-01-01,"2020-01-01"

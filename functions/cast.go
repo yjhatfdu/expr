@@ -3,6 +3,7 @@ package functions
 import (
 	"github.com/yjhatfdu/expr/types"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -163,6 +164,41 @@ func init() {
 			return nil
 		})
 	})
+	toText.Overload([]types.BaseType{types.Timestamp, types.TextS}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableTimestamp)
+		standard := vectors[1].(*types.NullableText).Values[0]
+		gostyle := convert2GoTimeFormatStyle(standard)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			t := time.Unix(0, input.Values[i])
+			output.Set(i, t.Format(gostyle), false)
+			return nil
+		})
+	})
+	toText.Overload([]types.BaseType{types.Date, types.TextS}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableTimestamp)
+		standard := vectors[1].(*types.NullableText).Values[0]
+		gostyle := convert2GoTimeFormatStyle(standard)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			t := time.Unix(0, input.Values[i])
+			output.Set(i, t.Format(gostyle), false)
+			return nil
+		})
+	})
+}
+
+func convert2GoTimeFormatStyle(standard string) (gostyle string) {
+	standard = strings.Replace(standard, "yyyy", "2006", 1)
+	standard = strings.Replace(standard, "yy", "06", 1)
+	standard = strings.Replace(standard, "MM", "01", 1)
+	standard = strings.Replace(standard, "dd", "02", 1)
+	standard = strings.Replace(standard, "HH", "15", 1)
+	standard = strings.Replace(standard, "mm", "04", 1)
+	standard = strings.Replace(standard, "ss", "05", 1)
+	standard = strings.Replace(standard, "SSS", "000", -1)
+
+	return standard
 }
 
 func init() {
