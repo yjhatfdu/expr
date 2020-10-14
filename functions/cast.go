@@ -216,6 +216,23 @@ func init() {
 			return nil
 		})
 	})
+	toDate.Overload([]types.BaseType{types.Text, types.TextS}, types.Date, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableTimestamp{TsType: types.Date}
+		input := vectors[0].(*types.NullableText)
+		standard := vectors[1].(*types.NullableText).Values[0]
+		gostyle := convert2GoTimeFormatStyle(standard)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			s := input.Values[i]
+			ts, err := time.Parse(gostyle, s)
+			if err != nil {
+				return err
+			}
+			t := ts.UnixNano() + types.LocalOffsetNano
+			dt := t - t%(24*3600*1e9)
+			output.Set(i, dt, false)
+			return nil
+		})
+	})
 }
 
 func init() {
@@ -228,6 +245,23 @@ func init() {
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			t := input.Values[i] + types.LocalOffsetNano
+			dt := t % (24 * 3600 * 1e9)
+			output.Set(i, dt, false)
+			return nil
+		})
+	})
+	toTime.Overload([]types.BaseType{types.Text, types.TextS}, types.Time, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+		output := &types.NullableTimestamp{TsType: types.Time}
+		input := vectors[0].(*types.NullableText)
+		standard := vectors[1].(*types.NullableText).Values[0]
+		gostyle := convert2GoTimeFormatStyle(standard)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			s := input.Values[i]
+			ts, err := time.Parse(gostyle, s)
+			if err != nil {
+				return err
+			}
+			t := ts.UnixNano() + types.LocalOffsetNano
 			dt := t % (24 * 3600 * 1e9)
 			output.Set(i, dt, false)
 			return nil
