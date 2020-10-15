@@ -21,6 +21,8 @@ func init() {
 				return 0, fmt.Errorf("argument #%d should be %s, got %s", 2*i+1, types.GetTypeName(outType), types.GetTypeName(t))
 			}
 		}
+
+		//todo 使用函数进行类型比较
 		lastType := inputTypes[len(inputTypes)-1]
 		if lastType != outType && lastType+types.ScalaOffset != outType && lastType-types.ScalaOffset != outType {
 			return 0, fmt.Errorf("argument #%d should be %s, got %s", len(inputTypes)-1, types.GetTypeName(outType), types.GetTypeName(lastType))
