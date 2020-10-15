@@ -2,11 +2,31 @@ package functions
 
 import "github.com/yjhatfdu/expr/types"
 
-func addIntInt(data1, data2, out []int64)
-func addIntS(data1, out []int64, intS int64)
-func addIntFloat(data1 []int64, data2 []float64, out []float64)
-func addIntSFloat([]float64, []float64, int64)
-func addIntFloatS([]int64, []float64, float64)
+func addIntInt(data1, data2, out []int64) {
+	for i := range out {
+		out[i] = data1[i] + data2[i]
+	}
+}
+func addIntS(data1, out []int64, intS int64) {
+	for i := range data1 {
+		out[i] = data1[i] + intS
+	}
+}
+func addIntFloat(data1 []int64, data2 []float64, out []float64) {
+	for i := range out {
+		out[i] = float64(data1[i]) + data2[i]
+	}
+}
+func addIntSFloat(data1 []float64, out []float64, iv int64) {
+	for i := range out {
+		out[i] = data1[i] + float64(iv)
+	}
+}
+func addIntFloatS(data1 []int64, out []float64, fv float64) {
+	for i := range out {
+		out[i] = float64(data1[i]) + fv
+	}
+}
 
 func init() {
 	addFunc, _ := NewFunction("add")

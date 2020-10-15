@@ -6,9 +6,16 @@ import (
 	"time"
 )
 
-func cvtInt2Float([]int64, []float64)
-func cvtFloat2Int([]float64, []int64)
-func cvtInt2Numeric([]int64, []int64, int64)
+func cvtInt2Float(in []int64, out []float64) {
+	for i := range in {
+		out[i] = float64(in[i])
+	}
+}
+func cvtFloat2Int(in []float64, out []int64) {
+	for i := range in {
+		out[i] = int64(in[i])
+	}
+}
 
 func init() {
 	toInt, _ := NewFunction("toInt")

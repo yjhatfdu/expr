@@ -1,7 +1,13 @@
 package types
 
-func int2bool([]int64, []bool)
+func int2bool(in []int64, out []bool) {
+	for i := range in {
+		out[i] = in[i] != 0
+	}
+}
 
-func boolAnd([]bool, []bool)
-
-func float2bool([]float64, []bool)
+func float2bool(in []float64, out []bool) {
+	for i := range in {
+		out[i] = in[i] != 0
+	}
+}

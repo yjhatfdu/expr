@@ -2,8 +2,16 @@ package functions
 
 import "github.com/yjhatfdu/expr/types"
 
-func andBool(data1, data2, out []bool)
-func andBoolS(data1, out []bool, bools bool)
+func andBool(data1, data2, out []bool) {
+	for i := range out {
+		out[i] = data1[i] && data2[i]
+	}
+}
+func andBoolS(data1, out []bool, bools bool) {
+	for i := range out {
+		out[i] = data1[i] && bools
+	}
+}
 
 func init() {
 	addFunc, _ := NewFunction("and")
