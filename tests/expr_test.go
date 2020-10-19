@@ -50,3 +50,11 @@ func TestCase(t *testing.T) {
 func TestPrintFunctions(t *testing.T) {
 	t.Log(functions.PrintAllFunctions())
 }
+
+func TestTrue(t *testing.T) {
+	p, err := expr.Compile("false", nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(p.Run(nil))
+}
