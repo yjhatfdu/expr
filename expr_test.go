@@ -211,3 +211,16 @@ func BenchmarkParse(b *testing.B) {
 		_, _ = Compile(code, []types.BaseType{types.Int})
 	}
 }
+
+func TestExprRegexp(t *testing.T) {
+	code := "$1|similar(`[a-zA-Z]+`)"
+	p, err := Compile(code, []types.BaseType{types.Text})
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "nil", "1", ".", "text")})
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
