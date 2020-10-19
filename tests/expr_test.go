@@ -46,3 +46,7 @@ func TestCase(t *testing.T) {
 		panic(err)
 	}
 }
+
+func TestPrintFunctions(t *testing.T) {
+	t.Log(functions.PrintAllFunctions())
+}

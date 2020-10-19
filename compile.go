@@ -63,7 +63,7 @@ func (p *Program) Run(input []types.INullableVector) (types.INullableVector, err
 			s.push(input[op.varIndex])
 		case FUNC:
 			args := s.popn(op.argc)
-			ret, err := op.handler(args)
+			ret, err := op.handler.Handle(args)
 			if err != nil {
 				return nil, err
 			}
@@ -78,7 +78,7 @@ type operation struct {
 	argc     int
 	v        types.INullableVector
 	varIndex int
-	handler  functions.Handler
+	handler  functions.IHandler
 }
 
 type context struct {

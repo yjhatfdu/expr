@@ -12,10 +12,18 @@ type typeRule struct {
 }
 
 type Handler func([]types.INullableVector) (types.INullableVector, error)
+
+func (h Handler) Handle(v []types.INullableVector) (types.INullableVector, error) {
+	return h(v)
+}
+
 type handlerFunction struct {
 	OutputType types.BaseType
-	Handler    Handler
+	Handler    IHandler
 	Argc       int
+}
+type IHandler interface {
+	Handle([]types.INullableVector) (types.INullableVector, error)
 }
 
 func types2Names(typeInput []types.BaseType) []string {
@@ -47,10 +55,11 @@ func GetFunction(name string, inputTypes []types.BaseType) (*handlerFunction, er
 type Function struct {
 	name             string
 	typeRules        []typeRule
-	handlers         []Handler
+	handlers         []IHandler
 	genericValidator func([]types.BaseType) (types.BaseType, error)
-	genericHandler   Handler
+	genericHandler   IHandler
 	isAggregation    bool
+	comment          string
 }
 
 func NewFunction(name string) (*Function, error) {
@@ -60,14 +69,21 @@ func NewFunction(name string) (*Function, error) {
 	f := &Function{
 		name:      name,
 		typeRules: make([]typeRule, 0),
-		handlers:  make([]Handler, 0),
+		handlers:  make([]IHandler, 0),
 	}
 	functions[name] = f
 	return f, nil
 }
 
+func (f *Function) Comment(c string) {
+	f.comment = c
+}
+
 func (f *Function) Print() string {
 	output := ""
+	if f.comment != "" {
+		output = "//" + f.comment
+	}
 	for _, tr := range f.typeRules {
 		var typeNames = types2Names(tr.input)
 		output += fmt.Sprintf("%s(%s):%s\n", f.name, strings.Join(typeNames, ", "), types.GetTypeName(tr.output))
@@ -87,7 +103,24 @@ func (f *Function) Overload(inputTypes []types.BaseType, output types.BaseType, 
 	f.handlers = append(f.handlers, implementation)
 }
 
+func (f *Function) OverloadHandler(inputTypes []types.BaseType, output types.BaseType, implementation IHandler) {
+	tr := typeRule{
+		input:  inputTypes,
+		output: output,
+	}
+	f.typeRules = append(f.typeRules, tr)
+	f.handlers = append(f.handlers, implementation)
+}
+
 func (f *Function) Generic(typeValidator func([]types.BaseType) (types.BaseType, error), implementation Handler) {
+	if f.genericValidator != nil {
+		panic("redeclare generic function " + f.name)
+	}
+	f.genericValidator = typeValidator
+	f.genericHandler = implementation
+}
+
+func (f *Function) GenericHandler(typeValidator func([]types.BaseType) (types.BaseType, error), implementation IHandler) {
 	if f.genericValidator != nil {
 		panic("redeclare generic function " + f.name)
 	}
@@ -279,7 +312,7 @@ func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseT
 		for j := 0; j < len(input); j++ {
 			row[j] = input[j].Index(i)
 		}
-		out, err := handler(row,i)
+		out, err := handler(row, i)
 		if err != nil {
 			output.SetNull(i, true)
 			output.AddError(&types.VectorError{
@@ -304,4 +337,12 @@ func CalFilterMask(mask [][]bool) []bool {
 		}
 	}
 	return result
+}
+
+func PrintAllFunctions() string {
+	s := make([]string, 0)
+	for _, f := range functions {
+		s = append(s, f.Print())
+	}
+	return strings.Join(s, "\n")
 }
