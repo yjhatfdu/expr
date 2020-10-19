@@ -192,6 +192,19 @@ func TestExprSIMD(t *testing.T) {
 
 }
 
+func TestExprTRUE(t *testing.T) {
+	code := `true`
+	p, err := Compile(code, []types.BaseType{})
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run(nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
 func BenchmarkParse(b *testing.B) {
 	code := `(1+1):Text+"text"`
 	for i := 0; i < b.N; i++ {

@@ -16,12 +16,16 @@ func init() {
 		}
 		outType := inputTypes[1]
 		for i := 0; i < len(inputTypes)/2; i++ {
-			if inputTypes[2*i+1] != outType {
-				return 0, fmt.Errorf("argument #%d should be %s, got %s", 2*i+1, types.GetTypeName(outType), types.GetTypeName(inputTypes[2*i+1]))
+			t := inputTypes[2*i+1]
+			if t != outType && t+types.ScalaOffset != outType && t-types.ScalaOffset != outType {
+				return 0, fmt.Errorf("argument #%d should be %s, got %s", 2*i+1, types.GetTypeName(outType), types.GetTypeName(t))
 			}
 		}
-		if inputTypes[len(inputTypes)-1] != outType {
-			return 0, fmt.Errorf("argument #%d should be %s, got %s", len(inputTypes)-1, types.GetTypeName(outType), types.GetTypeName(inputTypes[len(inputTypes)-1]))
+
+		//todo 使用函数进行类型比较
+		lastType := inputTypes[len(inputTypes)-1]
+		if lastType != outType && lastType+types.ScalaOffset != outType && lastType-types.ScalaOffset != outType {
+			return 0, fmt.Errorf("argument #%d should be %s, got %s", len(inputTypes)-1, types.GetTypeName(outType), types.GetTypeName(lastType))
 		}
 		return outType, nil
 	}, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
@@ -34,7 +38,7 @@ func init() {
 		for i := range vectors {
 			filterMasks[i] = vectors[i].GetFilterArr()
 		}
-		out, err := BroadCastMultiGeneric(vectors, vectors[1].Type(), func(values []interface{},index int) (i interface{}, e error) {
+		out, err := BroadCastMultiGeneric(vectors, vectors[1].Type(), func(values []interface{}, index int) (i interface{}, e error) {
 			for i := 0; i < l/2; i++ {
 				v := values[2*i]
 				var truthy bool
