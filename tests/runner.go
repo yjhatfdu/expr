@@ -226,7 +226,7 @@ func buildTimestampVec(d []string, isScalar bool) types.INullableVector {
 		if s == `\N` || s == "" {
 			val.Set(i, 0, true)
 		} else {
-			v, err := time.Parse(time.RFC3339, s)
+			v, err := time.ParseInLocation(time.RFC3339, s, time.Local)
 			if err != nil {
 				panic(err)
 			}
