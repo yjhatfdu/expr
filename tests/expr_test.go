@@ -60,7 +60,7 @@ func TestTrue(t *testing.T) {
 }
 
 func TestToDate(t *testing.T) {
-	p, err := expr.Compile(`"2020-01-01T12:00:00+08:00"|toTimestamp|toTime`, nil)
+	p, err := expr.Compile(`"1935-01-01 00:00:00"|toDate("yyyy-MM-dd HH:mm:ss")`, nil)
 	if err != nil {
 		panic(err)
 	}

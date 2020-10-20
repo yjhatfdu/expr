@@ -27,6 +27,30 @@ func (s *similarToFunc) Handle(vectors []types.INullableVector) (types.INullable
 	})
 }
 
+type replaceAllFunc struct {
+	regexp *regexp.Regexp
+}
+
+func (s *replaceAllFunc) Handle(vectors []types.INullableVector) (types.INullableVector, error) {
+	if s.regexp == nil {
+		r := vectors[1].Index(0).(string)
+		var err error
+		s.regexp, err = regexp.Compile(r)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	replace := vectors[2].Index(0).(string)
+
+	input := vectors[0].(*types.NullableText)
+	out := &types.NullableText{}
+	return BroadCast1(vectors[0], out, func(i int) error {
+		out.Set(i, string(s.regexp.ReplaceAll([]byte(input.Values[i]), []byte(replace))), false)
+		return nil
+	})
+}
+
 func init() {
 	trim, _ := NewFunction("trim")
 	trim.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
@@ -77,4 +101,8 @@ func init() {
 	similar, _ := NewFunction("similar")
 	similar.Comment("support Re2 regexp")
 	similar.OverloadHandler([]types.BaseType{types.Text, types.TextS}, types.Bool, new(similarToFunc))
+
+	replaceAll, _ := NewFunction("replaceAll")
+	replaceAll.Comment("support Re2 regexp")
+	replaceAll.OverloadHandler([]types.BaseType{types.Text, types.TextS, types.TextS}, types.Bool, new(replaceAllFunc))
 }
