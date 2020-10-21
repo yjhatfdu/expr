@@ -58,12 +58,3 @@ func TestTrue(t *testing.T) {
 	}
 	t.Log(p.Run(nil))
 }
-
-func TestToDate(t *testing.T) {
-	p, err := expr.Compile(`"1935-01-01 00:00:00"|toDate("yyyy-MM-dd HH:mm:ss")`, nil)
-	if err != nil {
-		panic(err)
-	}
-	vector, _ := p.Run(nil)
-	t.Log(types.ToString(vector))
-}
