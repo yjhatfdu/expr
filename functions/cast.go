@@ -217,7 +217,7 @@ func init() {
 		output := &types.NullableTimestamp{TsType: types.Date}
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			t := input.Values[i]
+			t := input.Values[i] - types.LocalOffsetNano
 			dt := t - t%(24*3600*1e9)
 			output.Set(i, dt, false)
 			return nil
@@ -230,7 +230,7 @@ func init() {
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Values[i]
-			ts, err := time.ParseInLocation(gostyle, s, time.Local)
+			ts, err := time.Parse(gostyle, s)
 			if err != nil {
 				return err
 			}
@@ -251,8 +251,8 @@ func init() {
 		output := &types.NullableTimestamp{TsType: types.Time}
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			t := input.Values[i]
-			dt := (t + types.LocalOffsetNano) % (24 * 3600 * 1e9)
+			t := input.Values[i] - types.LocalOffsetNano
+			dt := t % (24 * 3600 * 1e9)
 			output.Set(i, dt, false)
 			return nil
 		})
@@ -264,12 +264,12 @@ func init() {
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Values[i]
-			ts, err := time.ParseInLocation(gostyle, s, time.Local)
+			ts, err := time.Parse(gostyle, s)
 			if err != nil {
 				return err
 			}
 			t := ts.UnixNano()
-			dt := (t + types.LocalOffsetNano) % (24 * 3600 * 1e9)
+			dt := t % (24 * 3600 * 1e9)
 			output.Set(i, dt, false)
 			return nil
 		})
@@ -286,7 +286,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Values[i]
-			ts, err := time.ParseInLocation(time.RFC3339, s, time.Local)
+			ts, err := time.Parse(time.RFC3339, s)
 			if err != nil {
 				return err
 			}
@@ -302,7 +302,7 @@ func init() {
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Values[i]
-			ts, err := time.ParseInLocation(gostyle, s, time.Local)
+			ts, err := time.Parse(gostyle, s)
 			if err != nil {
 				return err
 			}
