@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"github.com/yjhatfdu/expr"
 	"github.com/yjhatfdu/expr/functions"
 	"github.com/yjhatfdu/expr/types"
@@ -60,16 +59,3 @@ func TestTrue(t *testing.T) {
 	t.Log(p.Run(nil))
 }
 
-func TestFPrint(t *testing.T) {
-	fmt.Println(len("潘成涛"))
-	fmt.Println(time.Unix(0, -23155200000000000).Format(time.RFC3339))
-	fmt.Println(time.Unix(0, time.Unix(0, -23155200000000000-types.LocalOffsetNano).UnixNano()).Format(time.RFC3339))
-
-	ts := -785721600000000000 - types.LocalOffsetNano
-	fmt.Println(ts % 24 * 3600 * 1e9)
-	fmt.Println(time.Unix(0, ts-ts%24*3600*1e9).Format(time.RFC3339))
-	fmt.Println(time.Parse(time.RFC3339, time.Unix(0, ts-ts%24*3600*1e9).Format(time.RFC3339)))
-	//fmt.Println(time.Unix(0, -23155200000000000-types.LocalOffsetNano-ts%(24*3600*1e9)))
-
-	//_, month, day := time.Unix(0, -23155200000000000-types.LocalOffsetNano).Date()
-}
