@@ -4,6 +4,7 @@ import (
 	"github.com/yjhatfdu/expr/types"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 )
 
 type similarToFunc struct {
@@ -66,7 +67,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
-			output.Set(i, int64(len(input.Values[i])), false)
+			output.Set(i, int64(utf8.RuneCountInString(input.Values[i])), false)
 			return nil
 		})
 	})
