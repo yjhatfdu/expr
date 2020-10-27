@@ -13,6 +13,8 @@ type typeRule struct {
 
 type Handler func([]types.INullableVector) (types.INullableVector, error)
 
+type HandlerFactory func() IHandler
+
 func (h Handler) Handle(v []types.INullableVector) (types.INullableVector, error) {
 	return h(v)
 }
@@ -55,7 +57,7 @@ func GetFunction(name string, inputTypes []types.BaseType) (*handlerFunction, er
 type Function struct {
 	name             string
 	typeRules        []typeRule
-	handlers         []IHandler
+	handlers         []HandlerFactory
 	genericValidator func([]types.BaseType) (types.BaseType, error)
 	genericHandler   IHandler
 	isAggregation    bool
@@ -69,7 +71,7 @@ func NewFunction(name string) (*Function, error) {
 	f := &Function{
 		name:      name,
 		typeRules: make([]typeRule, 0),
-		handlers:  make([]IHandler, 0),
+		handlers:  make([]HandlerFactory, 0),
 	}
 	functions[name] = f
 	return f, nil
@@ -100,10 +102,12 @@ func (f *Function) Overload(inputTypes []types.BaseType, output types.BaseType, 
 		output: output,
 	}
 	f.typeRules = append(f.typeRules, tr)
-	f.handlers = append(f.handlers, implementation)
+	f.handlers = append(f.handlers, func() IHandler {
+		return implementation
+	})
 }
 
-func (f *Function) OverloadHandler(inputTypes []types.BaseType, output types.BaseType, implementation IHandler) {
+func (f *Function) OverloadHandler(inputTypes []types.BaseType, output types.BaseType, implementation HandlerFactory) {
 	tr := typeRule{
 		input:  inputTypes,
 		output: output,
@@ -143,13 +147,13 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 		if isAllScala && tr.output < types.ScalaTypes {
 			return &handlerFunction{
 				OutputType: tr.output + types.ScalaOffset,
-				Handler:    f.handlers[i],
+				Handler:    f.handlers[i](),
 				Argc:       len(tr.input),
 			}, nil
 		} else {
 			return &handlerFunction{
 				OutputType: tr.output,
-				Handler:    f.handlers[i],
+				Handler:    f.handlers[i](),
 				Argc:       len(tr.input),
 			}, nil
 		}

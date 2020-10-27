@@ -101,9 +101,13 @@ func init() {
 	})
 	similar, _ := NewFunction("similar")
 	similar.Comment("support Re2 regexp")
-	similar.OverloadHandler([]types.BaseType{types.Text, types.TextS}, types.Bool, new(similarToFunc))
+	similar.OverloadHandler([]types.BaseType{types.Text, types.TextS}, types.Bool, func() IHandler { return &replaceAllFunc{} })
 
 	replaceAll, _ := NewFunction("replaceAll")
 	replaceAll.Comment("support Re2 regexp")
-	replaceAll.OverloadHandler([]types.BaseType{types.Text, types.TextS, types.TextS}, types.Bool, new(replaceAllFunc))
+	replaceAll.OverloadHandler(
+		[]types.BaseType{types.Text, types.TextS, types.TextS},
+		types.Bool,
+		func() IHandler { return &replaceAllFunc{} },
+	)
 }
