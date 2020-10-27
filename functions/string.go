@@ -52,6 +52,37 @@ func (s *replaceAllFunc) Handle(vectors []types.INullableVector) (types.INullabl
 	})
 }
 
+type regexpMatchFunc struct {
+	regexp *regexp.Regexp
+	group  int
+}
+
+func (s *regexpMatchFunc) Handle(vectors []types.INullableVector) (types.INullableVector, error) {
+	if s.regexp == nil {
+		r := vectors[1].Index(0).(string)
+		var err error
+		s.regexp, err = regexp.Compile(r)
+		if err != nil {
+			return nil, err
+		}
+		if len(vectors) == 3 {
+			s.group = int(vectors[2].Index(0).(int64))
+		}
+	}
+	input := vectors[0].(*types.NullableText)
+	out := &types.NullableText{}
+	return BroadCast1(vectors[0], out, func(i int) error {
+		group := s.regexp.FindStringSubmatch(input.Values[i])
+		if len(group) > s.group {
+			out.Set(i, group[s.group], false)
+		} else {
+			out.Set(i, "", true)
+		}
+		return nil
+	})
+
+}
+
 func init() {
 	trim, _ := NewFunction("trim")
 	trim.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
@@ -109,5 +140,21 @@ func init() {
 		[]types.BaseType{types.Text, types.TextS, types.TextS},
 		types.Bool,
 		func() IHandler { return &replaceAllFunc{} },
+	)
+
+	regexpMatch, _ := NewFunction("regexpMatch")
+	regexpMatch.OverloadHandler(
+		[]types.BaseType{types.Text, types.Text},
+		types.Text,
+		func() IHandler {
+			return &regexpMatchFunc{}
+		},
+	)
+	regexpMatch.OverloadHandler(
+		[]types.BaseType{types.Text, types.Text, types.Int},
+		types.Text,
+		func() IHandler {
+			return &regexpMatchFunc{}
+		},
 	)
 }
