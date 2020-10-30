@@ -1,10 +1,8 @@
 package expr
 
 import (
-	"fmt"
 	"github.com/yjhatfdu/expr/types"
 	"testing"
-	"time"
 )
 
 func TestExpr(t *testing.T) {
@@ -227,13 +225,3 @@ func TestExprRegexp(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 
-func TestCompile(t *testing.T) {
-	var value int64 = time.Now().UnixNano()
-	fmt.Println("source value", time.Unix(0, int64(value)).Format(time.RFC3339))
-	sub := value - types.LocalOffsetNano
-	fmt.Println("non-timezone value", time.Unix(0, sub).Format(time.RFC3339))
-	ti := sub % (24*3600*1e9)
-	fmt.Println("time value", ti)
-	dt := sub
-	fmt.Println("date value", time.Unix(0, dt).Format(time.RFC3339))
-}
