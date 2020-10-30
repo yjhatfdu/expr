@@ -47,7 +47,7 @@ func (s *replaceAllFunc) Handle(vectors []types.INullableVector) (types.INullabl
 	input := vectors[0].(*types.NullableText)
 	out := &types.NullableText{}
 	return BroadCast1(vectors[0], out, func(i int) error {
-		out.Set(i, string(s.regexp.ReplaceAll([]byte(input.Values[i]), []byte(replace))), false)
+		out.Set(i, string(s.regexp.ReplaceAllString(input.Values[i], replace)), false)
 		return nil
 	})
 }
@@ -138,7 +138,7 @@ func init() {
 	replaceAll.Comment("support Re2 regexp")
 	replaceAll.OverloadHandler(
 		[]types.BaseType{types.Text, types.TextS, types.TextS},
-		types.Bool,
+		types.Text,
 		func() IHandler { return &replaceAllFunc{} },
 	)
 
