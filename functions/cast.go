@@ -218,8 +218,7 @@ func init() {
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			t := input.Values[i] - types.LocalOffsetNano
-			dt := t - t%(24*3600*1e9)
-			output.Set(i, dt, false)
+			output.Set(i, t, false)
 			return nil
 		})
 	})
@@ -235,8 +234,7 @@ func init() {
 				return err
 			}
 			t := ts.UnixNano()
-			dt := t - t%(24*3600*1e9)
-			output.Set(i, dt, false)
+			output.Set(i, t, false)
 			return nil
 		})
 	})
