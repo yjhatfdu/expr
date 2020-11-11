@@ -72,7 +72,7 @@ type typeRuleInfo struct {
 type FunctionInfo struct {
 	Name        string
 	Comment     string
-	IOInterface []typeRuleInfo
+	Overloading []typeRuleInfo
 }
 
 func NewFunction(name string) (*Function, error) {
@@ -112,7 +112,7 @@ func (f *Function) PrintInfo() *FunctionInfo {
 	result.Name = f.name
 	result.Comment = f.comment
 	for _, tr := range f.typeRules {
-		result.IOInterface = append(result.IOInterface, typeRuleInfo{
+		result.Overloading = append(result.Overloading, typeRuleInfo{
 			Input:  tr.input,
 			Output: tr.output,
 		})
