@@ -64,6 +64,17 @@ type Function struct {
 	comment          string
 }
 
+type typeRuleInfo struct {
+	Input  []types.BaseType
+	Output types.BaseType
+}
+
+type FunctionInfo struct {
+	Name        string
+	Comment     string
+	IOInterface []typeRuleInfo
+}
+
 func NewFunction(name string) (*Function, error) {
 	if functions[name] != nil {
 		return nil, fmt.Errorf("function with name '%s' already exists", name)
@@ -94,6 +105,20 @@ func (f *Function) Print() string {
 		output += fmt.Sprintf("generic function %s(any...):any", f.name)
 	}
 	return output
+}
+
+func (f *Function) PrintInfo() *FunctionInfo {
+	result := &FunctionInfo{}
+	result.Name = f.name
+	result.Comment = f.comment
+	for _, tr := range f.typeRules {
+		result.IOInterface = append(result.IOInterface, typeRuleInfo{
+			Input:  tr.input,
+			Output: tr.output,
+		})
+	}
+
+	return result
 }
 
 func (f *Function) Overload(inputTypes []types.BaseType, output types.BaseType, implementation Handler) {
@@ -349,4 +374,12 @@ func PrintAllFunctions() string {
 		s = append(s, f.Print())
 	}
 	return strings.Join(s, "\n")
+}
+
+func PrintAllFunctionsInfo() []*FunctionInfo {
+	var result []*FunctionInfo
+	for _, f := range functions {
+		result = append(result, f.PrintInfo())
+	}
+	return result
 }
