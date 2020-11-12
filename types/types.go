@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -87,6 +88,22 @@ var typeMapping = map[string]BaseType{
 	"DateS":      DateS,
 	"TimeS":      TimeS,
 	"IntervalS":  IntervalS,
+}
+
+func (t *BaseType) MarshalJSON() ([]byte, error) {
+	if *t < ScalaTypes {
+		if name, ok := typeNames[*t]; ok {
+			return json.Marshal(name + "[S]")
+		} else {
+			return json.Marshal("undefined type")
+		}
+	} else {
+		if name, ok := typeNames[*t]; ok {
+			return json.Marshal(name)
+		} else {
+			return json.Marshal("undefined type")
+		}
+	}
 }
 
 func GetTypeName(t BaseType) string {
@@ -767,12 +784,12 @@ func (v NullableIntArray) Type() BaseType {
 }
 
 func (v NullableIntArray) Truthy(i int) bool {
-	return v.IsNullArr[i] == false && len(v.Values[i]) >0
+	return v.IsNullArr[i] == false && len(v.Values[i]) > 0
 }
 func (v NullableIntArray) TruthyArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := range v.IsNullArr {
-		arr[i] = len(v.Values[i]) >0 && (v.IsNullArr[i] == false)
+		arr[i] = len(v.Values[i]) > 0 && (v.IsNullArr[i] == false)
 	}
 	return arr
 }
@@ -780,7 +797,7 @@ func (v NullableIntArray) TruthyArr() []bool {
 func (v NullableIntArray) FalseArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := range v.IsNullArr {
-		arr[i] = len(v.Values[i]) ==0 || v.IsNullArr[i]
+		arr[i] = len(v.Values[i]) == 0 || v.IsNullArr[i]
 	}
 	return arr
 }
