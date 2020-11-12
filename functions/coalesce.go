@@ -21,7 +21,7 @@ func init() {
 			}
 		}
 		return t, nil
-	}, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	}, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		filterMasks := make([][]bool, len(vectors))
 		var filterMaskTemp []bool
 		for i := range vectors {

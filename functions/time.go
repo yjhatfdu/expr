@@ -7,7 +7,7 @@ import (
 
 func init() {
 	now, _ := NewFunction("now")
-	now.Overload([]types.BaseType{}, types.TimestampS, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	now.Overload([]types.BaseType{}, types.TimestampS, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		out := &types.NullableTimestamp{
 			TsType: types.Timestamp,
 		}
@@ -17,7 +17,7 @@ func init() {
 		return out, nil
 	})
 	getYear, _ := NewFunction("getYear")
-	getYear.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	getYear.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
@@ -27,7 +27,7 @@ func init() {
 		})
 	})
 	getMonth, _ := NewFunction("getMonth")
-	getMonth.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	getMonth.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
@@ -37,7 +37,7 @@ func init() {
 		})
 	})
 	getDay, _ := NewFunction("getDay")
-	getDay.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	getDay.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
@@ -47,7 +47,7 @@ func init() {
 		})
 	})
 	getWeekDay, _ := NewFunction("getWeekDay")
-	getWeekDay.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	getWeekDay.Overload([]types.BaseType{types.Timestamp}, types.Int, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {

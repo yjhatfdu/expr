@@ -28,7 +28,7 @@ func init() {
 			return 0, fmt.Errorf("argument #%d should be %s, got %s", len(inputTypes)-1, types.GetTypeName(outType), types.GetTypeName(lastType))
 		}
 		return outType, nil
-	}, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	}, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		var hasDefault bool
 		if len(vectors)%2 == 1 {
 			hasDefault = true

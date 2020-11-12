@@ -7,7 +7,7 @@ import (
 
 func init() {
 	addFunc, _ := NewFunction("mul")
-	addFunc.Overload([]types.BaseType{types.Int, types.Int}, types.Int, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Int, types.Int}, types.Int, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableInt{}
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableInt)
@@ -16,7 +16,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Int, types.Float}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	addFunc.Overload([]types.BaseType{types.Int, types.Float}, types.Float, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := types.NullableFloat{}
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableFloat)
@@ -25,7 +25,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Float, types.Int}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	addFunc.Overload([]types.BaseType{types.Float, types.Int}, types.Float, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := types.NullableFloat{}
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableInt)
@@ -34,7 +34,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Float, types.Float}, types.Float, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	addFunc.Overload([]types.BaseType{types.Float, types.Float}, types.Float, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := types.NullableFloat{}
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableFloat)
@@ -43,7 +43,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Numeric, types.Numeric}, types.Numeric, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Numeric, types.Numeric}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableNumeric{}
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableNumeric)
@@ -54,7 +54,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Numeric, types.Int}, types.Numeric, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Numeric, types.Int}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableNumeric{}
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableInt)
@@ -64,7 +64,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Int, types.Numeric}, types.Numeric, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Int, types.Numeric}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableNumeric{}
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableNumeric)
@@ -74,7 +74,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Numeric, types.Float}, types.Numeric, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Numeric, types.Float}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableNumeric{}
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableFloat)
@@ -84,7 +84,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Float, types.Numeric}, types.Numeric, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Float, types.Numeric}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableNumeric{}
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableNumeric)
@@ -94,7 +94,7 @@ func init() {
 			return nil
 		})
 	})
-	addFunc.Overload([]types.BaseType{types.Text, types.IntS}, types.Text, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Text, types.IntS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableText{}
 		left := vectors[0].(*types.NullableText)
 		right := vectors[1].(*types.NullableInt)

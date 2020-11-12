@@ -42,7 +42,7 @@ var stackPool = sync.Pool{
 	},
 }
 
-func (p *Program) Run(input []types.INullableVector) (types.INullableVector, error) {
+func (p *Program) Run(input []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	if len(input) != len(p.InputTypes) {
 		return nil, errors.New("input argument length not match")
 	}
@@ -63,7 +63,7 @@ func (p *Program) Run(input []types.INullableVector) (types.INullableVector, err
 			s.push(input[op.varIndex])
 		case FUNC:
 			args := s.popn(op.argc)
-			ret, err := op.handler.Handle(args)
+			ret, err := op.handler.Handle(args, env)
 			if err != nil {
 				return nil, err
 			}

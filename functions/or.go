@@ -15,7 +15,7 @@ func orBoolS(data1, out []bool, bools bool) {
 
 func init() {
 	addFunc, _ := NewFunction("or")
-	addFunc.Overload([]types.BaseType{types.Any, types.Any}, types.Bool, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Any, types.Any}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		truty1 := vectors[0].TruthyArr()
 		truty2 := vectors[1].TruthyArr()
 		length := len(truty1)

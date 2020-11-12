@@ -10,7 +10,7 @@ func not(arr []bool) {
 
 func init() {
 	addFunc, _ := NewFunction("not")
-	addFunc.Overload([]types.BaseType{types.Any}, types.Bool, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	addFunc.Overload([]types.BaseType{types.Any}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		v := vectors[0]
 		length := v.Length()
 		out := &types.NullableBool{

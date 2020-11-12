@@ -24,7 +24,7 @@ func TestCase(t *testing.T) {
 	f, _ := functions.NewFunction("test")
 	f.Generic(func(types []types.BaseType) (types.BaseType, error) {
 		return 0, nil
-	}, func(vectors []types.INullableVector) (types.INullableVector, error) {
+	}, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		return nil, nil
 	})
 	f.Print()
@@ -32,7 +32,7 @@ func TestCase(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = p.Run(nil)
+	_, err = p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -56,6 +56,5 @@ func TestTrue(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	t.Log(p.Run(nil))
+	t.Log(p.Run(nil, nil))
 }
-

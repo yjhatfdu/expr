@@ -11,7 +11,7 @@ type similarToFunc struct {
 	regexp *regexp.Regexp
 }
 
-func (s *similarToFunc) Handle(vectors []types.INullableVector) (types.INullableVector, error) {
+func (s *similarToFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	if s.regexp == nil {
 		r := vectors[1].Index(0).(string)
 		var err error
@@ -32,7 +32,7 @@ type replaceAllFunc struct {
 	regexp *regexp.Regexp
 }
 
-func (s *replaceAllFunc) Handle(vectors []types.INullableVector) (types.INullableVector, error) {
+func (s *replaceAllFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	if s.regexp == nil {
 		r := vectors[1].Index(0).(string)
 		var err error
@@ -57,7 +57,7 @@ type regexpMatchFunc struct {
 	group  int
 }
 
-func (s *regexpMatchFunc) Handle(vectors []types.INullableVector) (types.INullableVector, error) {
+func (s *regexpMatchFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	if s.regexp == nil {
 		r := vectors[1].Index(0).(string)
 		var err error
@@ -85,7 +85,7 @@ func (s *regexpMatchFunc) Handle(vectors []types.INullableVector) (types.INullab
 
 func init() {
 	trim, _ := NewFunction("trim")
-	trim.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	trim.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableText{}
 		return BroadCast1(input, output, func(i int) error {
@@ -94,7 +94,7 @@ func init() {
 		})
 	})
 	length, _ := NewFunction("length")
-	length.Overload([]types.BaseType{types.Text}, types.Int, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	length.Overload([]types.BaseType{types.Text}, types.Int, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
@@ -103,7 +103,7 @@ func init() {
 		})
 	})
 	toLower, _ := NewFunction("toLower")
-	toLower.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	toLower.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableText{}
 		return BroadCast1(input, output, func(i int) error {
@@ -112,7 +112,7 @@ func init() {
 		})
 	})
 	toUpper, _ := NewFunction("toUpper")
-	toUpper.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	toUpper.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableText{}
 		return BroadCast1(input, output, func(i int) error {
@@ -121,7 +121,7 @@ func init() {
 		})
 	})
 	contains, _ := NewFunction("contains")
-	contains.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector) (vector types.INullableVector, e error) {
+	contains.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
 		input2 := vectors[1].(*types.NullableText)
 		output := &types.NullableBool{}

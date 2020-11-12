@@ -84,7 +84,7 @@ func loader(file string) {
 		}
 		dataArr[i] = vec
 	}
-	result, err := program.Run(dataArr[0 : len(dataArr)-1])
+	result, err := program.Run(dataArr[0:len(dataArr)-1], nil)
 	if err != nil {
 		if strings.HasSuffix(file, ".rerr") {
 			return

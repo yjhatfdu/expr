@@ -11,12 +11,12 @@ type typeRule struct {
 	output types.BaseType
 }
 
-type Handler func([]types.INullableVector) (types.INullableVector, error)
+type Handler func([]types.INullableVector, map[string]string) (types.INullableVector, error)
 
 type HandlerFactory func() IHandler
 
-func (h Handler) Handle(v []types.INullableVector) (types.INullableVector, error) {
-	return h(v)
+func (h Handler) Handle(v []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+	return h(v, env)
 }
 
 type handlerFunction struct {
@@ -25,7 +25,7 @@ type handlerFunction struct {
 	Argc       int
 }
 type IHandler interface {
-	Handle([]types.INullableVector) (types.INullableVector, error)
+	Handle([]types.INullableVector, map[string]string) (types.INullableVector, error)
 }
 
 func types2Names(typeInput []types.BaseType) []string {
