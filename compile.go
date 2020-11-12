@@ -91,12 +91,12 @@ func (ct *context) addOperation(op operation) {
 }
 
 func Compile(code string, inputType []types.BaseType) (p *Program, err error) {
-	//defer func() {
-	//	r := recover()
-	//	if r != nil {
-	//		err = errors.New(fmt.Sprintf("%v", r))
-	//	}
-	//}()
+	defer func() {
+		r := recover()
+		if r != nil {
+			err = errors.New(fmt.Sprintf("%v", r))
+		}
+	}()
 	l := NewLexer(code)
 	yyErrorVerbose = true
 	yyParse(l)
