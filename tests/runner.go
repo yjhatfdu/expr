@@ -37,7 +37,7 @@ func loader(file string) {
 	inputTypes := allTypes[0 : len(allTypes)-1]
 	outputType := allTypes[len(allTypes)-1]
 	code, err := r.ReadString('\n')
-	program, err := expr.Compile(code, inputTypes)
+	program, err := expr.Compile(code, inputTypes, nil)
 	if err != nil {
 		if strings.HasSuffix(file, ".cerr") {
 			return

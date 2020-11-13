@@ -90,7 +90,7 @@ func (ct *context) addOperation(op operation) {
 	ct.ops = append(ct.ops, op)
 }
 
-func Compile(code string, inputType []types.BaseType) (p *Program, err error) {
+func Compile(code string, inputType []types.BaseType, env map[string]string) (p *Program, err error) {
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -102,7 +102,7 @@ func Compile(code string, inputType []types.BaseType) (p *Program, err error) {
 	yyParse(l)
 	ast := l.parseResult
 	ctx := &context{ops: []operation{}, code: code}
-	err = compile(ast, ctx, inputType)
+	err = compile(ast, ctx, inputType, env)
 	if err != nil {
 		return
 	}
@@ -118,9 +118,9 @@ func buildErrInfo(node *AstNode, code string) string {
 	return fmt.Sprintf("\n%s\n%s", code, strings.Repeat(" ", node.Offset)+"^")
 }
 
-func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
+func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[string]string) error {
 	for _, node := range an.Children {
-		if err := compile(node, ctx, inputType); err != nil {
+		if err := compile(node, ctx, inputType, env); err != nil {
 			return err
 		}
 	}
@@ -260,7 +260,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 		if err != nil {
 			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
 		}
-		err = f.Handler.Init(consts)
+		err = f.Handler.Init(consts, env)
 		if err != nil {
 			return err
 		}

@@ -11,7 +11,7 @@ type similarToFunc struct {
 	regexp *regexp.Regexp
 }
 
-func (s *similarToFunc) Init(consts []string) error {
+func (s *similarToFunc) Init([]string, map[string]string) error {
 	return nil
 }
 
@@ -36,7 +36,7 @@ type replaceAllFunc struct {
 	regexp *regexp.Regexp
 }
 
-func (s *replaceAllFunc) Init(consts []string) error {
+func (s *replaceAllFunc) Init([]string, map[string]string) error {
 	return nil
 }
 
@@ -65,7 +65,7 @@ type regexpMatchFunc struct {
 	group  int
 }
 
-func (s *regexpMatchFunc) Init(consts []string) error {
+func (s *regexpMatchFunc) Init([]string, map[string]string) error {
 	return nil
 }
 func (s *regexpMatchFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {

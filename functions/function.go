@@ -18,7 +18,7 @@ type HandlerFactory func() IHandler
 func (h Handler) Handle(v []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	return h(v, env)
 }
-func (h Handler) Init(astChildren []string) error {
+func (h Handler) Init([]string, map[string]string) error {
 	return nil
 }
 
@@ -29,7 +29,7 @@ type handlerFunction struct {
 }
 type IHandler interface {
 	Handle([]types.INullableVector, map[string]string) (types.INullableVector, error)
-	Init(astChildren []string) error
+	Init([]string, map[string]string) error
 }
 
 func types2Names(typeInput []types.BaseType) []string {

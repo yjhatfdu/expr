@@ -28,7 +28,7 @@ func TestCase(t *testing.T) {
 		return nil, nil
 	})
 	f.Print()
-	p, err := expr.Compile("now", nil)
+	p, err := expr.Compile("now", nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ func TestPrintFunctions(t *testing.T) {
 }
 
 func TestTrue(t *testing.T) {
-	p, err := expr.Compile("false", nil)
+	p, err := expr.Compile("false", nil, nil)
 	if err != nil {
 		panic(err)
 	}
