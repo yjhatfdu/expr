@@ -250,9 +250,19 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType) error {
 				inputTypes[i] = c.OutType
 			}
 		}
+		consts := make([]string, len(an.Children))
+		for i, c := range an.Children {
+			if c.NodeType == CONST {
+				consts[i] = c.Value
+			}
+		}
 		f, err := functions.GetFunction(an.Value, inputTypes)
 		if err != nil {
 			return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
+		}
+		err = f.Handler.Init(consts)
+		if err != nil {
+			return err
 		}
 		ctx.addOperation(operation{
 			op:      FUNC,
