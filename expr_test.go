@@ -5,8 +5,23 @@ import (
 	"testing"
 )
 
+func TestExpr_Minus(t *testing.T) {
+	code := `-1`
+	p, err := Compile(code, nil, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	ret, err := p.Run(nil, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(types.ToString(ret))
+}
+
 func TestExpr(t *testing.T) {
-	code := `1+1`
+	code := `1-1`
 	p, err := Compile(code, nil, nil)
 	if err != nil {
 		panic(err)

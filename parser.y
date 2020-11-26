@@ -78,6 +78,10 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$
     | DOLLAR MUL       { $$.node =newAst(VAR,"ALL",types.Any,$1.offset);}
     | LP e RP          { $$.node =$2.node;}
     | func_call        { $$.node =$1.node;}
+    | negative 	       { $$.node =$1.node;}
+
+negative : MINUS INT { $$.node =newAst(CONST,"-" + yylex.(*Lexer).Text(),types.Int,$2.offset); }
+	| MINUS FLOAT { $$.node =newAst(CONST,"-" + yylex.(*Lexer).Text(),types.Float,$2.offset); }
 
 func_call :     IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset,$3.node.Children...);}
               | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset);}
@@ -93,4 +97,3 @@ cast_func: CAST IDD    { $$.node =newAst(FUNC,"to"+$2.node.Value,types.Any,$2.of
 
 e_list:   e  {$$.node =newAst(NULL,"",types.Any,$1.offset,$1.node);}
         | e_list COMMA e  {$$.node=newAst(NULL,"",types.Any,$3.offset,append($1.node.Children,$3.node)...);}
-

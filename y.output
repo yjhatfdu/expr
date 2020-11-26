@@ -8,7 +8,8 @@ state 0
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
@@ -16,7 +17,8 @@ state 0
 	input  goto 1
 	e  goto 2
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
 state 1
 	$accept:  input.$end 
@@ -44,23 +46,23 @@ state 2
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	OR  shift 15
-	AND  shift 14
-	NEQ  shift 25
-	GT  shift 20
-	LT  shift 22
-	GTE  shift 21
-	LTE  shift 23
-	EQ  shift 24
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	OR  shift 17
+	AND  shift 16
+	NEQ  shift 27
+	GT  shift 22
+	LT  shift 24
+	GTE  shift 23
+	LTE  shift 25
+	EQ  shift 26
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 1 (src line 57)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
 state 3
 	e:  INT.    (2)
@@ -101,21 +103,23 @@ state 8
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 29
+	e  goto 31
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
 state 9
 	e:  DOLLAR.INT 
 	e:  DOLLAR.MUL 
 
-	INT  shift 30
-	MUL  shift 31
+	INT  shift 32
+	MUL  shift 33
 	.  error
 
 
@@ -128,14 +132,16 @@ state 10
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 32
+	e  goto 34
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
 state 11
 	e:  func_call.    (23)
@@ -144,21 +150,39 @@ state 11
 
 
 state 12
-	func_call:  IDD.LP e_list RP 
-	func_call:  IDD.LP RP 
-	func_call:  IDD.    (26)
+	e:  negative.    (24)
 
-	LP  shift 33
-	.  reduce 26 (src line 84)
+	.  reduce 24 (src line 81)
 
 
 state 13
-	IDD:  ID.    (31)
+	func_call:  IDD.LP e_list RP 
+	func_call:  IDD.LP RP 
+	func_call:  IDD.    (30)
 
-	.  reduce 31 (src line 90)
+	LP  shift 35
+	.  reduce 30 (src line 89)
 
 
 state 14
+	negative:  MINUS.INT 
+	negative:  MINUS.FLOAT 
+	negative:  MINUS.negative 
+
+	INT  shift 36
+	FLOAT  shift 37
+	MINUS  shift 14
+	.  error
+
+	negative  goto 38
+
+state 15
+	IDD:  ID.    (35)
+
+	.  reduce 35 (src line 95)
+
+
+state 16
 	e:  e AND.e 
 
 	INT  shift 3
@@ -167,16 +191,18 @@ state 14
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 34
+	e  goto 39
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 15
+state 17
 	e:  e OR.e 
 
 	INT  shift 3
@@ -185,16 +211,18 @@ state 15
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 35
+	e  goto 40
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 16
+state 18
 	e:  e ADD.e 
 
 	INT  shift 3
@@ -203,16 +231,18 @@ state 16
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 36
+	e  goto 41
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 17
+state 19
 	e:  e MINUS.e 
 
 	INT  shift 3
@@ -221,16 +251,18 @@ state 17
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 37
+	e  goto 42
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 18
+state 20
 	e:  e DIV.e 
 
 	INT  shift 3
@@ -239,16 +271,18 @@ state 18
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 38
+	e  goto 43
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 19
+state 21
 	e:  e MUL.e 
 
 	INT  shift 3
@@ -257,16 +291,18 @@ state 19
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 39
+	e  goto 44
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 20
+state 22
 	e:  e GT.e 
 
 	INT  shift 3
@@ -275,16 +311,18 @@ state 20
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 40
+	e  goto 45
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 21
+state 23
 	e:  e GTE.e 
 
 	INT  shift 3
@@ -293,16 +331,18 @@ state 21
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 41
+	e  goto 46
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 22
+state 24
 	e:  e LT.e 
 
 	INT  shift 3
@@ -311,16 +351,18 @@ state 22
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 42
+	e  goto 47
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 23
+state 25
 	e:  e LTE.e 
 
 	INT  shift 3
@@ -329,16 +371,18 @@ state 23
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 43
+	e  goto 48
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 24
+state 26
 	e:  e EQ.e 
 
 	INT  shift 3
@@ -347,16 +391,18 @@ state 24
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 44
+	e  goto 49
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 25
+state 27
 	e:  e NEQ.e 
 
 	INT  shift 3
@@ -365,40 +411,42 @@ state 25
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 45
+	e  goto 50
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 26
-	func_call:  e cast_func.    (27)
+state 28
+	func_call:  e cast_func.    (31)
 
-	.  reduce 27 (src line 85)
+	.  reduce 31 (src line 90)
 
 
-state 27
+state 29
 	func_call:  e PIPE.IDD 
 	func_call:  e PIPE.IDD LP RP 
 	func_call:  e PIPE.IDD LP e_list RP 
 
-	ID  shift 13
+	ID  shift 15
 	.  error
 
-	IDD  goto 46
+	IDD  goto 51
 
-state 28
+state 30
 	cast_func:  CAST.IDD 
 
-	ID  shift 13
+	ID  shift 15
 	.  error
 
-	IDD  goto 47
+	IDD  goto 52
 
-state 29
+state 31
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -417,35 +465,35 @@ state 29
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	NEQ  shift 25
-	GT  shift 20
-	LT  shift 22
-	GTE  shift 21
-	LTE  shift 23
-	EQ  shift 24
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	NEQ  shift 27
+	GT  shift 22
+	LT  shift 24
+	GTE  shift 23
+	LTE  shift 25
+	EQ  shift 26
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 13 (src line 70)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 30
+state 32
 	e:  DOLLAR INT.    (20)
 
 	.  reduce 20 (src line 77)
 
 
-state 31
+state 33
 	e:  DOLLAR MUL.    (21)
 
 	.  reduce 21 (src line 78)
 
 
-state 32
+state 34
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -464,26 +512,26 @@ state 32
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	OR  shift 15
-	AND  shift 14
-	NEQ  shift 25
-	GT  shift 20
-	LT  shift 22
-	GTE  shift 21
-	LTE  shift 23
-	EQ  shift 24
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	RP  shift 48
-	CAST  shift 28
-	PIPE  shift 27
+	OR  shift 17
+	AND  shift 16
+	NEQ  shift 27
+	GT  shift 22
+	LT  shift 24
+	GTE  shift 23
+	LTE  shift 25
+	EQ  shift 26
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	RP  shift 53
+	CAST  shift 30
+	PIPE  shift 29
 	.  error
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 33
+state 35
 	func_call:  IDD LP.e_list RP 
 	func_call:  IDD LP.RP 
 
@@ -493,18 +541,38 @@ state 33
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
-	RP  shift 50
+	RP  shift 55
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 51
+	e  goto 56
 	func_call  goto 11
-	IDD  goto 12
-	e_list  goto 49
+	negative  goto 12
+	IDD  goto 13
+	e_list  goto 54
 
-state 34
+state 36
+	negative:  MINUS INT.    (25)
+
+	.  reduce 25 (src line 83)
+
+
+state 37
+	negative:  MINUS FLOAT.    (26)
+
+	.  reduce 26 (src line 84)
+
+
+state 38
+	negative:  MINUS negative.    (27)
+
+	.  reduce 27 (src line 85)
+
+
+state 39
 	e:  e.AND e 
 	e:  e AND e.    (7)
 	e:  e.OR e 
@@ -523,23 +591,23 @@ state 34
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	NEQ  shift 25
-	GT  shift 20
-	LT  shift 22
-	GTE  shift 21
-	LTE  shift 23
-	EQ  shift 24
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	NEQ  shift 27
+	GT  shift 22
+	LT  shift 24
+	GTE  shift 23
+	LTE  shift 25
+	EQ  shift 26
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 7 (src line 64)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 35
+state 40
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e OR e.    (8)
@@ -558,24 +626,24 @@ state 35
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	AND  shift 14
-	NEQ  shift 25
-	GT  shift 20
-	LT  shift 22
-	GTE  shift 21
-	LTE  shift 23
-	EQ  shift 24
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	AND  shift 16
+	NEQ  shift 27
+	GT  shift 22
+	LT  shift 24
+	GTE  shift 23
+	LTE  shift 25
+	EQ  shift 26
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 8 (src line 65)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 36
+state 41
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -594,15 +662,15 @@ state 36
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 9 (src line 66)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 37
+state 42
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -621,15 +689,15 @@ state 37
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 10 (src line 67)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 38
+state 43
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -648,13 +716,13 @@ state 38
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	CAST  shift 28
-	PIPE  shift 27
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 11 (src line 68)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 39
+state 44
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -673,13 +741,13 @@ state 39
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	CAST  shift 28
-	PIPE  shift 27
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 12 (src line 69)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 40
+state 45
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -698,17 +766,17 @@ state 40
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 14 (src line 71)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 41
+state 46
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -727,17 +795,17 @@ state 41
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 15 (src line 72)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 42
+state 47
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -756,17 +824,17 @@ state 42
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 16 (src line 73)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 43
+state 48
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -785,17 +853,17 @@ state 43
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 17 (src line 74)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 44
+state 49
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -814,17 +882,17 @@ state 44
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 18 (src line 75)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 45
+state 50
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -843,53 +911,53 @@ state 45
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
 	.  reduce 19 (src line 76)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 46
-	func_call:  e PIPE IDD.    (28)
+state 51
+	func_call:  e PIPE IDD.    (32)
 	func_call:  e PIPE IDD.LP RP 
 	func_call:  e PIPE IDD.LP e_list RP 
 
-	LP  shift 52
-	.  reduce 28 (src line 86)
+	LP  shift 57
+	.  reduce 32 (src line 91)
 
 
-state 47
-	cast_func:  CAST IDD.    (32)
+state 52
+	cast_func:  CAST IDD.    (36)
 
-	.  reduce 32 (src line 92)
+	.  reduce 36 (src line 97)
 
 
-state 48
+state 53
 	e:  LP e RP.    (22)
 
 	.  reduce 22 (src line 79)
 
 
-state 49
+state 54
 	func_call:  IDD LP e_list.RP 
 	e_list:  e_list.COMMA e 
 
-	COMMA  shift 54
-	RP  shift 53
+	COMMA  shift 59
+	RP  shift 58
 	.  error
 
 
-state 50
-	func_call:  IDD LP RP.    (25)
+state 55
+	func_call:  IDD LP RP.    (29)
 
-	.  reduce 25 (src line 83)
+	.  reduce 29 (src line 88)
 
 
-state 51
+state 56
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -906,27 +974,27 @@ state 51
 	func_call:  e.PIPE IDD 
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
-	e_list:  e.    (33)
+	e_list:  e.    (37)
 
-	OR  shift 15
-	AND  shift 14
-	NEQ  shift 25
-	GT  shift 20
-	LT  shift 22
-	GTE  shift 21
-	LTE  shift 23
-	EQ  shift 24
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
-	.  reduce 33 (src line 94)
+	OR  shift 17
+	AND  shift 16
+	NEQ  shift 27
+	GT  shift 22
+	LT  shift 24
+	GTE  shift 23
+	LTE  shift 25
+	EQ  shift 26
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
+	.  reduce 37 (src line 99)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 52
+state 57
 	func_call:  e PIPE IDD LP.RP 
 	func_call:  e PIPE IDD LP.e_list RP 
 
@@ -936,24 +1004,26 @@ state 52
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
-	RP  shift 55
+	RP  shift 60
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 51
+	e  goto 56
 	func_call  goto 11
-	IDD  goto 12
-	e_list  goto 56
+	negative  goto 12
+	IDD  goto 13
+	e_list  goto 61
 
-state 53
-	func_call:  IDD LP e_list RP.    (24)
+state 58
+	func_call:  IDD LP e_list RP.    (28)
 
-	.  reduce 24 (src line 82)
+	.  reduce 28 (src line 87)
 
 
-state 54
+state 59
 	e_list:  e_list COMMA.e 
 
 	INT  shift 3
@@ -962,31 +1032,33 @@ state 54
 	BOOL  shift 7
 	FLOAT  shift 6
 	NOT  shift 8
-	ID  shift 13
+	MINUS  shift 14
+	ID  shift 15
 	LP  shift 10
 	DOLLAR  shift 9
 	.  error
 
-	e  goto 57
+	e  goto 62
 	func_call  goto 11
-	IDD  goto 12
+	negative  goto 12
+	IDD  goto 13
 
-state 55
-	func_call:  e PIPE IDD LP RP.    (29)
+state 60
+	func_call:  e PIPE IDD LP RP.    (33)
 
-	.  reduce 29 (src line 87)
+	.  reduce 33 (src line 92)
 
 
-state 56
+state 61
 	func_call:  e PIPE IDD LP e_list.RP 
 	e_list:  e_list.COMMA e 
 
-	COMMA  shift 54
-	RP  shift 58
+	COMMA  shift 59
+	RP  shift 63
 	.  error
 
 
-state 57
+state 62
 	e:  e.AND e 
 	e:  e.OR e 
 	e:  e.ADD e 
@@ -1003,41 +1075,41 @@ state 57
 	func_call:  e.PIPE IDD 
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
-	e_list:  e_list COMMA e.    (34)
+	e_list:  e_list COMMA e.    (38)
 
-	OR  shift 15
-	AND  shift 14
-	NEQ  shift 25
-	GT  shift 20
-	LT  shift 22
-	GTE  shift 21
-	LTE  shift 23
-	EQ  shift 24
-	ADD  shift 16
-	MINUS  shift 17
-	MUL  shift 19
-	DIV  shift 18
-	CAST  shift 28
-	PIPE  shift 27
-	.  reduce 34 (src line 95)
+	OR  shift 17
+	AND  shift 16
+	NEQ  shift 27
+	GT  shift 22
+	LT  shift 24
+	GTE  shift 23
+	LTE  shift 25
+	EQ  shift 26
+	ADD  shift 18
+	MINUS  shift 19
+	MUL  shift 21
+	DIV  shift 20
+	CAST  shift 30
+	PIPE  shift 29
+	.  reduce 38 (src line 100)
 
-	cast_func  goto 26
+	cast_func  goto 28
 
-state 58
-	func_call:  e PIPE IDD LP e_list RP.    (30)
+state 63
+	func_call:  e PIPE IDD LP e_list RP.    (34)
 
-	.  reduce 30 (src line 88)
+	.  reduce 34 (src line 93)
 
 
-36 terminals, 7 nonterminals
-35 grammar rules, 59/8000 states
+36 terminals, 8 nonterminals
+39 grammar rules, 64/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-56 working sets used
-memory: parser 59/120000
-53 extra closures
-316 shift entries, 1 exceptions
-25 goto entries
-51 entries saved by goto default
-Optimizer space used: output 170/120000
-170 table entries, 41 zero
-maximum spread: 36, maximum offset: 54
+57 working sets used
+memory: parser 78/120000
+58 extra closures
+337 shift entries, 1 exceptions
+27 goto entries
+68 entries saved by goto default
+Optimizer space used: output 178/120000
+178 table entries, 41 zero
+maximum spread: 36, maximum offset: 59
