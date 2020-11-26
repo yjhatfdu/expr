@@ -7,11 +7,11 @@ import (
 
 func TestExpr(t *testing.T) {
 	code := `1+1`
-	p, err := Compile(code, nil)
+	p, err := Compile(code, nil, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run(nil)
+	ret, err := p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -19,11 +19,11 @@ func TestExpr(t *testing.T) {
 }
 func TestExpr2(t *testing.T) {
 	code := `length($1)<10 and length($1)>2`
-	p, err := Compile(code, []types.BaseType{types.Text})
+	p, err := Compile(code, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, nil, "1", "12", "123", "1234")})
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, nil, "1", "12", "123", "1234")}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -32,11 +32,11 @@ func TestExpr2(t *testing.T) {
 
 func TestExpr3(t *testing.T) {
 	code := "($1+$1*0.1):Float:Text"
-	p, err := Compile(code, []types.BaseType{types.Int})
+	p, err := Compile(code, []types.BaseType{types.Int}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10)})
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10)}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -45,11 +45,11 @@ func TestExpr3(t *testing.T) {
 
 func TestExprCoalesce(t *testing.T) {
 	code := "coalesce($1,$2,1)"
-	p, err := Compile(code, []types.BaseType{types.Int, types.Int})
+	p, err := Compile(code, []types.BaseType{types.Int, types.Int}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10), types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10)})
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10), types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10)}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -58,11 +58,11 @@ func TestExprCoalesce(t *testing.T) {
 
 func TestExprMultiIf(t *testing.T) {
 	code := `multiIf($1==2,"is2",$1==3,"is3","err")`
-	p, err := Compile(code, []types.BaseType{types.Int, types.Int})
+	p, err := Compile(code, []types.BaseType{types.Int, types.Int}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10), types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10)})
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10), types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10)}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -70,11 +70,11 @@ func TestExprMultiIf(t *testing.T) {
 }
 func TestExprCast(t *testing.T) {
 	code := "`12`"
-	p, err := Compile(code, []types.BaseType{types.Int, types.Int})
+	p, err := Compile(code, []types.BaseType{types.Int, types.Int}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10), types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10)})
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10), types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10)}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -83,11 +83,11 @@ func TestExprCast(t *testing.T) {
 
 func TestExprNow(t *testing.T) {
 	code := `now()`
-	p, err := Compile(code, []types.BaseType{})
+	p, err := Compile(code, []types.BaseType{}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run(nil)
+	ret, err := p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -96,11 +96,11 @@ func TestExprNow(t *testing.T) {
 
 func TestExprNowDate(t *testing.T) {
 	code := `now():Text`
-	p, err := Compile(code, []types.BaseType{})
+	p, err := Compile(code, []types.BaseType{}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run(nil)
+	ret, err := p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -109,11 +109,11 @@ func TestExprNowDate(t *testing.T) {
 
 func TestExprNowTime(t *testing.T) {
 	code := `now():Time`
-	p, err := Compile(code, []types.BaseType{})
+	p, err := Compile(code, []types.BaseType{}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run(nil)
+	ret, err := p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -121,11 +121,11 @@ func TestExprNowTime(t *testing.T) {
 }
 func TestExprNowYear(t *testing.T) {
 	code := `now|getYear|add(10)`
-	p, err := Compile(code, []types.BaseType{})
+	p, err := Compile(code, []types.BaseType{}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run(nil)
+	ret, err := p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -134,11 +134,11 @@ func TestExprNowYear(t *testing.T) {
 
 func TestExprNowYearWithoutP(t *testing.T) {
 	code := `" nihao   "|trim|length`
-	p, err := Compile(code, []types.BaseType{})
+	p, err := Compile(code, []types.BaseType{}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run(nil)
+	ret, err := p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -147,7 +147,7 @@ func TestExprNowYearWithoutP(t *testing.T) {
 
 func BenchmarkExpr(b *testing.B) {
 	code := "!$1"
-	p, err := Compile(code, []types.BaseType{types.Int})
+	p, err := Compile(code, []types.BaseType{types.Int}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -156,7 +156,7 @@ func BenchmarkExpr(b *testing.B) {
 	b.ResetTimer()
 	var ret types.INullableVector
 	for i := 0; i < b.N; i++ {
-		ret, _ = p.Run(input)
+		ret, _ = p.Run(input, nil)
 
 	}
 	b.Log(types.ToString(ret))
@@ -164,7 +164,7 @@ func BenchmarkExpr(b *testing.B) {
 
 func BenchmarkExprShort(b *testing.B) {
 	code := "1 + $1:Float"
-	p, err := Compile(code, []types.BaseType{types.Int})
+	p, err := Compile(code, []types.BaseType{types.Int}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -173,7 +173,7 @@ func BenchmarkExprShort(b *testing.B) {
 	b.ResetTimer()
 	var ret types.INullableVector
 	for i := 0; i < b.N; i++ {
-		ret, _ = p.Run(input)
+		ret, _ = p.Run(input, nil)
 
 	}
 	b.Log(types.ToString(ret))
@@ -181,24 +181,24 @@ func BenchmarkExprShort(b *testing.B) {
 
 func TestExprSIMD(t *testing.T) {
 	code := "$1 + $1"
-	p, err := Compile(code, []types.BaseType{types.Int})
+	p, err := Compile(code, []types.BaseType{types.Int}, nil)
 	if err != nil {
 		panic(err)
 	}
 	input := []types.INullableVector{types.BuildValue(types.Int, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10, 1, 2, 3, 4, 5, 6, nil, 8, 9, 10)}
 	for i := 0; i < 1000000; i++ {
-		_, _ = p.Run(input)
+		_, _ = p.Run(input, nil)
 	}
 
 }
 
 func TestExprTRUE(t *testing.T) {
 	code := `true`
-	p, err := Compile(code, []types.BaseType{})
+	p, err := Compile(code, []types.BaseType{}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run(nil)
+	ret, err := p.Run(nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -208,20 +208,19 @@ func TestExprTRUE(t *testing.T) {
 func BenchmarkParse(b *testing.B) {
 	code := `(1+1):Text+"text"`
 	for i := 0; i < b.N; i++ {
-		_, _ = Compile(code, []types.BaseType{types.Int})
+		_, _ = Compile(code, []types.BaseType{types.Int}, nil)
 	}
 }
 
 func TestExprRegexp(t *testing.T) {
 	code := "$1|similar(`[a-zA-Z]+`)"
-	p, err := Compile(code, []types.BaseType{types.Text})
+	p, err := Compile(code, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "nil", "1", ".", "text")})
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "nil", "1", ".", "text")}, nil)
 	if err != nil {
 		panic(err)
 	}
 	t.Log(types.ToString(ret))
 }
-

@@ -32,30 +32,28 @@ func (s *similarToFunc) Handle(vectors []types.INullableVector, env map[string]s
 	})
 }
 
-type replaceAllFunc struct {
+type regexpReplaceAll struct {
 	regexp *regexp.Regexp
 }
 
-func (s *replaceAllFunc) Init([]string, map[string]string) error {
-	return nil
-}
-
-func (s *replaceAllFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+func (s *regexpReplaceAll) Init(consts []string, env map[string]string) error {
 	if s.regexp == nil {
-		r := vectors[1].Index(0).(string)
+		r := consts[1]
 		var err error
 		s.regexp, err = regexp.Compile(r)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
+	return nil
+}
 
+func (s *regexpReplaceAll) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	replace := vectors[2].Index(0).(string)
-
 	input := vectors[0].(*types.NullableText)
 	out := &types.NullableText{}
 	return BroadCast1(vectors[0], out, func(i int) error {
-		out.Set(i, string(s.regexp.ReplaceAllString(input.Values[i], replace)), false)
+		out.Set(i, s.regexp.ReplaceAllString(input.Values[i], replace), false)
 		return nil
 	})
 }
@@ -145,12 +143,12 @@ func init() {
 	similar.Comment("support Re2 regexp")
 	similar.OverloadHandler([]types.BaseType{types.Text, types.TextS}, types.Bool, func() IHandler { return &similarToFunc{} })
 
-	replaceAll, _ := NewFunction("replaceAll")
+	replaceAll, _ := NewFunction("regexpReplace")
 	replaceAll.Comment("support Re2 regexp")
 	replaceAll.OverloadHandler(
 		[]types.BaseType{types.Text, types.TextS, types.TextS},
 		types.Text,
-		func() IHandler { return &replaceAllFunc{} },
+		func() IHandler { return &regexpReplaceAll{} },
 	)
 
 	regexpMatch, _ := NewFunction("regexpMatch")
