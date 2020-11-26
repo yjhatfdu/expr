@@ -20,12 +20,12 @@ type stack struct {
 	n    int
 }
 
-func (s *stack) popn(n int) []types.INullableVector {
+func (s *stack) popn(n int) ([]types.INullableVector, error) {
 	if s.n-n < 0 {
-		panic("pop empty stack")
+		return nil, errors.New("pop empty stack")
 	}
 	s.n -= n
-	return s.list[s.n : s.n+n]
+	return s.list[s.n : s.n+n], nil
 }
 func (s *stack) push(v types.INullableVector) {
 	if s.n >= len(s.list) {
@@ -42,13 +42,20 @@ var stackPool = sync.Pool{
 	},
 }
 
-func (p *Program) Run(input []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+func (p *Program) Run(input []types.INullableVector, env map[string]string) (vector types.INullableVector, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if e, ok := r.(error); ok {
+				err = e
+				return
+			}
+			err = errors.New(fmt.Sprintf("%v", err))
+		}
+	}()
+
 	if len(input) != len(p.InputTypes) {
 		return nil, errors.New("input argument length not match")
 	}
-	//for i := range input {
-	//	if input[i].Type()
-	//}
 	s := stack{
 		list: stackPool.Get().([]types.INullableVector),
 		n:    0,
@@ -62,7 +69,10 @@ func (p *Program) Run(input []types.INullableVector, env map[string]string) (typ
 		case VAR:
 			s.push(input[op.varIndex])
 		case FUNC:
-			args := s.popn(op.argc)
+			args, err := s.popn(op.argc)
+			if err != nil {
+				return nil, err
+			}
 			ret, err := op.handler.Handle(args, env)
 			if err != nil {
 				return nil, err
@@ -70,7 +80,11 @@ func (p *Program) Run(input []types.INullableVector, env map[string]string) (typ
 			s.push(ret)
 		}
 	}
-	return s.popn(1)[0], nil
+	popn, err := s.popn(1)
+	if err != nil {
+		return nil, err
+	}
+	return popn[0], nil
 }
 
 type operation struct {
