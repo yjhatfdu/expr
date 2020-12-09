@@ -347,4 +347,24 @@ func init() {
 			return nil
 		})
 	})
+	toNumeric.Overload([]types.BaseType{types.Float}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableNumeric{}
+		input := vectors[0].(*types.NullableFloat)
+		scale := 4
+		output.Scale = 4
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, types.Float2numeric(input.Values[i], scale), false)
+			return nil
+		})
+	})
+	toNumeric.Overload([]types.BaseType{types.Float, types.IntS}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableNumeric{}
+		input := vectors[0].(*types.NullableFloat)
+		scale := int(vectors[1].(*types.NullableInt).Values[0])
+		output.Scale = scale
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, types.Float2numeric(input.Values[i], scale), false)
+			return nil
+		})
+	})
 }
