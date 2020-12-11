@@ -153,6 +153,7 @@ type INullableVector interface {
 	SetFilterArr(arr []bool)
 	InitFilterArr() []bool
 	Copy() INullableVector
+	Concat(vector INullableVector) (INullableVector, error)
 }
 
 type NullableVector struct {
@@ -271,6 +272,24 @@ type NullableInt struct {
 	Values []int64
 }
 
+func (v *NullableInt) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableInt)
+	if !ok {
+		return nil, fmt.Errorf("NullableInt must concat NullableInt")
+	}
+
+	var r = v.Copy().(*NullableInt)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
+}
+
 func (v *NullableInt) Init(length int) {
 	v.IsNullArr = make([]bool, length, 32*(length/32+1))
 	v.Values = make([]int64, length, 8*(length/8+1))
@@ -338,6 +357,24 @@ func (v NullableInt) Index(i int) interface{} {
 type NullableFloat struct {
 	NullableVector
 	Values []float64
+}
+
+func (v *NullableFloat) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableFloat)
+	if !ok {
+		return nil, fmt.Errorf("NullableFloat must concat NullableFloat")
+	}
+
+	var r = v.Copy().(*NullableFloat)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
 }
 
 func (v *NullableFloat) Init(length int) {
@@ -410,6 +447,24 @@ type NullableBool struct {
 	Values []bool
 }
 
+func (v *NullableBool) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableBool)
+	if !ok {
+		return nil, fmt.Errorf("NullableBool must concat NullableBool")
+	}
+
+	var r = v.Copy().(*NullableBool)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
+}
+
 func (v NullableBool) Set(i int, val bool, isNull bool) {
 	if i >= len(v.Values) {
 		return
@@ -477,6 +532,24 @@ type NullableNumeric struct {
 	NullableVector
 	Values []int64
 	Scale  int
+}
+
+func (v *NullableNumeric) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableNumeric)
+	if !ok {
+		return nil, fmt.Errorf("NullableNumeric must concat NullableNumeric")
+	}
+
+	var r = v.Copy().(*NullableNumeric)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
 }
 
 func (v NullableNumeric) Set(i int, val int64, isNull bool) {
@@ -549,6 +622,24 @@ type NullableText struct {
 	Values []string
 }
 
+func (v *NullableText) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableText)
+	if !ok {
+		return nil, fmt.Errorf("NullableText must concat NullableText")
+	}
+
+	var r = v.Copy().(*NullableText)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
+}
+
 func (v NullableText) Set(i int, val string, isNull bool) {
 	if i >= len(v.Values) {
 		return
@@ -617,6 +708,24 @@ type NullableTimestamp struct {
 	NullableVector
 	Values []int64
 	TsType BaseType //one of Timestamp,Date,Time
+}
+
+func (v *NullableTimestamp) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableTimestamp)
+	if !ok {
+		return nil, fmt.Errorf("NullableTimestamp must concat NullableTimestamp")
+	}
+
+	var r = v.Copy().(*NullableTimestamp)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
 }
 
 func (v NullableTimestamp) Type() BaseType {
@@ -757,6 +866,24 @@ func GetFilteredMaskOfVectors(vec []INullableVector) []bool {
 type NullableIntArray struct {
 	NullableVector
 	Values [][]int64
+}
+
+func (v *NullableIntArray) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableIntArray)
+	if !ok {
+		return nil, fmt.Errorf("NullableIntArray must concat NullableIntArray")
+	}
+
+	var r = v.Copy().(*NullableIntArray)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
 }
 
 func (v *NullableIntArray) Init(length int) {
