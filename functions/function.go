@@ -328,6 +328,8 @@ func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseT
 		output = &types.NullableText{}
 	case types.Timestamp, types.Time, types.Date:
 		output = &types.NullableTimestamp{}
+	case types.Numeric:
+		output = &types.NullableNumeric{}
 	default:
 		panic("should not happend")
 	}
