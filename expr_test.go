@@ -1,6 +1,7 @@
 package expr
 
 import (
+	"fmt"
 	"github.com/yjhatfdu/expr/types"
 	"testing"
 )
@@ -234,6 +235,20 @@ func TestExprRegexp(t *testing.T) {
 		panic(err)
 	}
 	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "nil", "1", ".", "text")}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
+func TestNumericToText(t *testing.T) {
+	fmt.Println(types.Numeric2Text(-3189000,4))
+	code := "$1|toNumeric"
+	p, err := Compile(code, []types.BaseType{types.Int}, nil)
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, 31400)}, nil)
 	if err != nil {
 		panic(err)
 	}

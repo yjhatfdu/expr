@@ -27,8 +27,13 @@ func Numeric2Int(n int64, scale int) int64 {
 	return n / pow10[scale]
 }
 
+func abs(n int64) int64 {
+	return int64(math.Abs(float64(n)))
+}
+
 func Numeric2Text(n int64, scale int) string {
-	frac := strconv.FormatInt(n%pow10[scale], 10)
+	absN := abs(n)
+	frac := strconv.FormatInt(absN%pow10[scale], 10)
 	if len(frac) < scale {
 		frac = strings.Repeat("0", scale-len(frac))+frac
 	}
