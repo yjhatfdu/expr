@@ -707,7 +707,7 @@ func (v NullableText) Copy() INullableVector {
 type NullableTimestamp struct {
 	NullableVector
 	Values []int64
-	TsType BaseType //one of Timestamp,Date,Time
+	TsType BaseType //one of Timestamp,Date,Time, Interval
 }
 
 func (v *NullableTimestamp) Concat(vector INullableVector) (INullableVector, error) {

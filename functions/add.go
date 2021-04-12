@@ -116,7 +116,7 @@ func init() {
 		})
 	})
 	addFunc.Overload([]types.BaseType{types.Timestamp, types.Interval}, types.Timestamp, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		output := types.NullableTimestamp{}
+		output := types.NullableTimestamp{TsType: types.Timestamp}
 		output.TsType = types.Timestamp
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
@@ -126,7 +126,7 @@ func init() {
 		})
 	})
 	addFunc.Overload([]types.BaseType{types.Time, types.Interval}, types.Time, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		output := types.NullableTimestamp{}
+		output := types.NullableTimestamp{TsType: types.Time}
 		output.TsType = types.Time
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
@@ -136,7 +136,7 @@ func init() {
 		})
 	})
 	addFunc.Overload([]types.BaseType{types.Date, types.Interval}, types.Date, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		output := types.NullableTimestamp{}
+		output := types.NullableTimestamp{TsType: types.Date}
 		output.TsType = types.Date
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
