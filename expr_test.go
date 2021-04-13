@@ -254,3 +254,15 @@ func Test2Time(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 
+func TestRegexpReplace(t *testing.T) {
+	code := `regexpReplace($1,"\\d","")`
+	p, err := Compile(code, []types.BaseType{types.Text}, nil)
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "2016-11-10 09:41:51+08")}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
