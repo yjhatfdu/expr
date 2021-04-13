@@ -40,7 +40,7 @@ func (s *regexpReplaceAll) Init(consts []string, env map[string]string) error {
 	if s.regexp == nil {
 		r := consts[1]
 		var err error
-		r = strings.ReplaceAll(strings.TrimSuffix(strings.TrimPrefix(r,`"`),`"`),`\\`,`\`)
+		r = strings.TrimSuffix(strings.TrimPrefix(r,`"`),`"`)
 		s.regexp, err = regexp.Compile(r)
 		if err != nil {
 			return err

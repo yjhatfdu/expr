@@ -255,7 +255,7 @@ func Test2Time(t *testing.T) {
 }
 
 func TestRegexpReplace(t *testing.T) {
-	code := `regexpReplace($1,"\\d","")`
+	code := `regexpReplace($1,"\d+","")`
 	p, err := Compile(code, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		panic(err)

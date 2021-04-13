@@ -188,7 +188,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 						IsScalaV:  true,
 						IsNullArr: []bool{false},
 					},
-					Values: []string{str},
+					Values: []string{strings.ReplaceAll(str,`\\`,`\`)},
 				},
 			})
 			an.OutType = types.TextS
