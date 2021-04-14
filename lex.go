@@ -47,7 +47,7 @@ var keywords = map[string]int{
 
 var replaceMap = map[string]string{
 	"==": "=",
-	"!=": "_NE",
+	"!=": "ne",
 }
 var replacer = regexp.MustCompile("(==|!=|!==)")
 

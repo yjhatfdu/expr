@@ -280,3 +280,18 @@ func TestRegexpReplace(t *testing.T) {
 	}
 	t.Log(types.ToString(ret))
 }
+
+func TestCompile(t *testing.T) {
+	expr := `multiIf(length($1) != 19,$1+" 00:00:00",$1)`
+	p, err := Compile(expr, []types.BaseType{types.Text}, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "2016-11-10")}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
