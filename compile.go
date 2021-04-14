@@ -176,10 +176,13 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 			})
 			an.OutType = types.FloatS
 		case types.Text:
-			str, err := strconv.Unquote(an.Value)
-			if err != nil {
-				return fmt.Errorf("compile error:%s\ncaused by:%v", buildErrInfo(an, ctx.code), err)
+			var str string
+			if strings.HasPrefix(an.Value, `"`) && strings.HasSuffix(an.Value, `"`) {
+				str = an.Value[1 : len(an.Value)-1]
+			} else if strings.HasPrefix(an.Value, `'`) && strings.HasSuffix(an.Value, `'`) {
+				str = an.Value[1 : len(an.Value)-1]
 			}
+			str = strings.ReplaceAll(str, "\\\\", "\\")
 			ctx.addOperation(operation{
 				op:   CONST,
 				argc: 0,
@@ -188,7 +191,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 						IsScalaV:  true,
 						IsNullArr: []bool{false},
 					},
-					Values: []string{strings.ReplaceAll(str,`\\`,`\`)},
+					Values: []string{str},
 				},
 			})
 			an.OutType = types.TextS

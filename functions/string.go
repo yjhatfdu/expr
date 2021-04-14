@@ -37,19 +37,18 @@ type regexpReplaceAll struct {
 }
 
 func (s *regexpReplaceAll) Init(consts []string, env map[string]string) error {
-	if s.regexp == nil {
-		r := consts[1]
-		var err error
-		r = strings.TrimSuffix(strings.TrimPrefix(r,`"`),`"`)
-		s.regexp, err = regexp.Compile(r)
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
 func (s *regexpReplaceAll) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+	if s.regexp == nil {
+		r := vectors[1].Index(0).(string)
+		var err error
+		s.regexp, err= regexp.Compile(r)
+		if err != nil {
+			return nil, err
+		}
+	}
 	replace := vectors[2].Index(0).(string)
 	input := vectors[0].(*types.NullableText)
 	out := &types.NullableText{}

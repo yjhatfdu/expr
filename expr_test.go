@@ -7,7 +7,7 @@ import (
 )
 
 func TestExpr_Minus(t *testing.T) {
-	code := `-1`
+	code := `"\\d+"`
 	p, err := Compile(code, nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -255,12 +255,26 @@ func Test2Time(t *testing.T) {
 }
 
 func TestRegexpReplace(t *testing.T) {
-	code := `regexpReplace($1,"\d+","")`
+	//bs ,_ := json.Marshal(`regexpReplace($1,"\+08","")"`)
+	//fmt.Println(string(bs))
+	//code := "regexpReplace($1,`\\+08`,``)"
+	code := `regexpReplace($1,"\+08","")`
 	p, err := Compile(code, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		panic(err)
 	}
 	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "2016-11-10 09:41:51+08")}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+
+	code = `regexpReplace($1,"\\d+","")`
+	p, err = Compile(code, []types.BaseType{types.Text}, nil)
+	if err != nil {
+		panic(err)
+	}
+	ret, err = p.Run([]types.INullableVector{types.BuildValue(types.Text, "2016-11-10 09:41:51+08")}, nil)
 	if err != nil {
 		panic(err)
 	}
