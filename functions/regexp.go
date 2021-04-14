@@ -10,11 +10,9 @@ import (
 type similarToFunc struct {
 	regexp *regexp.Regexp
 }
-
 func (s *similarToFunc) Init([]string, map[string]string) error {
 	return nil
 }
-
 func (s *similarToFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	if s.regexp == nil {
 		r := vectors[1].Index(0).(string)
@@ -35,11 +33,9 @@ func (s *similarToFunc) Handle(vectors []types.INullableVector, env map[string]s
 type regexpReplaceAll struct {
 	regexp *regexp.Regexp
 }
-
 func (s *regexpReplaceAll) Init(consts []string, env map[string]string) error {
 	return nil
 }
-
 func (s *regexpReplaceAll) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 	if s.regexp == nil {
 		r := vectors[1].Index(0).(string)
@@ -62,7 +58,6 @@ type regexpMatchFunc struct {
 	regexp *regexp.Regexp
 	group  int
 }
-
 func (s *regexpMatchFunc) Init([]string, map[string]string) error {
 	return nil
 }
