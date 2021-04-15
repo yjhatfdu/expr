@@ -282,7 +282,7 @@ func TestRegexpReplace(t *testing.T) {
 }
 
 func TestCompile(t *testing.T) {
-	expr := `multiIf(length($1) != 19,$1+" 00:00:00",$1)`
+	expr := `multiIf(length($1) <= 19,$1+" 00:00:00",$1)`
 	p, err := Compile(expr, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		t.Error(err)

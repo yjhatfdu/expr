@@ -16,10 +16,13 @@ var keywords = map[string]int{
 	"*":     MUL,
 	"/":     DIV,
 	">":     GT,
+	">=":    GTE,
 	"=":     EQ,
 	"==":    EQ,
 	"aeq":   EQ,
+	"lte":   LTE,
 	"<":     LT,
+	"<=":    LTE,
 	"!=":    NEQ,
 	"ne":    NEQ,
 	"!==":   NEQ,
@@ -48,8 +51,10 @@ var keywords = map[string]int{
 var replaceMap = map[string]string{
 	"==": "=",
 	"!=": "ne",
+	">=": "gte",
+	"<=": "lte",
 }
-var replacer = regexp.MustCompile("(==|!=|!==)")
+var replacer = regexp.MustCompile("(==|!=|<=|>=)")
 
 type Lexer struct {
 	s           scanner.Scanner
