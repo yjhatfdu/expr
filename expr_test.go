@@ -282,14 +282,14 @@ func TestRegexpReplace(t *testing.T) {
 }
 
 func TestCompile(t *testing.T) {
-	expr := `multiIf(length($1) <= 19,$1+" 00:00:00",$1)`
-	p, err := Compile(expr, []types.BaseType{types.Text}, nil)
+	expr := `multiIf(toText($1) == "1", true, false)`
+	p, err := Compile(expr, []types.BaseType{types.Int}, nil)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "2016-11-10")}, nil)
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, 1)}, nil)
 	if err != nil {
 		panic(err)
 	}
