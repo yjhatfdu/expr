@@ -348,3 +348,18 @@ func (s *splitFunc) Handle(vectors []types.INullableVector, env map[string]strin
 		return nil
 	})
 }
+
+func TestComparison(t *testing.T) {
+	expr := `$1>=123`
+	p, err := Compile(expr, []types.BaseType{types.Int}, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, 1)}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
