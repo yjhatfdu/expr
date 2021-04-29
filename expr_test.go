@@ -1,7 +1,11 @@
 package expr
 
 import (
+	"errors"
+	"github.com/yjhatfdu/expr/functions"
 	"github.com/yjhatfdu/expr/types"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -294,4 +298,53 @@ func TestCompile(t *testing.T) {
 		panic(err)
 	}
 	t.Log(types.ToString(ret))
+}
+
+func init() {
+	splitFunction, _ := functions.NewFunction("split")
+	splitFunction.OverloadHandler(
+		[]types.BaseType{types.Text, types.TextS},
+		types.Text,
+		func() functions.IHandler {
+			return &splitFunc{}
+		},
+	)
+	splitFunction.OverloadHandler(
+		[]types.BaseType{types.Text, types.TextS, types.IntS},
+		types.Text,
+		func() functions.IHandler {
+			return &splitFunc{}
+		},
+	)
+}
+
+type splitFunc struct {
+	index       int64
+}
+
+func (s *splitFunc) Init(args []string, _ map[string]string) error {
+	if len(args) == 3 {
+		index, err := strconv.ParseInt(args[2], 10, 8)
+		if err != nil {
+			return errors.New("split 方法第三个参数类型为整数，实际值 " + args[2])
+		} else {
+			s.index = index
+		}
+	}
+	return nil
+}
+
+func (s *splitFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+	splitStr := vectors[1].Index(0).(string)
+	input := vectors[0].(*types.NullableText)
+	out := &types.NullableText{}
+	return functions.BroadCast1(vectors[0], out, func(i int) error {
+		splits := strings.Split(input.Values[i], splitStr)
+		if len(splits) > int(s.index) {
+			out.Set(i, splits[s.index], false)
+		} else {
+			out.Set(i, "", true)
+		}
+		return nil
+	})
 }
