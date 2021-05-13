@@ -319,7 +319,7 @@ func init() {
 }
 
 type splitFunc struct {
-	index       int64
+	index int64
 }
 
 func (s *splitFunc) Init(args []string, _ map[string]string) error {
@@ -358,6 +358,21 @@ func TestComparison(t *testing.T) {
 	}
 
 	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, 1)}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
+func TestRegexpReplaceIndex(t *testing.T) {
+	expr := `regexpReplace($1,"\w", "*", 1,1)`
+	p, err := Compile(expr, []types.BaseType{types.Text}, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "qwertyu")}, nil)
 	if err != nil {
 		panic(err)
 	}

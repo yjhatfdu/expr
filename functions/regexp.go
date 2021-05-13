@@ -1,6 +1,8 @@
 package functions
 
 import (
+	"errors"
+	"fmt"
 	"github.com/yjhatfdu/expr/types"
 	"regexp"
 	"strings"
@@ -10,6 +12,7 @@ import (
 type similarToFunc struct {
 	regexp *regexp.Regexp
 }
+
 func (s *similarToFunc) Init([]string, map[string]string) error {
 	return nil
 }
@@ -33,6 +36,7 @@ func (s *similarToFunc) Handle(vectors []types.INullableVector, env map[string]s
 type regexpReplaceAll struct {
 	regexp *regexp.Regexp
 }
+
 func (s *regexpReplaceAll) Init(consts []string, env map[string]string) error {
 	return nil
 }
@@ -40,7 +44,7 @@ func (s *regexpReplaceAll) Handle(vectors []types.INullableVector, env map[strin
 	if s.regexp == nil {
 		r := vectors[1].Index(0).(string)
 		var err error
-		s.regexp, err= regexp.Compile(r)
+		s.regexp, err = regexp.Compile(r)
 		if err != nil {
 			return nil, err
 		}
@@ -54,10 +58,85 @@ func (s *regexpReplaceAll) Handle(vectors []types.INullableVector, env map[strin
 	})
 }
 
+type regexpReplaceAllIndex struct {
+	regexp *regexp.Regexp
+	start  int
+	end    int
+}
+
+func (s *regexpReplaceAllIndex) Init(consts []string, env map[string]string) error {
+	return nil
+}
+func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+	if s.regexp == nil {
+		r := vectors[1].Index(0).(string)
+		var err error
+		s.regexp, err = regexp.Compile(r)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var needSub bool
+	var startIndex int
+	var endIndex int
+
+	if len(vectors) == 4 {
+		startIndex = int(vectors[3].Index(0).(int64))
+		needSub = true
+	} else if len(vectors) == 5 {
+		startIndex = int(vectors[3].Index(0).(int64))
+		endIndex = int(vectors[4].Index(0).(int64))
+		needSub = true
+	} else {
+		needSub = false
+	}
+
+	if needSub {
+		if startIndex < 0 || endIndex < 0 {
+			return nil, errors.New(fmt.Sprintf("regexpReplace 函数的 startIndex 与 endIndex 必须大于等于 0, 实际值 startIndex: %d, endIndex: %d", startIndex, endIndex))
+		}
+
+		if startIndex == endIndex {
+			endIndex += 1
+		}
+
+		if startIndex > endIndex {
+			return nil, errors.New(fmt.Sprintf("regexpReplace 函数的 startIndex 必须小于等于 endIndex, 实际值 startIndex: %d, endIndex: %d", startIndex, endIndex))
+		}
+	}
+
+	replace := vectors[2].Index(0).(string)
+	input := vectors[0].(*types.NullableText)
+	out := &types.NullableText{}
+	return BroadCast1(vectors[0], out, func(i int) error {
+		var realEnd int
+		v := input.Index(i).(string)
+		if needSub {
+			if len(v) <= endIndex {
+				realEnd = len(v)
+			} else {
+				realEnd = endIndex
+			}
+		}
+
+		if needSub {
+			sub := string([]rune(v)[startIndex:realEnd])
+			subReplaceStr := s.regexp.ReplaceAllString(sub, replace)
+			out.Set(i, string([]rune(v)[0:startIndex])+subReplaceStr+string([]rune(v)[realEnd:]), false)
+		} else {
+			out.Set(i, s.regexp.ReplaceAllString(v, replace), false)
+		}
+
+		return nil
+	})
+}
+
 type regexpMatchFunc struct {
 	regexp *regexp.Regexp
 	group  int
 }
+
 func (s *regexpMatchFunc) Init([]string, map[string]string) error {
 	return nil
 }
@@ -143,7 +222,17 @@ func init() {
 	replaceAll.OverloadHandler(
 		[]types.BaseType{types.Text, types.TextS, types.TextS},
 		types.Text,
-		func() IHandler { return &regexpReplaceAll{} },
+		func() IHandler { return &regexpReplaceAllIndex{} },
+	)
+	replaceAll.OverloadHandler(
+		[]types.BaseType{types.Text, types.TextS, types.TextS, types.IntS},
+		types.Text,
+		func() IHandler { return &regexpReplaceAllIndex{} },
+	)
+	replaceAll.OverloadHandler(
+		[]types.BaseType{types.Text, types.TextS, types.TextS, types.IntS, types.IntS},
+		types.Text,
+		func() IHandler { return &regexpReplaceAllIndex{} },
 	)
 
 	regexpMatch, _ := NewFunction("regexpMatch")
