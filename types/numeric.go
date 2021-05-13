@@ -35,9 +35,9 @@ func Numeric2Text(n int64, scale int) string {
 	absN := abs(n)
 	frac := strconv.FormatInt(absN%pow10[scale], 10)
 	if len(frac) < scale {
-		frac = strings.Repeat("0", scale-len(frac))+frac
+		frac = strings.Repeat("0", scale-len(frac)) + frac
 	}
-	return strconv.FormatInt(n/pow10[scale], 10) + "." +frac
+	return strconv.FormatInt(n/pow10[scale], 10) + "." + frac
 }
 
 func CompareNumeric(n1 int64, scale1 int, n2 int64, scale2 int) int64 {

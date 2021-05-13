@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-func init () {
+func init() {
 	neq, _ := NewFunction("neq")
 	neq.Overload([]types.BaseType{types.Int, types.Int}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
 		output := types.NullableBool{}

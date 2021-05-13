@@ -57,7 +57,7 @@ func init() {
 			if right.Values[j] == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, types.Int2numeric( types.NormalizeNumeric(left.Values[i], left.Scale, s),s)/types.NormalizeNumeric(right.Values[j], left.Scale, s), false)
+			output.Set(index, types.Int2numeric(types.NormalizeNumeric(left.Values[i], left.Scale, s), s)/types.NormalizeNumeric(right.Values[j], left.Scale, s), false)
 			return nil
 		})
 	})

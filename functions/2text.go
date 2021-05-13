@@ -17,7 +17,7 @@ func convert2GoTimeFormatStyle(standard string) (gostyle string) {
 	standard = strings.Replace(standard, "ss", "05", 1)
 	standard = strings.Replace(standard, "SSS", "000", 1)
 
-    // ±07:00 ±hh:mm
+	// ±07:00 ±hh:mm
 	standard = strings.Replace(standard, "hh", "08", 1)
 	standard = strings.Replace(standard, "mm", "00", 1)
 
