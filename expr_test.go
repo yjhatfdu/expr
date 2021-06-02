@@ -2,6 +2,7 @@ package expr
 
 import (
 	"errors"
+	"fmt"
 	"github.com/yjhatfdu/expr/functions"
 	"github.com/yjhatfdu/expr/types"
 	"strconv"
@@ -9,6 +10,14 @@ import (
 	"testing"
 	"time"
 )
+
+func TestPlugin(t *testing.T) {
+	err := LoadPlugin("main.so")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(functions.PrintAllFunctions())
+}
 
 func TestExpr_Minus(t *testing.T) {
 	code := `"\\d+"`
