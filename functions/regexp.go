@@ -33,31 +33,6 @@ func (s *similarToFunc) Handle(vectors []types.INullableVector, env map[string]s
 	})
 }
 
-type regexpReplaceAll struct {
-	regexp *regexp.Regexp
-}
-
-func (s *regexpReplaceAll) Init(consts []string, env map[string]string) error {
-	return nil
-}
-func (s *regexpReplaceAll) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
-	if s.regexp == nil {
-		r := vectors[1].Index(0).(string)
-		var err error
-		s.regexp, err = regexp.Compile(r)
-		if err != nil {
-			return nil, err
-		}
-	}
-	replace := vectors[2].Index(0).(string)
-	input := vectors[0].(*types.NullableText)
-	out := &types.NullableText{}
-	return BroadCast1(vectors[0], out, func(i int) error {
-		out.Set(i, s.regexp.ReplaceAllString(input.Values[i], replace), false)
-		return nil
-	})
-}
-
 type regexpReplaceAllIndex struct {
 	regexp *regexp.Regexp
 	start  int
