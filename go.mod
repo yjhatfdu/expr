@@ -2,4 +2,7 @@ module github.com/yjhatfdu/expr
 
 go 1.15
 
-require github.com/dlclark/regexp2 v1.4.0
+require (
+	github.com/dlclark/regexp2 v1.4.0
+	golang.org/x/tools v0.1.2 // indirect
+)

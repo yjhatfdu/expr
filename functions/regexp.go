@@ -161,6 +161,7 @@ func init() {
 			return nil
 		})
 	})
+
 	length, _ := NewFunction("length")
 	length.Overload([]types.BaseType{types.Text}, types.Int, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
@@ -170,6 +171,7 @@ func init() {
 			return nil
 		})
 	})
+
 	toLower, _ := NewFunction("toLower")
 	toLower.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
@@ -179,6 +181,7 @@ func init() {
 			return nil
 		})
 	})
+
 	toUpper, _ := NewFunction("toUpper")
 	toUpper.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		input := vectors[0].(*types.NullableText)
@@ -188,22 +191,37 @@ func init() {
 			return nil
 		})
 	})
-	contains, _ := NewFunction("contains")
-	contains.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		input := vectors[0].(*types.NullableText)
-		input2 := vectors[1].(*types.NullableText)
+
+	like, _ := NewFunction("like")
+	like.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableBool{}
-		return BroadCast2(input, input2, output, func(index, i, j int) error {
-			output.Set(index, strings.Contains(input.Values[i], input2.Values[j]), false)
+		input := vectors[0].(*types.NullableText)
+		likeStr := vectors[1].(*types.NullableText).Index(0).(string)
+		var rxp, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(likeStr, "%", ".*?"), "_", "."))
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("like函数匹配语法未能编译成正确的正则表达式，原始匹配语法 %s，编译异常信息 %s", likeStr, err.Error()))
+		}
+		return BroadCast1(input, output, func(i int) error {
+			output.Seti(i, rxp.MatchString(input.Index(i).(string)))
 			return nil
 		})
 	})
+
+	contains, _ := NewFunction("contains")
+	contains.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		input := vectors[0].(*types.NullableText)
+		containsStr := vectors[1].(*types.NullableText).Index(0).(string)
+		output := &types.NullableBool{}
+		return BroadCast1(input, output, func(i int) error {
+			output.Seti(i, strings.Contains(input.Index(i).(string), containsStr))
+			return nil
+		})
+	})
+
 	similar, _ := NewFunction("similar")
-	similar.Comment("support Re2 regexp")
 	similar.OverloadHandler([]types.BaseType{types.Text, types.TextS}, types.Bool, func() IHandler { return &similarToFunc{} })
 
 	replaceAll, _ := NewFunction("regexpReplace")
-	replaceAll.Comment("support Re2 regexp")
 	replaceAll.OverloadHandler(
 		[]types.BaseType{types.Text, types.TextS, types.TextS},
 		types.Text,

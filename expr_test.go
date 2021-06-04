@@ -19,6 +19,21 @@ func TestPlugin(t *testing.T) {
 	fmt.Println(functions.PrintAllFunctions())
 }
 
+func TestExpr_Like(t *testing.T) {
+	code := `"123" like "_123"`
+	p, err := Compile(code, nil, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	ret, err := p.Run(nil, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(types.ToString(ret))
+}
+
 func TestExpr_Minus(t *testing.T) {
 	code := `"\\d+"`
 	p, err := Compile(code, nil, nil)
