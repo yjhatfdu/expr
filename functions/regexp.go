@@ -169,10 +169,20 @@ func (s *regexpMatchFunc) Handle(vectors []types.INullableVector, env map[string
 func init() {
 	trim, _ := NewFunction("trim")
 	trim.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		input := vectors[0].(*types.NullableText)
 		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableText)
 		return BroadCast1(input, output, func(i int) error {
 			output.Set(i, strings.TrimSpace(input.Values[i]), false)
+			return nil
+		})
+	})
+	trim.Overload([]types.BaseType{types.Text, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableText)
+		t := vectors[0].(*types.NullableText).Index(0).(string)
+		return BroadCast1(input, output, func(i int) error {
+			s := input.Index(i).(string)
+			output.Seti(i, strings.TrimSuffix(strings.TrimPrefix(s, t), t))
 			return nil
 		})
 	})
