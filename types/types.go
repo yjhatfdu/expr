@@ -15,7 +15,6 @@ var LocalOffsetNano = int64(LocalOffsetSec) * int64(time.Second)
 
 const (
 	ScalaOffset          = 1000
-	ArrayOffset          = 2000
 	Any         BaseType = iota + 1000
 	Int
 	Float
@@ -27,6 +26,8 @@ const (
 	Time
 	Interval
 	Blob
+	IntA
+	TextA
 	ScalaTypes = Any + ScalaOffset
 	IntS       = Int + ScalaOffset
 	FloatS     = Float + ScalaOffset
@@ -38,8 +39,6 @@ const (
 	TimeS      = Time + ScalaOffset
 	IntervalS  = Interval + ScalaOffset
 	BlobS      = Blob + ScalaOffset
-	ArrayTypes = Any + ArrayOffset
-	IntA       = Int + ArrayOffset
 )
 
 var typeNames = map[BaseType]string{
@@ -54,6 +53,8 @@ var typeNames = map[BaseType]string{
 	Time:       "Time",
 	Interval:   "Interval",
 	Blob:       "Blob",
+	IntA:       "IntA",
+	TextA:      "TextA",
 	BlobS:      "BlobS",
 	IntS:       "IntS",
 	FloatS:     "FloatS",
