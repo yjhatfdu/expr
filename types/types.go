@@ -70,6 +70,8 @@ var typeNames = map[BaseType]string{
 var typeMapping = map[string]BaseType{
 	"Any":        Any,
 	"Int":        Int,
+	"IntA":       IntA,
+	"TextA":      TextA,
 	"Float":      Float,
 	"Numeric":    Numeric,
 	"Text":       Text,
@@ -241,7 +243,7 @@ func ToString(v INullableVector) string {
 			time.Now().Month()
 			val := v.Index(i)
 			switch v.Type() {
-			case Int, Float, Bool, IntS, FloatS, BoolS:
+			case Int, Float, Bool, IntS, FloatS, BoolS, IntA, TextA:
 				retSegs = append(retSegs, fmt.Sprintf("%v", val))
 			case Text, TextS:
 				retSegs = append(retSegs, strconv.Quote(val.(string)))
@@ -891,6 +893,7 @@ func (v *NullableIntArray) Init(length int) {
 	v.IsNullArr = make([]bool, length, 32*(length/32+1))
 	v.Values = make([][]int64, length, 8*(length/8+1))
 }
+
 func (v NullableIntArray) Set(i int, val []int64, isNull bool) {
 	if i >= len(v.Values) {
 		return
@@ -914,6 +917,7 @@ func (v NullableIntArray) Type() BaseType {
 func (v NullableIntArray) Truthy(i int) bool {
 	return v.IsNullArr[i] == false && len(v.Values[i]) > 0
 }
+
 func (v NullableIntArray) TruthyArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := range v.IsNullArr {
@@ -935,6 +939,95 @@ func (v NullableIntArray) Copy() INullableVector {
 }
 
 func (v NullableIntArray) Index(i int) interface{} {
+
+	if v.IsScalaV {
+		if v.IsNullArr[0] {
+			return nil
+		} else {
+			return v.Values[0]
+		}
+	} else {
+		if v.IsNullArr[i] {
+			return nil
+		} else {
+			return v.Values[i]
+		}
+	}
+}
+
+type NullableTextArray struct {
+	NullableVector
+	Values [][]string
+}
+
+func (v *NullableTextArray) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableIntArray)
+	if !ok {
+		return nil, fmt.Errorf("NullableIntArray must concat NullableIntArray")
+	}
+
+	var r = v.Copy().(*NullableIntArray)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
+}
+
+func (v *NullableTextArray) Init(length int) {
+	v.IsNullArr = make([]bool, length, 32*(length/32+1))
+	v.Values = make([][]string, length, 8*(length/8+1))
+}
+
+func (v NullableTextArray) Set(i int, val []string, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
+	v.Values[i] = val
+	v.IsNullArr[i] = isNull
+}
+
+func (v NullableTextArray) Seti(i int, val interface{}) {
+	if vval, ok := val.([]string); ok {
+		v.Set(i, vval, false)
+	} else {
+		v.SetNull(i, true)
+	}
+}
+
+func (v NullableTextArray) Type() BaseType {
+	return TextA
+}
+
+func (v NullableTextArray) Truthy(i int) bool {
+	return v.IsNullArr[i] == false && len(v.Values[i]) > 0
+}
+
+func (v NullableTextArray) TruthyArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = len(v.Values[i]) > 0 && (v.IsNullArr[i] == false)
+	}
+	return arr
+}
+
+func (v NullableTextArray) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = len(v.Values[i]) == 0 || v.IsNullArr[i]
+	}
+	return arr
+}
+
+func (v NullableTextArray) Copy() INullableVector {
+	return &v
+}
+
+func (v NullableTextArray) Index(i int) interface{} {
 
 	if v.IsScalaV {
 		if v.IsNullArr[0] {
