@@ -172,7 +172,7 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 		}
 		isAllScala := true
 		for j := range tr.input {
-			isAllScala = isAllScala && inputTypes[j] > types.ScalaOffset
+			isAllScala = isAllScala && inputTypes[j] > types.ScalaTypes
 			if tr.input[j] != types.Any && tr.input[j] != inputTypes[j] && tr.input[j]+types.ScalaOffset != inputTypes[j] {
 				goto next
 			}
