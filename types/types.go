@@ -39,6 +39,8 @@ const (
 	TimeS      = Time + ScalaOffset
 	IntervalS  = Interval + ScalaOffset
 	BlobS      = Blob + ScalaOffset
+	IntAS      = IntA + ScalaOffset
+	TextAS     = TextA + ScalaOffset
 )
 
 var typeNames = map[BaseType]string{
