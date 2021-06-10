@@ -67,6 +67,8 @@ var typeNames = map[BaseType]string{
 	DateS:      "DateS",
 	TimeS:      "TimeS",
 	IntervalS:  "IntervalS",
+	IntAS:      "IntAS",
+	TextAS:     "TextAS",
 }
 
 var typeMapping = map[string]BaseType{
@@ -93,6 +95,8 @@ var typeMapping = map[string]BaseType{
 	"DateS":      DateS,
 	"TimeS":      TimeS,
 	"IntervalS":  IntervalS,
+	"IntAS":      IntAS,
+	"TextAS":      TextAS,
 }
 
 func (t *BaseType) MarshalJSON() ([]byte, error) {
