@@ -7,7 +7,7 @@ import (
 
 func init() {
 	toBool, _ := NewFunction("toBool")
-	toBool.Overload([]types.BaseType{types.Int}, types.Int, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+	toBool.Overload([]types.BaseType{types.Int}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableBool{}
 		input := vectors[0].(*types.NullableInt)
 		output.Init(input.Length())
@@ -23,7 +23,7 @@ func init() {
 		output.FilterArr = input.FilterArr
 		return output, nil
 	})
-	toBool.Overload([]types.BaseType{types.Float}, types.Int, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+	toBool.Overload([]types.BaseType{types.Float}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableBool{}
 		input := vectors[0].(*types.NullableFloat)
 		output.Init(input.Length())
@@ -39,7 +39,7 @@ func init() {
 		output.FilterArr = input.FilterArr
 		return output, nil
 	})
-	toBool.Overload([]types.BaseType{types.Text}, types.Int, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+	toBool.Overload([]types.BaseType{types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableBool{}
 		input := vectors[0].(*types.NullableText)
 		//output.FilterArr = input.FilterArr
@@ -52,7 +52,7 @@ func init() {
 			return nil
 		})
 	})
-	toBool.Overload([]types.BaseType{types.Bool}, types.Int, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+	toBool.Overload([]types.BaseType{types.Bool}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		return vectors[0], nil
 	})
 }
