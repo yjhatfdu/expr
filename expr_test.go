@@ -1,6 +1,7 @@
 package expr
 
 import (
+	"errors"
 	"fmt"
 	"github.com/yjhatfdu/expr/functions"
 	"github.com/yjhatfdu/expr/types"
@@ -370,4 +371,81 @@ func TestSplit(t *testing.T) {
 	}
 
 	fmt.Println(c.OutputType)
+}
+
+func TestSubstring(t *testing.T) {
+	substring, _ := functions.NewFunction("substr")
+	substring.Overload([]types.BaseType{types.Text, types.IntS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+		out := &types.NullableText{}
+		input := vectors[0].(*types.NullableText)
+		start := vectors[1].(*types.NullableInt).Index(0).(int64)
+		return functions.BroadCast1(vectors[0], out, func(i int) error {
+			runes := []rune(input.Index(i).(string))
+			fmt.Println(string(runes))
+			l := len(runes)
+			if start >= 0 {
+				if int64(l) > start {
+					out.Seti(i, string(runes[start:]))
+				} else {
+					out.Seti(i, "")
+				}
+			} else {
+				end := int64(l) + start
+				if end > 0 {
+					out.Seti(i, string(runes[0:end]))
+				} else {
+					out.Seti(i, "")
+				}
+			}
+			return nil
+		})
+	})
+	substring.Overload([]types.BaseType{types.Text, types.IntS, types.IntS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+		out := &types.NullableText{}
+		input := vectors[0].(*types.NullableText)
+		start := vectors[1].(*types.NullableInt).Index(0).(int64)
+		length := vectors[2].(*types.NullableInt).Index(0).(int64)
+		if length < 0 {
+			return nil, errors.New(fmt.Sprintf("substring 函数接收的第三个参数表示长度，不可小于零，实际值 %d", length))
+		}
+		return functions.BroadCast1(vectors[0], out, func(i int) error {
+			runes := []rune(input.Index(i).(string))
+			l := len(runes)
+			if start >= 0 {
+				if int64(l) > start {
+					if int64(l) > start+length {
+						out.Seti(i, string(runes[start:start+length]))
+					} else {
+						out.Seti(i, runes[start:])
+					}
+				} else {
+					out.Seti(i, "")
+				}
+			} else {
+				end := int64(l) + start
+				if end > 0 {
+					start := end - length
+					if start > 0 {
+						out.Seti(i, string(runes[start:end]))
+						return nil
+					}
+				}
+
+				out.Seti(i, "")
+			}
+			return nil
+		})
+	})
+
+	c, err := Compile(fmt.Sprint(`substr($1,1,3)`), []types.BaseType{types.Text}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Text, "王X蓉")}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+
 }

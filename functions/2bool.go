@@ -28,8 +28,8 @@ func init() {
 		input := vectors[0].(*types.NullableFloat)
 		output.Init(input.Length())
 		output.IsScalaV = input.IsScalaV
-		for i := range input.Values {
-			if i > 0 {
+		for i, v := range input.Values {
+			if v > 0 {
 				output.Values[i] = true
 			} else {
 				output.Values[i] = false

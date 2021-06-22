@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/yjhatfdu/expr/types"
 	"regexp"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 )
@@ -83,6 +84,36 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 	})
 }
 
+type likeFunc struct {
+	regexp *regexp.Regexp
+}
+
+func (s *likeFunc) Init(cons []string, env map[string]string) error {
+	if len(cons) != 2 {
+		return errors.New(fmt.Sprintf("like 函数仅接受两个参数，实际参数个数 %d", len(cons)))
+	}
+
+	pattern, err := strconv.Unquote(cons[1])
+	if err != nil {
+		return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], pattern))
+	}
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return errors.New(fmt.Sprintf("未能成功编译 like 函数表达式 %s，异常信息 %s", cons[1], pattern))
+	}
+	s.regexp = re
+	return nil
+}
+func (s *likeFunc) Handle(vectors []types.INullableVector, env map[string]string) (types.INullableVector, error) {
+	input := vectors[0].(*types.NullableText)
+	output := &types.NullableBool{}
+	return BroadCast1(input, output, func(i int) error {
+		output.Seti(i, s.regexp.MatchString(input.Index(i).(string)))
+		return nil
+	})
+}
+
 func init() {
 	trim, _ := NewFunction("trim")
 	trim.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
@@ -135,19 +166,24 @@ func init() {
 	})
 
 	like, _ := NewFunction("like")
-	like.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		output := &types.NullableBool{}
-		input := vectors[0].(*types.NullableText)
-		likeStr := vectors[1].(*types.NullableText).Index(0).(string)
-		var rxp, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(likeStr, "%", ".*?"), "_", "."))
-		if err != nil {
-			return nil, errors.New(fmt.Sprintf("like函数匹配语法未能编译成正确的正则表达式，原始匹配语法 %s，编译异常信息 %s", likeStr, err.Error()))
-		}
-		return BroadCast1(input, output, func(i int) error {
-			output.Seti(i, rxp.MatchString(input.Index(i).(string)))
-			return nil
-		})
-	})
+	like.OverloadHandler(
+		[]types.BaseType{types.Text, types.TextS},
+		types.Bool,
+		func() IHandler { return &likeFunc{} },
+	)
+	//like.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+	//	output := &types.NullableBool{}
+	//	input := vectors[0].(*types.NullableText)
+	//	likeStr := vectors[1].(*types.NullableText).Index(0).(string)
+	//	var rxp, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(likeStr, "%", ".*?"), "_", "."))
+	//	if err != nil {
+	//		return nil, errors.New(fmt.Sprintf("like函数匹配语法未能编译成正确的正则表达式，原始匹配语法 %s，编译异常信息 %s", likeStr, err.Error()))
+	//	}
+	//	return BroadCast1(input, output, func(i int) error {
+	//		output.Seti(i, rxp.MatchString(input.Index(i).(string)))
+	//		return nil
+	//	})
+	//})
 
 	contains, _ := NewFunction("contains")
 	contains.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
