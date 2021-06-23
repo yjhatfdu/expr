@@ -993,7 +993,7 @@ func (v *NullableTextArray) Init(length int) {
 	v.Values = make([][]string, length, 8*(length/8+1))
 }
 
-func (v NullableTextArray) Set(i int, val []string, isNull bool) {
+func (v *NullableTextArray) Set(i int, val []string, isNull bool) {
 	if i >= len(v.Values) {
 		return
 	}
@@ -1001,7 +1001,7 @@ func (v NullableTextArray) Set(i int, val []string, isNull bool) {
 	v.IsNullArr[i] = isNull
 }
 
-func (v NullableTextArray) Seti(i int, val interface{}) {
+func (v *NullableTextArray) Seti(i int, val interface{}) {
 	if vval, ok := val.([]string); ok {
 		v.Set(i, vval, false)
 	} else {
@@ -1009,15 +1009,15 @@ func (v NullableTextArray) Seti(i int, val interface{}) {
 	}
 }
 
-func (v NullableTextArray) Type() BaseType {
+func (v *NullableTextArray) Type() BaseType {
 	return TextA
 }
 
-func (v NullableTextArray) Truthy(i int) bool {
+func (v *NullableTextArray) Truthy(i int) bool {
 	return v.IsNullArr[i] == false && len(v.Values[i]) > 0
 }
 
-func (v NullableTextArray) TruthyArr() []bool {
+func (v *NullableTextArray) TruthyArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := range v.IsNullArr {
 		arr[i] = len(v.Values[i]) > 0 && (v.IsNullArr[i] == false)
@@ -1025,7 +1025,7 @@ func (v NullableTextArray) TruthyArr() []bool {
 	return arr
 }
 
-func (v NullableTextArray) FalseArr() []bool {
+func (v *NullableTextArray) FalseArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := range v.IsNullArr {
 		arr[i] = len(v.Values[i]) == 0 || v.IsNullArr[i]
@@ -1033,11 +1033,11 @@ func (v NullableTextArray) FalseArr() []bool {
 	return arr
 }
 
-func (v NullableTextArray) Copy() INullableVector {
-	return &v
+func (v *NullableTextArray) Copy() INullableVector {
+	return v
 }
 
-func (v NullableTextArray) Index(i int) interface{} {
+func (v *NullableTextArray) Index(i int) interface{} {
 
 	if v.IsScalaV {
 		if v.IsNullArr[0] {
@@ -1052,4 +1052,87 @@ func (v NullableTextArray) Index(i int) interface{} {
 			return v.Values[i]
 		}
 	}
+}
+
+type NullVector struct {
+}
+
+func (n NullVector) IsNull(i int) bool {
+	return true
+}
+
+func (n NullVector) GetIsNullArr() []bool {
+	return []bool{true}
+}
+
+func (n NullVector) IsScala() bool {
+	return true
+}
+
+func (n NullVector) Length() int {
+	return 1
+}
+
+func (n NullVector) Index(i int) interface{} {
+	return nil
+}
+
+func (n NullVector) Truthy(i int) bool {
+	return false
+}
+
+func (n NullVector) TruthyArr() []bool {
+	return []bool{false}
+}
+
+func (n NullVector) FalseArr() []bool {
+	return []bool{true}
+}
+
+func (n NullVector) Type() BaseType {
+	return Any
+}
+
+func (n NullVector) SetNull(i int, isNull bool) {
+	return
+}
+
+func (n NullVector) Init(length int) {
+	return
+}
+
+func (n NullVector) SetScala(isScala bool) {
+	return
+}
+
+func (n NullVector) Seti(i int, v interface{}) {
+	return
+}
+
+func (n NullVector) AddError(err *VectorError) {
+	return
+}
+
+func (n NullVector) GetErrors() []*VectorError {
+	return nil
+}
+
+func (n NullVector) GetFilterArr() []bool {
+	return nil
+}
+
+func (n NullVector) SetFilterArr(arr []bool) {
+	return
+}
+
+func (n NullVector) InitFilterArr() []bool {
+	return nil
+}
+
+func (n NullVector) Copy() INullableVector {
+	return n
+}
+
+func (n NullVector) Concat(vector INullableVector) (INullableVector, error) {
+	return n, nil
 }

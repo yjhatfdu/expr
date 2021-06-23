@@ -145,7 +145,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 			ctx.addOperation(operation{
 				op:   CONST,
 				argc: 0,
-				v:    nil,
+				v:    &types.NullVector{},
 			})
 			an.OutType = ANY
 		case types.Int:
