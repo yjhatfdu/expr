@@ -147,7 +147,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 				argc: 0,
 				v:    &types.NullVector{},
 			})
-			an.OutType = ANY
+			an.OutType = types.Any
 		case types.Int:
 			v, err := strconv.ParseInt(an.Value, 10, 64)
 			if err != nil {

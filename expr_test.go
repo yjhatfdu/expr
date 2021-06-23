@@ -100,7 +100,7 @@ func TestExprCoalesce(t *testing.T) {
 }
 
 func TestExprMultiIf(t *testing.T) {
-	code := `multiIf($1==2,"is2",$1==3,"is3","err")`
+	code := `multiIf($1==2,"is2",$1==3,"is3",null)`
 	p, err := Compile(code, []types.BaseType{types.Int, types.Int}, nil)
 	if err != nil {
 		panic(err)

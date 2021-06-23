@@ -17,14 +17,14 @@ func init() {
 		outType := inputTypes[1]
 		for i := 0; i < len(inputTypes)/2; i++ {
 			t := inputTypes[2*i+1]
-			if t != outType && t+types.ScalaOffset != outType && t-types.ScalaOffset != outType {
+			if t != outType && t+types.ScalaOffset != outType && t-types.ScalaOffset != outType && t != types.Any {
 				return 0, fmt.Errorf("argument #%d should be %s, got %s", 2*i+1, types.GetTypeName(outType), types.GetTypeName(t))
 			}
 		}
 
 		//todo 使用函数进行类型比较
 		lastType := inputTypes[len(inputTypes)-1]
-		if lastType != outType && lastType+types.ScalaOffset != outType && lastType-types.ScalaOffset != outType {
+		if lastType != outType && lastType+types.ScalaOffset != outType && lastType-types.ScalaOffset != outType && lastType != types.Any {
 			return 0, fmt.Errorf("argument #%d should be %s, got %s", len(inputTypes)-1, types.GetTypeName(outType), types.GetTypeName(lastType))
 		}
 		return outType, nil
