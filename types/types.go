@@ -16,6 +16,7 @@ var LocalOffsetNano = int64(LocalOffsetSec) * int64(time.Second)
 const (
 	ScalaOffset          = 1000
 	Any         BaseType = iota + 1000
+	Null
 	Int
 	Float
 	Numeric
@@ -96,7 +97,7 @@ var typeMapping = map[string]BaseType{
 	"TimeS":      TimeS,
 	"IntervalS":  IntervalS,
 	"IntAS":      IntAS,
-	"TextAS":      TextAS,
+	"TextAS":     TextAS,
 }
 
 func (t *BaseType) MarshalJSON() ([]byte, error) {
@@ -241,6 +242,9 @@ func (v NullableVector) copy() NullableVector {
 // for debug
 // todo optimize performance
 func ToString(v INullableVector) string {
+	if v == nil {
+		return "null"
+	}
 	var retSegs []string
 	for i := 0; i < v.Length(); i++ {
 		if v.IsNull(i) == true {

@@ -124,6 +124,19 @@ func TestExprCast(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 
+func TestExprNull(t *testing.T) {
+	code := `null`
+	p, err := Compile(code, []types.BaseType{}, nil)
+	if err != nil {
+		panic(err)
+	}
+	ret, err := p.Run(nil, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+}
+
 func TestExprNow(t *testing.T) {
 	code := `now()`
 	p, err := Compile(code, []types.BaseType{}, nil)

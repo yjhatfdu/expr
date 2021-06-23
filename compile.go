@@ -141,6 +141,13 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 	switch an.NodeType {
 	case CONST:
 		switch an.ValueType {
+		case types.Null:
+			ctx.addOperation(operation{
+				op:   CONST,
+				argc: 0,
+				v:    nil,
+			})
+			an.OutType = ANY
 		case types.Int:
 			v, err := strconv.ParseInt(an.Value, 10, 64)
 			if err != nil {

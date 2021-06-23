@@ -81,6 +81,7 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$
     | LP e RP          { $$.node =$2.node;}
     | func_call        { $$.node =$1.node;}
     | negative 	       { $$.node =$1.node;}
+    | NULL             { $$.node =newAst(CONST,"null",types.Null,$1.offset);}
 
 negative : MINUS INT { $$.node =newAst(CONST,"-" + yylex.(*Lexer).Text(),types.Int,$2.offset); }
 	| MINUS FLOAT { $$.node =newAst(CONST,"-" + yylex.(*Lexer).Text(),types.Float,$2.offset); }
