@@ -145,7 +145,12 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 			ctx.addOperation(operation{
 				op:   CONST,
 				argc: 0,
-				v:    &types.NullVector{},
+				v: &types.NullVector{
+					IsNullArr: []bool{true},
+					FilterArr: []bool{false},
+					IsScalaV:  true,
+					Values:    []string{"NULL"},
+				},
 			})
 			an.OutType = types.Any
 		case types.Int:
