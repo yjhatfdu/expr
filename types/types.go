@@ -1055,6 +1055,10 @@ func (v *NullableTextArray) Index(i int) interface{} {
 }
 
 type NullVector struct {
+	IsNullArr []bool
+	FilterArr []bool
+	IsScalaV  bool
+	Values    []string
 }
 
 func (n NullVector) IsNull(i int) bool {
@@ -1062,7 +1066,7 @@ func (n NullVector) IsNull(i int) bool {
 }
 
 func (n NullVector) GetIsNullArr() []bool {
-	return []bool{true}
+	return n.IsNullArr
 }
 
 func (n NullVector) IsScala() bool {
@@ -1126,7 +1130,7 @@ func (n NullVector) SetFilterArr(arr []bool) {
 }
 
 func (n NullVector) InitFilterArr() []bool {
-	return nil
+	return n.FilterArr
 }
 
 func (n NullVector) Copy() INullableVector {
