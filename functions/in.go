@@ -5,7 +5,6 @@ import (
 	"github.com/yjhatfdu/expr/types"
 	"math"
 )
-
 func init() {
 	in, _ := NewFunction("in")
 	in.Generic(func(inputTypes []types.BaseType) (baseType types.BaseType, e error) {
