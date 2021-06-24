@@ -49,7 +49,7 @@ func (p *Program) Run(input []types.INullableVector, env map[string]string) (vec
 				err = e
 				return
 			}
-			err = errors.New(fmt.Sprintf("%v", err))
+			err = errors.New(fmt.Sprintf("%v", r))
 		}
 	}()
 

@@ -11,12 +11,16 @@ func init() {
 		if len(inputTypes) == 0 {
 			return 0, errors.New("require at least 1 argument")
 		}
-		t := inputTypes[0]
-		if t > types.ScalaTypes {
-			t = t - types.ScalaOffset
-		}
+		var t = types.Any
 		for _, ti := range inputTypes {
-			if ti != t && ti != t+types.ScalaOffset {
+			if t == types.Any && ti != types.Any {
+				t = ti
+				if t > types.ScalaTypes {
+					t = t - types.ScalaOffset
+				}
+				continue
+			}
+			if ti != t && ti != t+types.ScalaOffset && ti != types.Any {
 				return 0, errors.New("require argument with same type")
 			}
 		}
@@ -35,8 +39,17 @@ func init() {
 		if filterMaskTemp != nil {
 			outFilterMask = make([]bool, len(filterMaskTemp), cap(filterMaskTemp))
 		}
-
-		out, err := BroadCastMultiGeneric(vectors, vectors[0].Type(), func(values []interface{}, index int) (vector interface{}, e error) {
+		var t = types.Any
+		for _, ti := range vectors {
+			if t == types.Any && ti.Type() != types.Any {
+				t = ti.Type()
+				if t > types.ScalaTypes {
+					t = t - types.ScalaOffset
+				}
+				continue
+			}
+		}
+		out, err := BroadCastMultiGeneric(vectors, t, func(values []interface{}, index int) (vector interface{}, e error) {
 			if outFilterMask != nil {
 				isFiltered := true
 				for j, v := range values {
