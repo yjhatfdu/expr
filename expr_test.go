@@ -19,7 +19,7 @@ import (
 //}
 
 func TestExpr_Like(t *testing.T) {
-	code := `coalesce(null,1,2)`
+	code := `"abcd" like "%bc%"`
 	p, err := Compile(code, nil, nil)
 	if err != nil {
 		t.Error(err)

@@ -41,6 +41,12 @@ import "github.com/yjhatfdu/expr/types"
 %token VAR
 %token CAST
 %token PIPE
+%token WHEN
+%token CASE
+%token THEN
+%token IN
+%token END
+%token ELSE
 %left OR
 %left AND
 %left NOT
@@ -49,6 +55,7 @@ import "github.com/yjhatfdu/expr/types"
 %left ADD MINUS
 %left MUL DIV
 %left PIPE
+%right IN
 %right LP
 %right DOLLAR
 %right CAST
@@ -62,6 +69,7 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$
     | FLOAT            { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Float,$1.offset); }
     | BOOL             { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Bool,$1.offset); }
     | e LIKE e          { $$.node =newAst(FUNC,"like",types.Any,$2.offset,$1.node,$3.node); }
+    | e NOT LIKE e          { $$.node =newAst(FUNC,"notLike",types.Any,$2.offset,$1.node,$4.node); }
     | e CONTAINS e          { $$.node =newAst(FUNC,"contains",types.Any,$2.offset,$1.node,$3.node); }
     | e AND e          { $$.node =newAst(FUNC,"and",types.Any,$2.offset,$1.node,$3.node); }
     | e OR e           { $$.node =newAst(FUNC,"or",types.Any,$2.offset,$1.node,$3.node); }
@@ -82,6 +90,18 @@ e:    INT              { $$.node =newAst(CONST,yylex.(*Lexer).Text(),types.Int,$
     | func_call        { $$.node =$1.node;}
     | negative 	       { $$.node =$1.node;}
     | NULL             { $$.node =newAst(CONST,"null",types.Null,$1.offset);}
+    | CASE whenClause END { $$.node =$2.node;}
+    | CASE whenClause ELSE e END {
+        $$.node =$2.node
+        $$.node.Children=append($$.node.Children,$4.node)
+    }
+    | e IN LP e_list RP  {
+        $$.node=newAst(FUNC,"in",types.Any,$2.offset,append([]*AstNode{$1.node},$4.node.Children...)...)
+    }
+    | e NOT IN LP e_list RP  {
+         $$.node=newAst(FUNC,"notIn",types.Any,$2.offset,append([]*AstNode{$1.node},$5.node.Children...)...)
+     }
+
 
 negative : MINUS INT { $$.node =newAst(CONST,"-" + yylex.(*Lexer).Text(),types.Int,$2.offset); }
 	| MINUS FLOAT { $$.node =newAst(CONST,"-" + yylex.(*Lexer).Text(),types.Float,$2.offset); }
@@ -89,10 +109,18 @@ negative : MINUS INT { $$.node =newAst(CONST,"-" + yylex.(*Lexer).Text(),types.I
 func_call :     IDD LP e_list RP { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset,$3.node.Children...);}
               | IDD LP RP        { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset);}
               | IDD              { $$.node =newAst(FUNC,$1.node.Value,types.Any,$1.offset);}
-              | e cast_func      { $$.node =newAst(FUNC,$2.node.Value,types.Any,$2.offset,$1.node);};
+              | e cast_func      { $$.node =newAst(FUNC,$2.node.Value,types.Any,$2.offset,$1.node);}
               | e PIPE IDD       { $3.node.Children=append([]*AstNode{$1.node},$3.node.Children...);$$.node=$3.node}
               | e PIPE IDD LP RP { $3.node.Children=append([]*AstNode{$1.node},$3.node.Children...);$$.node=$3.node}
               | e PIPE IDD LP e_list RP { $$.node =newAst(FUNC,$3.node.Value,types.Any,$3.offset,append([]*AstNode{$1.node},$5.node.Children...)...);}
+
+whenClause  : WHEN e  THEN e
+            {$$.node = newAst(FUNC,"multiIf",types.Any,$1.offset,$2.node,$4.node)}
+            | whenClause WHEN e  THEN e
+            {
+            $1.node.Children=append($1.node.Children,$3.node,$5.node)
+            $$=$1
+            }
 
 IDD: ID {$$.node=newAst(FUNC,yylex.(*Lexer).Text(),types.Any,$1.offset);};
 

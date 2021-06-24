@@ -48,6 +48,12 @@ var keywords = map[string]int{
 	"$":     DOLLAR,
 	":":     CAST,
 	"|":     PIPE,
+	"case":  CASE,
+	"when":  WHEN,
+	"then":  THEN,
+	"end":   END,
+	"in":    IN,
+	"else":  ELSE,
 }
 
 var replaceMap = map[string]string{

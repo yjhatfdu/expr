@@ -86,6 +86,7 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 
 type likeFunc struct {
 	regexp *regexp.Regexp
+	not    bool
 }
 
 func (s *likeFunc) Init(cons []string, env map[string]string) error {
@@ -97,8 +98,8 @@ func (s *likeFunc) Init(cons []string, env map[string]string) error {
 	if err != nil {
 		return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], pattern))
 	}
-
-	re, err := regexp.Compile(pattern)
+	re, err :=regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*?"), "_", "."))
+	//re, err := regexp.Compile(pattern)
 	if err != nil {
 		return errors.New(fmt.Sprintf("未能成功编译 like 函数表达式 %s，异常信息 %s", cons[1], pattern))
 	}
@@ -109,7 +110,11 @@ func (s *likeFunc) Handle(vectors []types.INullableVector, env map[string]string
 	input := vectors[0].(*types.NullableText)
 	output := &types.NullableBool{}
 	return BroadCast1(input, output, func(i int) error {
-		output.Seti(i, s.regexp.MatchString(input.Index(i).(string)))
+		if s.not {
+			output.Seti(i, !s.regexp.MatchString(input.Values[i]))
+		} else {
+			output.Seti(i, s.regexp.MatchString(input.Values[i]))
+		}
 		return nil
 	})
 }
@@ -170,6 +175,12 @@ func init() {
 		[]types.BaseType{types.Text, types.TextS},
 		types.Bool,
 		func() IHandler { return &likeFunc{} },
+	)
+	notLike, _ := NewFunction("notLike")
+	notLike.OverloadHandler(
+		[]types.BaseType{types.Text, types.TextS},
+		types.Bool,
+		func() IHandler { return &likeFunc{not: true} },
 	)
 	//like.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 	//	output := &types.NullableBool{}
