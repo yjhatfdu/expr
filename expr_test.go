@@ -10,16 +10,16 @@ import (
 	"time"
 )
 
-func TestPlugin(t *testing.T) {
-	err := LoadPlugin("main.so")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(functions.PrintAllFunctions())
-}
+//func TestPlugin(t *testing.T) {
+//	err := LoadPlugin("main.so")
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Println(functions.PrintAllFunctions())
+//}
 
 func TestExpr_Like(t *testing.T) {
-	code := `"123" like "_123"`
+	code := `"abcd" like "%bc%"`
 	p, err := Compile(code, nil, nil)
 	if err != nil {
 		t.Error(err)
