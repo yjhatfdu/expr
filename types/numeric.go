@@ -32,6 +32,10 @@ func abs(n int64) int64 {
 }
 
 func Numeric2Text(n int64, scale int) string {
+	if scale == 0 {
+		return strconv.FormatInt(n/pow10[scale], 10)
+	}
+
 	absN := abs(n)
 	frac := strconv.FormatInt(absN%pow10[scale], 10)
 	if len(frac) < scale {
