@@ -3,7 +3,6 @@ package functions
 import (
 	"fmt"
 	"github.com/yjhatfdu/expr/types"
-	"log"
 	"strings"
 )
 
@@ -84,9 +83,9 @@ func NewFunction(name string) (*Function, error) {
 	//if functions[name] != nil {
 	//	return nil, fmt.Errorf("function with name '%s' already exists", name)
 	//}
-	if functions[name] != nil {
-		log.Println("override function " + name)
-	}
+	//if functions[name] != nil {
+	//	log.Println("override function " + name)
+	//}
 	f := &Function{
 		name:      name,
 		typeRules: make([]typeRule, 0),
