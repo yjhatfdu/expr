@@ -2,9 +2,11 @@ package functions
 
 import (
 	"errors"
+	"fmt"
 	"github.com/yjhatfdu/expr/types"
 	"math"
 )
+
 func init() {
 	in, _ := NewFunction("in")
 	in.Generic(func(inputTypes []types.BaseType) (baseType types.BaseType, e error) {
@@ -17,7 +19,7 @@ func init() {
 		}
 		for i := 1; i < len(inputTypes); i++ {
 			if inputTypes[i] != t+types.ScalaOffset {
-				return 0, errors.New("参数必须为同样类型，且为常量")
+				return 0, errors.New(fmt.Sprintf("in函数的输入值参数和匹配值参数必须为相同类型，且匹配值必须为常量，实际输入值类型 %s, 期望类型 %s", types.GetTypeName(t), types.GetTypeName(inputTypes[])))
 			}
 		}
 		return types.Bool, nil

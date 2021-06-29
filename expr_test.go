@@ -462,3 +462,17 @@ func TestSubstring(t *testing.T) {
 	t.Log(types.ToString(ret))
 
 }
+
+func TestIn(t *testing.T) {
+	c, err := Compile(fmt.Sprint(`$1 in (0,1)`), []types.BaseType{types.Text}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Text, 0)}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+
+}
