@@ -394,7 +394,6 @@ func TestSubstring(t *testing.T) {
 		start := vectors[1].(*types.NullableInt).Index(0).(int64)
 		return functions.BroadCast1(vectors[0], out, func(i int) error {
 			runes := []rune(input.Index(i).(string))
-			fmt.Println(string(runes))
 			l := len(runes)
 			if start >= 0 {
 				if int64(l) > start {
@@ -470,6 +469,28 @@ func TestIn(t *testing.T) {
 	}
 
 	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Text, 0)}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
+
+}
+
+func TestTimeFormat(t *testing.T) {
+	c, err := Compile(fmt.Sprint(`toText($1,"MM")`), []types.BaseType{types.Timestamp}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	ret, err := c.Run([]types.INullableVector{&types.NullableTimestamp{
+		NullableVector: types.NullableVector{
+			IsNullArr: []bool{false},
+			IsScalaV:  false,
+			FilterArr: []bool{false},
+		},
+		Values: []int64{time.Now().UnixNano()},
+		TsType: types.Timestamp,
+	}}, nil)
 	if err != nil {
 		panic(err)
 	}
