@@ -176,7 +176,7 @@ func init() {
 		types.Bool,
 		func() IHandler { return &likeFunc{} },
 	)
-	notLike, _ := NewFunction("not_like")
+	notLike, _ := NewFunction("notLike")
 	notLike.OverloadHandler(
 		[]types.BaseType{types.Text, types.TextS},
 		types.Bool,

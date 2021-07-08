@@ -619,7 +619,7 @@ yydefault:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parser.y:72
 		{
-			yyVAL.node = newAst(FUNC, "not_like", types.Any, yyDollar[2].offset, yyDollar[1].node, yyDollar[4].node)
+			yyVAL.node = newAst(FUNC, "notLike", types.Any, yyDollar[2].offset, yyDollar[1].node, yyDollar[4].node)
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
