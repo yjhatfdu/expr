@@ -58,3 +58,11 @@ func TestTrue(t *testing.T) {
 	}
 	t.Log(p.Run(nil, nil))
 }
+
+func TestAutoCast(t *testing.T) {
+	p, err := expr.Compile("1111 like \"11\"", nil, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(p.Run(nil, nil))
+}

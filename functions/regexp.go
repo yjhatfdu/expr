@@ -96,12 +96,12 @@ func (s *likeFunc) Init(cons []string, env map[string]string) error {
 
 	pattern, err := strconv.Unquote(cons[1])
 	if err != nil {
-		return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], pattern))
+		return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], err))
 	}
 	re, err :=regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*?"), "_", "."))
 	//re, err := regexp.Compile(pattern)
 	if err != nil {
-		return errors.New(fmt.Sprintf("未能成功编译 like 函数表达式 %s，异常信息 %s", cons[1], pattern))
+		return errors.New(fmt.Sprintf("未能成功编译 like 函数表达式 %s，异常信息 %s", cons[1], err))
 	}
 	s.regexp = re
 	return nil

@@ -26,6 +26,7 @@ type handlerFunction struct {
 	OutputType types.BaseType
 	Handler    IHandler
 	Argc       int
+	Casts      []CastFunc
 }
 type IHandler interface {
 	Handle([]types.INullableVector, map[string]string) (types.INullableVector, error)
@@ -164,6 +165,17 @@ func (f *Function) GenericHandler(typeValidator func([]types.BaseType) (types.Ba
 	f.genericHandler = implementation
 }
 
+func typesEqual(t1, t2 types.BaseType) bool {
+	return t1 == t2 || t1+types.ScalaOffset == t2 || t1-types.ScalaOffset == t2
+}
+
+func normalType(t types.BaseType) types.BaseType {
+	if t > types.ScalaTypes {
+		t -= types.ScalaOffset
+	}
+	return t
+}
+
 func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) {
 	for i, tr := range f.typeRules {
 		if len(tr.input) != len(inputTypes) {
@@ -201,6 +213,31 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 			Handler:    f.genericHandler,
 			Argc:       len(inputTypes),
 		}, nil
+	}
+	var autoCast []CastFunc
+	for i := range f.typeRules {
+		tr := f.typeRules[i]
+		if len(tr.input) != len(inputTypes) {
+			continue
+		}
+		autoCast = make([]CastFunc, len(inputTypes))
+		for j := range inputTypes {
+			if !typesEqual(tr.input[i], inputTypes[j]) {
+				cf := matchAutoMatch(normalType(inputTypes[j]), normalType(tr.input[i]))
+				if cf != nil {
+					autoCast[j] = cf
+				} else {
+					goto next2
+				}
+			}
+		}
+		return &handlerFunction{
+			OutputType: f.typeRules[i].output,
+			Handler:    f.handlers[i](),
+			Argc:       len(inputTypes),
+			Casts:      autoCast,
+		}, nil
+	next2:
 	}
 	return nil, nil
 }

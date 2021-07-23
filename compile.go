@@ -73,6 +73,17 @@ func (p *Program) Run(input []types.INullableVector, env map[string]string) (vec
 			if err != nil {
 				return nil, err
 			}
+			if op.cast != nil {
+				argsc := make([]types.INullableVector, len(args))
+				for i := range op.cast {
+					if op.cast[i] != nil {
+						argsc[i] = op.cast[i](args[i])
+					} else {
+						argsc[i] = args[i]
+					}
+				}
+				args=argsc
+			}
 			ret, err := op.handler.Handle(args, env)
 			if err != nil {
 				return nil, err
@@ -93,6 +104,7 @@ type operation struct {
 	v        types.INullableVector
 	varIndex int
 	handler  functions.IHandler
+	cast     []functions.CastFunc
 }
 
 type context struct {
@@ -297,6 +309,7 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 			op:      FUNC,
 			argc:    len(inputTypes),
 			handler: f.Handler,
+			cast:    f.Casts,
 		})
 		an.OutType = f.OutputType
 	default:
