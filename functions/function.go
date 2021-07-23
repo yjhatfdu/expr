@@ -222,7 +222,7 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 		}
 		autoCast = make([]CastFunc, len(inputTypes))
 		for j := range inputTypes {
-			if !typesEqual(tr.input[i], inputTypes[j]) {
+			if !typesEqual(tr.input[j], inputTypes[j]) {
 				cf := matchAutoMatch(normalType(inputTypes[j]), normalType(tr.input[i]))
 				if cf != nil {
 					autoCast[j] = cf
