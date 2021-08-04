@@ -71,38 +71,38 @@ state 2
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 1 (src line 64)
+	.  reduce 1 (src line 65)
 
 	cast_func  goto 34
 
 state 3
 	e:  INT.    (2)
 
-	.  reduce 2 (src line 66)
+	.  reduce 2 (src line 67)
 
 
 state 4
 	e:  STR.    (3)
 
-	.  reduce 3 (src line 67)
+	.  reduce 3 (src line 68)
 
 
 state 5
 	e:  RAWSTR.    (4)
 
-	.  reduce 4 (src line 68)
+	.  reduce 4 (src line 69)
 
 
 state 6
 	e:  FLOAT.    (5)
 
-	.  reduce 5 (src line 69)
+	.  reduce 5 (src line 70)
 
 
 state 7
 	e:  BOOL.    (6)
 
-	.  reduce 6 (src line 70)
+	.  reduce 6 (src line 71)
 
 
 state 8
@@ -161,19 +161,19 @@ state 10
 state 11
 	e:  func_call.    (26)
 
-	.  reduce 26 (src line 90)
+	.  reduce 26 (src line 91)
 
 
 state 12
 	e:  negative.    (27)
 
-	.  reduce 27 (src line 91)
+	.  reduce 27 (src line 92)
 
 
 state 13
 	e:  NULL.    (28)
 
-	.  reduce 28 (src line 92)
+	.  reduce 28 (src line 93)
 
 
 state 14
@@ -191,7 +191,7 @@ state 15
 	func_call:  IDD.    (37)
 
 	LP  shift 43
-	.  reduce 37 (src line 111)
+	.  reduce 37 (src line 112)
 
 
 state 16
@@ -206,7 +206,7 @@ state 16
 state 17
 	IDD:  ID.    (44)
 
-	.  reduce 44 (src line 125)
+	.  reduce 44 (src line 126)
 
 
 state 18
@@ -536,7 +536,7 @@ state 33
 state 34
 	func_call:  e cast_func.    (38)
 
-	.  reduce 38 (src line 112)
+	.  reduce 38 (src line 113)
 
 
 state 35
@@ -596,20 +596,20 @@ state 37
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 16 (src line 80)
+	.  reduce 16 (src line 81)
 
 	cast_func  goto 34
 
 state 38
 	e:  DOLLAR INT.    (23)
 
-	.  reduce 23 (src line 87)
+	.  reduce 23 (src line 88)
 
 
 state 39
 	e:  DOLLAR MUL.    (24)
 
-	.  reduce 24 (src line 88)
+	.  reduce 24 (src line 89)
 
 
 state 40
@@ -720,13 +720,13 @@ state 43
 state 44
 	negative:  MINUS INT.    (33)
 
-	.  reduce 33 (src line 106)
+	.  reduce 33 (src line 107)
 
 
 state 45
 	negative:  MINUS FLOAT.    (34)
 
-	.  reduce 34 (src line 107)
+	.  reduce 34 (src line 108)
 
 
 state 46
@@ -760,7 +760,7 @@ state 46
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 7 (src line 71)
+	.  reduce 7 (src line 72)
 
 	cast_func  goto 34
 
@@ -824,7 +824,7 @@ state 49
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 9 (src line 73)
+	.  reduce 9 (src line 74)
 
 	cast_func  goto 34
 
@@ -868,7 +868,7 @@ state 50
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 10 (src line 74)
+	.  reduce 10 (src line 75)
 
 	cast_func  goto 34
 
@@ -913,7 +913,7 @@ state 51
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 11 (src line 75)
+	.  reduce 11 (src line 76)
 
 	cast_func  goto 34
 
@@ -946,7 +946,7 @@ state 52
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 12 (src line 76)
+	.  reduce 12 (src line 77)
 
 	cast_func  goto 34
 
@@ -979,7 +979,7 @@ state 53
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 13 (src line 77)
+	.  reduce 13 (src line 78)
 
 	cast_func  goto 34
 
@@ -1010,7 +1010,7 @@ state 54
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 14 (src line 78)
+	.  reduce 14 (src line 79)
 
 	cast_func  goto 34
 
@@ -1041,7 +1041,7 @@ state 55
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 15 (src line 79)
+	.  reduce 15 (src line 80)
 
 	cast_func  goto 34
 
@@ -1078,7 +1078,7 @@ state 56
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 17 (src line 81)
+	.  reduce 17 (src line 82)
 
 	cast_func  goto 34
 
@@ -1115,7 +1115,7 @@ state 57
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 18 (src line 82)
+	.  reduce 18 (src line 83)
 
 	cast_func  goto 34
 
@@ -1152,7 +1152,7 @@ state 58
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 19 (src line 83)
+	.  reduce 19 (src line 84)
 
 	cast_func  goto 34
 
@@ -1189,7 +1189,7 @@ state 59
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 20 (src line 84)
+	.  reduce 20 (src line 85)
 
 	cast_func  goto 34
 
@@ -1226,7 +1226,7 @@ state 60
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 21 (src line 85)
+	.  reduce 21 (src line 86)
 
 	cast_func  goto 34
 
@@ -1263,7 +1263,7 @@ state 61
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 22 (src line 86)
+	.  reduce 22 (src line 87)
 
 	cast_func  goto 34
 
@@ -1296,25 +1296,25 @@ state 63
 	func_call:  e PIPE IDD.LP e_list RP 
 
 	LP  shift 76
-	.  reduce 39 (src line 113)
+	.  reduce 39 (src line 114)
 
 
 state 64
 	cast_func:  CAST IDD.    (45)
 
-	.  reduce 45 (src line 127)
+	.  reduce 45 (src line 128)
 
 
 state 65
 	e:  LP e RP.    (25)
 
-	.  reduce 25 (src line 89)
+	.  reduce 25 (src line 90)
 
 
 state 66
 	e:  CASE whenClause END.    (29)
 
-	.  reduce 29 (src line 93)
+	.  reduce 29 (src line 94)
 
 
 state 67
@@ -1420,7 +1420,7 @@ state 70
 state 71
 	func_call:  IDD LP RP.    (36)
 
-	.  reduce 36 (src line 110)
+	.  reduce 36 (src line 111)
 
 
 state 72
@@ -1465,7 +1465,7 @@ state 72
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 46 (src line 129)
+	.  reduce 46 (src line 130)
 
 	cast_func  goto 34
 
@@ -1500,7 +1500,7 @@ state 73
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 8 (src line 72)
+	.  reduce 8 (src line 73)
 
 	cast_func  goto 34
 
@@ -1680,7 +1680,7 @@ state 79
 state 80
 	func_call:  IDD LP e_list RP.    (35)
 
-	.  reduce 35 (src line 109)
+	.  reduce 35 (src line 110)
 
 
 state 81
@@ -1717,13 +1717,13 @@ state 82
 state 83
 	e:  e IN LP e_list RP.    (31)
 
-	.  reduce 31 (src line 98)
+	.  reduce 31 (src line 99)
 
 
 state 84
 	func_call:  e PIPE IDD LP RP.    (40)
 
-	.  reduce 40 (src line 114)
+	.  reduce 40 (src line 115)
 
 
 state 85
@@ -1738,7 +1738,7 @@ state 85
 state 86
 	e:  CASE whenClause ELSE e END.    (30)
 
-	.  reduce 30 (src line 94)
+	.  reduce 30 (src line 95)
 
 
 state 87
@@ -1805,7 +1805,7 @@ state 88
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 42 (src line 117)
+	.  reduce 42 (src line 118)
 
 	cast_func  goto 34
 
@@ -1851,20 +1851,20 @@ state 89
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 47 (src line 130)
+	.  reduce 47 (src line 131)
 
 	cast_func  goto 34
 
 state 90
 	e:  e NOT IN LP e_list RP.    (32)
 
-	.  reduce 32 (src line 101)
+	.  reduce 32 (src line 102)
 
 
 state 91
 	func_call:  e PIPE IDD LP e_list RP.    (41)
 
-	.  reduce 41 (src line 115)
+	.  reduce 41 (src line 116)
 
 
 state 92
@@ -1909,19 +1909,19 @@ state 92
 	CAST  shift 36
 	PIPE  shift 35
 	IN  shift 33
-	.  reduce 43 (src line 119)
+	.  reduce 43 (src line 120)
 
 	cast_func  goto 34
 
 42 terminals, 9 nonterminals
-48 grammar rules, 93/16000 states
+48 grammar rules, 93/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 58 working sets used
-memory: parser 168/240000
+memory: parser 168/120000
 79 extra closures
 667 shift entries, 1 exceptions
 37 goto entries
 108 entries saved by goto default
-Optimizer space used: output 406/240000
+Optimizer space used: output 406/120000
 406 table entries, 142 zero
 maximum spread: 42, maximum offset: 87

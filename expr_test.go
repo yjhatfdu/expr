@@ -49,7 +49,7 @@ func TestExpr_Minus(t *testing.T) {
 }
 
 func TestExpr(t *testing.T) {
-	code := `1-1`
+	code := `1+1`
 	p, err := Compile(code, nil, nil)
 	if err != nil {
 		panic(err)
@@ -61,7 +61,7 @@ func TestExpr(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 func TestExpr2(t *testing.T) {
-	code := `length($1)<10 and length($1)>2`
+	code := `length("1")`
 	p, err := Compile(code, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		panic(err)
@@ -298,7 +298,7 @@ func TestRegexpReplace(t *testing.T) {
 	//bs ,_ := json.Marshal(`regexpReplace($1,"\+08","")"`)
 	//fmt.Println(string(bs))
 	//code := "regexpReplace($1,`\\+08`,``)"
-	code := `regexpReplace($1,"\+08","")`
+	code := `regexpReplace($1,"\\+08","")`
 	p, err := Compile(code, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		panic(err)
@@ -352,7 +352,7 @@ func TestComparison(t *testing.T) {
 }
 
 func TestRegexpReplaceIndex(t *testing.T) {
-	expr := `regexpReplace($1,"\w", "*", 1,1)`
+	expr := "regexpReplace($1,`\\w`, '*', 1,1)"
 	p, err := Compile(expr, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		t.Error(err)
@@ -463,12 +463,12 @@ func TestSubstring(t *testing.T) {
 }
 
 func TestIn(t *testing.T) {
-	c, err := Compile(fmt.Sprint(`$1 in (0,1)`), []types.BaseType{types.Text}, nil)
+	c, err := Compile(fmt.Sprint(`$1 in (0,1)`), []types.BaseType{types.Int}, nil)
 	if err != nil {
 		t.Error(err)
 	}
 
-	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Text, 0)}, nil)
+	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Int, 0)}, nil)
 	if err != nil {
 		panic(err)
 	}

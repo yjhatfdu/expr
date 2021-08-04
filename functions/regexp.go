@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/yjhatfdu/expr/types"
 	"regexp"
-	"strconv"
 	"strings"
 	"unicode/utf8"
 )
@@ -94,10 +93,10 @@ func (s *likeFunc) Init(cons []string, env map[string]string) error {
 		return errors.New(fmt.Sprintf("like 函数仅接受两个参数，实际参数个数 %d", len(cons)))
 	}
 
-	pattern, err := strconv.Unquote(cons[1])
-	if err != nil {
-		return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], err))
-	}
+	pattern:=cons[1]
+	//if err != nil {
+	//	return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], err))
+	//}
 	re, err :=regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*?"), "_", "."))
 	//re, err := regexp.Compile(pattern)
 	if err != nil {
