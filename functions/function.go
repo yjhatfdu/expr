@@ -382,6 +382,7 @@ func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseT
 		allIsScala = allIsScala && in.IsScala()
 	}
 	output.Init(maxLength)
+	output.SetScala(allIsScala)
 	row := make([]interface{}, len(input))
 	for i := 0; i < maxLength; i++ {
 		for j := 0; j < len(input); j++ {
