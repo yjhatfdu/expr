@@ -1,6 +1,7 @@
 package expr
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/yjhatfdu/expr/functions"
@@ -497,3 +498,4 @@ func TestTimeFormat(t *testing.T) {
 	t.Log(types.ToString(ret))
 
 }
+

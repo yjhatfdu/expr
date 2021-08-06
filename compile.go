@@ -82,7 +82,7 @@ func (p *Program) Run(input []types.INullableVector, env map[string]string) (vec
 						argsc[i] = args[i]
 					}
 				}
-				args=argsc
+				args = argsc
 			}
 			ret, err := op.handler.Handle(args, env)
 			if err != nil {
@@ -205,6 +205,8 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 				str = an.Value[1 : len(an.Value)-1]
 			} else if strings.HasPrefix(an.Value, `'`) && strings.HasSuffix(an.Value, `'`) {
 				str = an.Value[1 : len(an.Value)-1]
+			} else {
+				str = an.Value
 			}
 			str = strings.ReplaceAll(str, "\\\\", "\\")
 			ctx.addOperation(operation{
