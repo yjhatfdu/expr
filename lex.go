@@ -126,8 +126,9 @@ func (l *Lexer) lookAheadKeyword() string {
 		if i > len(l.s) {
 			continue
 		}
-		if terminators[l.s[l.pos:i]] > 0 {
-			return l.s[l.pos:i]
+		k:=strings.ToLower(l.s[l.pos:i])
+		if terminators[k] > 0 {
+			return k
 		}
 	}
 	return ""
