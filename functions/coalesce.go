@@ -49,7 +49,26 @@ func init() {
 				continue
 			}
 		}
-		out, err := BroadCastMultiGeneric(vectors, t, func(values []interface{}, index int) (vector interface{}, e error) {
+		var output types.INullableVector
+		switch t {
+		case types.Int:
+			output = &types.NullableInt{}
+		case types.Float:
+			output = &types.NullableFloat{}
+		case types.Bool:
+			output = &types.NullableBool{}
+		case types.Text:
+			output = &types.NullableText{}
+		case types.Timestamp, types.Time, types.Date:
+			output = &types.NullableTimestamp{
+				TsType: t,
+			}
+		case types.Numeric:
+			output = &types.NullableNumeric{Scale: vectors[len(vectors)-1].(*types.NullableNumeric).Scale}
+		default:
+			panic("should not happend")
+		}
+		out, err := BroadCastMultiGeneric(vectors, output, func(values []interface{}, index int) (vector interface{}, e error) {
 			if outFilterMask != nil {
 				isFiltered := true
 				for j, v := range values {

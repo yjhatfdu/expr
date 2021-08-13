@@ -1,7 +1,6 @@
 package expr
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/yjhatfdu/expr/functions"
@@ -87,13 +86,37 @@ func TestExpr3(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 
+func buildNumericVec(d []string, isScalar bool) types.INullableVector {
+	val := types.NullableNumeric{}
+	val.Scale = 4
+	if isScalar {
+		val.Init(1)
+	} else {
+		val.Init(len(d))
+	}
+	for i, s := range d {
+		if s == `\N` || s == "" {
+			val.Set(i, 0, true)
+		} else {
+			v, err := types.Text2Numeric(s, 4)
+			if err != nil {
+				panic(err)
+			}
+			val.Set(i, v, false)
+		}
+	}
+	val.IsScalaV = isScalar
+	return &val
+}
+
 func TestExprCoalesce(t *testing.T) {
-	code := "coalesce($1,$2,1)"
-	p, err := Compile(code, []types.BaseType{types.Int, types.Int}, nil)
+	n := buildNumericVec([]string{"123.12345", "1.11111"}, false)
+	code := "coalesce($1,toNumeric(0))"
+	p, err := Compile(code, []types.BaseType{types.Numeric}, nil)
 	if err != nil {
 		panic(err)
 	}
-	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Int, nil, 2, 3, 4, 5, 6, nil, 8, 9, 10), types.BuildValue(types.Int, 10, 2, 3, 4, 5, 6, nil, 8, 9, 10)}, nil)
+	ret, err := p.Run([]types.INullableVector{n}, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -478,24 +501,15 @@ func TestIn(t *testing.T) {
 }
 
 func TestTimeFormat(t *testing.T) {
-	c, err := Compile(fmt.Sprint(`toText($1,"MM")`), []types.BaseType{types.Timestamp}, nil)
+	c, err := Compile(fmt.Sprint(`toTimestamp($1,"yyyy")`), []types.BaseType{types.Text}, nil)
 	if err != nil {
 		t.Error(err)
 	}
 
-	ret, err := c.Run([]types.INullableVector{&types.NullableTimestamp{
-		NullableVector: types.NullableVector{
-			IsNullArr: []bool{false},
-			IsScalaV:  false,
-			FilterArr: []bool{false},
-		},
-		Values: []int64{time.Now().UnixNano()},
-		TsType: types.Timestamp,
-	}}, nil)
+	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Text, "1970-01-29 00:00:00")}, nil)
 	if err != nil {
 		panic(err)
 	}
 	t.Log(types.ToString(ret))
 
 }
-

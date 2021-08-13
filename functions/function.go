@@ -355,24 +355,24 @@ func BroadCast1(in types.INullableVector, output types.INullableVector, handler 
 	return output, nil
 }
 
-func BroadCastMultiGeneric(input []types.INullableVector, outputType types.BaseType, handler func(values []interface{}, index int) (interface{}, error)) (types.INullableVector, error) {
-	var output types.INullableVector
-	switch outputType {
-	case types.Int:
-		output = &types.NullableInt{}
-	case types.Float:
-		output = &types.NullableFloat{}
-	case types.Bool:
-		output = &types.NullableBool{}
-	case types.Text:
-		output = &types.NullableText{}
-	case types.Timestamp, types.Time, types.Date:
-		output = &types.NullableTimestamp{}
-	case types.Numeric:
-		output = &types.NullableNumeric{}
-	default:
-		panic("should not happend")
-	}
+func BroadCastMultiGeneric(input []types.INullableVector, output types.INullableVector, handler func(values []interface{}, index int) (interface{}, error)) (types.INullableVector, error) {
+	//var output types.INullableVector
+	//switch outputType {
+	//case types.Int:
+	//	output = &types.NullableInt{}
+	//case types.Float:
+	//	output = &types.NullableFloat{}
+	//case types.Bool:
+	//	output = &types.NullableBool{}
+	//case types.Text:
+	//	output = &types.NullableText{}
+	//case types.Timestamp, types.Time, types.Date:
+	//	output = &types.NullableTimestamp{}
+	//case types.Numeric:
+	//	output = &types.NullableNumeric{}
+	//default:
+	//	panic("should not happend")
+	//}
 	maxLength := 0
 	allIsScala := true
 	for _, in := range input {
