@@ -57,6 +57,7 @@ import "github.com/yjhatfdu/expr/types"
 %left ADD MINUS
 %left MUL DIV
 %left PIPE
+%right IS
 %right IN
 %right LP
 %right DOLLAR
