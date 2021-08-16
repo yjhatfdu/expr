@@ -55,6 +55,7 @@ var keywords = map[string]int{
 	"end":   END,
 	"in":    IN,
 	"else":  ELSE,
+	"is":    IS,
 }
 
 type Lexer struct {
@@ -126,7 +127,7 @@ func (l *Lexer) lookAheadKeyword() string {
 		if i > len(l.s) {
 			continue
 		}
-		k:=strings.ToLower(l.s[l.pos:i])
+		k := strings.ToLower(l.s[l.pos:i])
 		if terminators[k] > 0 {
 			return k
 		}

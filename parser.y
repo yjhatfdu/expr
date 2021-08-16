@@ -48,6 +48,7 @@ import "github.com/yjhatfdu/expr/types"
 %token IN
 %token END
 %token ELSE
+%token IS
 %left OR
 %left AND
 %left NOT
@@ -85,6 +86,8 @@ e:    INT              { $$.node =newAst(CONST,$1.text,types.Int,$1.offset); }
     | e LTE e          { $$.node =newAst(FUNC,"lte",types.Any,$2.offset,$1.node,$3.node); }
     | e EQ e           { $$.node =newAst(FUNC,"eq",types.Any,$2.offset,$1.node,$3.node); }
     | e NEQ e          { $$.node =newAst(FUNC,"neq",types.Any,$2.offset,$1.node,$3.node); }
+    | e IS NULL        { $$.node =newAst(FUNC,"isNull",types.Any,$2.offset,$1.node); }
+    | e IS NOT NULL    { $$.node =newAst(FUNC,"isNotNull",types.Any,$2.offset,$1.node); }
     | DOLLAR INT       { $$.node =newAst(VAR,$2.text,types.Any,$1.offset);}
     | DOLLAR MUL       { $$.node =newAst(VAR,"ALL",types.Any,$1.offset);}
     | LP e RP          { $$.node =$2.node;}
