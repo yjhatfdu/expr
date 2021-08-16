@@ -15,6 +15,14 @@ func init() {
 			return 0, fmt.Errorf("multiIf should have at least 2 arguments got (%d) argument", len(inputTypes))
 		}
 		outType := inputTypes[1]
+
+		for i := 1; i < len(inputTypes); i++ {
+			if inputTypes[i] != types.Any {
+				outType = inputTypes[i]
+				break
+			}
+		}
+
 		for i := 0; i < len(inputTypes)/2; i++ {
 			t := inputTypes[2*i+1]
 			if t != outType && t+types.ScalaOffset != outType && t-types.ScalaOffset != outType && t != types.Any {
@@ -40,7 +48,15 @@ func init() {
 		}
 
 		var output types.INullableVector
-		t := vectors[1].Type()
+		var outType = types.Any
+
+		for i := 1; i < len(vectors); i++ {
+			if vectors[i].Type() != types.Any {
+				outType = vectors[i].Type()
+				break
+			}
+		}
+		t := outType
 		switch t {
 		case types.Int:
 			output = &types.NullableInt{}
