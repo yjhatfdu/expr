@@ -156,7 +156,7 @@ func (l *Lexer) Lex(lval *yySymType) (out int) {
 		return 0
 	}
 	if t.t != STR && t.t != INT && t.t != FLOAT {
-		if s, ok := keywords[t.s]; ok {
+		if s, ok := keywords[strings.ToLower(t.s)]; ok {
 			return s
 		} else {
 			return ID

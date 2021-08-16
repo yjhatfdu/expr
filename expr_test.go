@@ -19,7 +19,7 @@ import (
 //}
 
 func TestExpr_Like(t *testing.T) {
-	code := `"abcd" like "%bc%"`
+	code := `case WHEN 1 then 1 else 1 end`
 	p, err := Compile(code, nil, nil)
 	if err != nil {
 		t.Error(err)
