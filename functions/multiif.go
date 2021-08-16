@@ -38,7 +38,29 @@ func init() {
 		for i := range vectors {
 			filterMasks[i] = vectors[i].GetFilterArr()
 		}
-		out, err := BroadCastMultiGeneric(vectors, vectors[1].Type(), func(values []interface{}, index int) (i interface{}, e error) {
+
+		var output types.INullableVector
+		t := vectors[1].Type()
+		switch t {
+		case types.Int:
+			output = &types.NullableInt{}
+		case types.Float:
+			output = &types.NullableFloat{}
+		case types.Bool:
+			output = &types.NullableBool{}
+		case types.Text:
+			output = &types.NullableText{}
+		case types.Timestamp, types.Time, types.Date:
+			output = &types.NullableTimestamp{
+				TsType: t,
+			}
+		case types.Numeric:
+			output = &types.NullableNumeric{Scale: vectors[1].(*types.NullableNumeric).Scale}
+		default:
+			panic("should not happend")
+		}
+
+		out, err := BroadCastMultiGeneric(vectors, output, func(values []interface{}, index int) (i interface{}, e error) {
 			for i := 0; i < l/2; i++ {
 				v := values[2*i]
 				var truthy bool
