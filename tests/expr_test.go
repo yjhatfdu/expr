@@ -6,6 +6,7 @@ import (
 	"github.com/yjhatfdu/expr/types"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -37,6 +38,15 @@ func TestCase(t *testing.T) {
 		panic(err)
 	}
 	err = filepath.Walk("./case", func(p string, info os.FileInfo, err error) error {
+		if os.Getenv("NO_TIME_TEST") != "" {
+			if !info.IsDir() {
+				if strings.Contains(info.Name(), "time") {
+				} else {
+					loader(p)
+				}
+			}
+			return nil
+		}
 		if !info.IsDir() {
 			loader(p)
 		}

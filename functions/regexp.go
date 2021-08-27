@@ -208,9 +208,9 @@ func init() {
 
 	similar, _ := NewFunction("similar")
 	similar.Overload([]types.BaseType{types.Text, types.TextS}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		output := &types.NullableTextArray{}
+		output := &types.NullableBool{}
 		input := vectors[0].(*types.NullableText)
-		reStr := vectors[0].Index(0).(string)
+		reStr := vectors[1].Index(0).(string)
 		re, err := regexp.Compile(reStr)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("similar函数未能成功编译正则表达式 %s, %s", reStr, err.Error()))

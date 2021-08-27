@@ -23,9 +23,8 @@ func loader(file string) {
 		panic(err)
 	}
 	r := bufio.NewReader(fp)
-	typesStr, err := r.ReadString('\n')
-	typesStr = typesStr[0 : len(typesStr)-1]
-	typesSegs := strings.Split(typesStr, ",")
+	typesStr, _, err := r.ReadLine()
+	typesSegs := strings.Split(string(typesStr), ",")
 	allTypes := make([]types.BaseType, len(typesSegs))
 	for i := range typesSegs {
 		t, ok := types.GetTypeByName(typesSegs[i])
@@ -36,8 +35,8 @@ func loader(file string) {
 	}
 	inputTypes := allTypes[0 : len(allTypes)-1]
 	outputType := allTypes[len(allTypes)-1]
-	code, err := r.ReadString('\n')
-	program, err := expr.Compile(code, inputTypes, nil)
+	code, _, err := r.ReadLine()
+	program, err := expr.Compile(string(code), inputTypes, nil)
 	if err != nil {
 		if strings.HasSuffix(file, ".cerr") {
 			return
