@@ -84,7 +84,7 @@ func init() {
 			ret, _ := f.Handler.Handle([]types.INullableVector{v}, nil)
 			return ret
 		}, castKey{types.Numeric, types.Text}: func(v types.INullableVector) types.INullableVector {
-			f, _ := GetFunction("toText", []types.BaseType{types.Int})
+			f, _ := GetFunction("toText", []types.BaseType{types.Numeric})
 			ret, _ := f.Handler.Handle([]types.INullableVector{v}, nil)
 			return ret
 		},

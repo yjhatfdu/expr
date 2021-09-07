@@ -75,4 +75,11 @@ func TestAutoCast(t *testing.T) {
 		panic(err)
 	}
 	t.Log(p.Run(nil, nil))
+
+	p, err = expr.Compile("toNumeric($1) like \"12\"", []types.BaseType{types.Int}, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	t.Log(p.Run([]types.INullableVector{types.BuildValue(types.Int, 123)}, nil))
 }
