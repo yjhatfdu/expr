@@ -131,7 +131,7 @@ func init() {
 	trim.Overload([]types.BaseType{types.Text, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableText)
-		t := vectors[0].(*types.NullableText).Index(0).(string)
+		t := vectors[1].(*types.NullableText).Index(0).(string)
 		return BroadCast1(input, output, func(i int) error {
 			s := input.Index(i).(string)
 			output.Seti(i, strings.TrimSuffix(strings.TrimPrefix(s, t), t))
