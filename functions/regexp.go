@@ -93,11 +93,11 @@ func (s *likeFunc) Init(cons []string, env map[string]string) error {
 		return errors.New(fmt.Sprintf("like 函数仅接受两个参数，实际参数个数 %d", len(cons)))
 	}
 
-	pattern:=cons[1]
+	pattern := cons[1]
 	//if err != nil {
 	//	return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], err))
 	//}
-	re, err :=regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*?"), "_", "."))
+	re, err := regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*?"), "_", "."))
 	//re, err := regexp.Compile(pattern)
 	if err != nil {
 		return errors.New(fmt.Sprintf("未能成功编译 like 函数表达式 %s，异常信息 %s", cons[1], err))
@@ -133,8 +133,16 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		t := vectors[1].(*types.NullableText).Index(0).(string)
 		return BroadCast1(input, output, func(i int) error {
-			s := input.Index(i).(string)
-			output.Seti(i, strings.TrimSuffix(strings.TrimPrefix(s, t), t))
+			var v = input.Values[i]
+			for strings.HasPrefix(v, t) {
+				v = strings.TrimLeft(v, t)
+			}
+
+			for strings.HasSuffix(v, t) {
+				v = strings.TrimSuffix(v, t)
+			}
+
+			output.Seti(i, v)
 			return nil
 		})
 	})
