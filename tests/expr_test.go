@@ -42,13 +42,13 @@ func TestCase(t *testing.T) {
 			if !info.IsDir() {
 				if strings.Contains(info.Name(), "time") {
 				} else {
-					loader(p)
+					CaseLoader(p)
 				}
 			}
 			return nil
 		}
 		if !info.IsDir() {
-			loader(p)
+			CaseLoader(p)
 		}
 		return nil
 	})
