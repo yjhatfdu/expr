@@ -83,3 +83,41 @@ func TestAutoCast(t *testing.T) {
 
 	t.Log(p.Run([]types.INullableVector{types.BuildValue(types.Int, 123)}, nil))
 }
+
+// test *
+func TestSimilarToCase1(t *testing.T) {
+	p, err := expr.Compile("`"+`abbc`+"`"+` similar to `+"`"+`a?b*c+`+"`", nil, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	v, _ := p.Run(nil, nil)
+	if !v.Index(0).(bool) {
+		panic(types.ToString(v))
+	}
+}
+
+// test |
+func TestSimilarToCase2(t *testing.T) {
+	p, err := expr.Compile("`"+`abc`+"`"+` similar to `+"`"+`%(b|d)%`+"`", nil, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	v, _ := p.Run(nil, nil)
+	if !v.Index(0).(bool) {
+		panic(types.ToString(v))
+	}
+}
+
+func TestNotSimilarToCase1(t *testing.T) {
+	p, err := expr.Compile("`"+`abc`+"`"+`not similar to `+"`"+`ab`+"`", nil, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	v, _ := p.Run(nil, nil)
+	if !v.Index(0).(bool) {
+		panic(types.ToString(v))
+	}
+}

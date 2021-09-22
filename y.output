@@ -32,6 +32,8 @@ state 1
 state 2
 	input:  e.    (1)
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -55,57 +57,58 @@ state 2
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 1 (src line 67)
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
+	.  reduce 1 (src line 69)
 
-	cast_func  goto 35
+	cast_func  goto 36
 
 state 3
 	e:  INT.    (2)
 
-	.  reduce 2 (src line 69)
+	.  reduce 2 (src line 71)
 
 
 state 4
 	e:  STR.    (3)
 
-	.  reduce 3 (src line 70)
+	.  reduce 3 (src line 72)
 
 
 state 5
 	e:  RAWSTR.    (4)
 
-	.  reduce 4 (src line 71)
+	.  reduce 4 (src line 73)
 
 
 state 6
 	e:  FLOAT.    (5)
 
-	.  reduce 5 (src line 72)
+	.  reduce 5 (src line 74)
 
 
 state 7
 	e:  BOOL.    (6)
 
-	.  reduce 6 (src line 73)
+	.  reduce 6 (src line 75)
 
 
 state 8
@@ -125,7 +128,7 @@ state 8
 	CASE  shift 14
 	.  error
 
-	e  goto 38
+	e  goto 39
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
@@ -134,8 +137,8 @@ state 9
 	e:  DOLLAR.INT 
 	e:  DOLLAR.MUL 
 
-	INT  shift 39
-	MUL  shift 40
+	INT  shift 40
+	MUL  shift 41
 	.  error
 
 
@@ -156,60 +159,60 @@ state 10
 	CASE  shift 14
 	.  error
 
-	e  goto 41
+	e  goto 42
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
 
 state 11
-	e:  func_call.    (28)
+	e:  func_call.    (30)
 
-	.  reduce 28 (src line 95)
+	.  reduce 30 (src line 99)
 
 
 state 12
-	e:  negative.    (29)
+	e:  negative.    (31)
 
-	.  reduce 29 (src line 96)
+	.  reduce 31 (src line 100)
 
 
 state 13
-	e:  NULL.    (30)
+	e:  NULL.    (32)
 
-	.  reduce 30 (src line 97)
+	.  reduce 32 (src line 101)
 
 
 state 14
 	e:  CASE.whenClause END 
 	e:  CASE.whenClause ELSE e END 
 
-	WHEN  shift 43
+	WHEN  shift 44
 	.  error
 
-	whenClause  goto 42
+	whenClause  goto 43
 
 state 15
 	func_call:  IDD.LP e_list RP 
 	func_call:  IDD.LP RP 
-	func_call:  IDD.    (39)
+	func_call:  IDD.    (41)
 
-	LP  shift 44
-	.  reduce 39 (src line 116)
+	LP  shift 45
+	.  reduce 41 (src line 120)
 
 
 state 16
 	negative:  MINUS.INT 
 	negative:  MINUS.FLOAT 
 
-	INT  shift 45
-	FLOAT  shift 46
+	INT  shift 46
+	FLOAT  shift 47
 	.  error
 
 
 state 17
-	IDD:  ID.    (46)
+	IDD:  ID.    (48)
 
-	.  reduce 46 (src line 130)
+	.  reduce 48 (src line 134)
 
 
 state 18
@@ -229,88 +232,31 @@ state 18
 	CASE  shift 14
 	.  error
 
-	e  goto 47
+	e  goto 48
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
 
 state 19
-	e:  e NOT.LIKE e 
-	e:  e NOT.IN LP e_list RP 
+	e:  e SIMILAR.TO e 
 
-	LIKE  shift 48
-	IN  shift 49
+	TO  shift 49
 	.  error
 
 
 state 20
-	e:  e CONTAINS.e 
+	e:  e NOT.SIMILAR TO e 
+	e:  e NOT.LIKE e 
+	e:  e NOT.IN LP e_list RP 
 
-	NULL  shift 13
-	INT  shift 3
-	STR  shift 4
-	RAWSTR  shift 5
-	BOOL  shift 7
-	FLOAT  shift 6
-	NOT  shift 8
-	MINUS  shift 16
-	ID  shift 17
-	LP  shift 10
-	DOLLAR  shift 9
-	CASE  shift 14
+	LIKE  shift 51
+	IN  shift 52
+	SIMILAR  shift 50
 	.  error
 
-	e  goto 50
-	func_call  goto 11
-	negative  goto 12
-	IDD  goto 15
 
 state 21
-	e:  e AND.e 
-
-	NULL  shift 13
-	INT  shift 3
-	STR  shift 4
-	RAWSTR  shift 5
-	BOOL  shift 7
-	FLOAT  shift 6
-	NOT  shift 8
-	MINUS  shift 16
-	ID  shift 17
-	LP  shift 10
-	DOLLAR  shift 9
-	CASE  shift 14
-	.  error
-
-	e  goto 51
-	func_call  goto 11
-	negative  goto 12
-	IDD  goto 15
-
-state 22
-	e:  e OR.e 
-
-	NULL  shift 13
-	INT  shift 3
-	STR  shift 4
-	RAWSTR  shift 5
-	BOOL  shift 7
-	FLOAT  shift 6
-	NOT  shift 8
-	MINUS  shift 16
-	ID  shift 17
-	LP  shift 10
-	DOLLAR  shift 9
-	CASE  shift 14
-	.  error
-
-	e  goto 52
-	func_call  goto 11
-	negative  goto 12
-	IDD  goto 15
-
-state 23
-	e:  e ADD.e 
+	e:  e CONTAINS.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -331,8 +277,8 @@ state 23
 	negative  goto 12
 	IDD  goto 15
 
-state 24
-	e:  e MINUS.e 
+state 22
+	e:  e AND.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -353,8 +299,8 @@ state 24
 	negative  goto 12
 	IDD  goto 15
 
-state 25
-	e:  e DIV.e 
+state 23
+	e:  e OR.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -375,8 +321,8 @@ state 25
 	negative  goto 12
 	IDD  goto 15
 
-state 26
-	e:  e MUL.e 
+state 24
+	e:  e ADD.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -397,8 +343,8 @@ state 26
 	negative  goto 12
 	IDD  goto 15
 
-state 27
-	e:  e GT.e 
+state 25
+	e:  e MINUS.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -419,8 +365,8 @@ state 27
 	negative  goto 12
 	IDD  goto 15
 
-state 28
-	e:  e GTE.e 
+state 26
+	e:  e DIV.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -441,8 +387,8 @@ state 28
 	negative  goto 12
 	IDD  goto 15
 
-state 29
-	e:  e LT.e 
+state 27
+	e:  e MUL.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -463,8 +409,8 @@ state 29
 	negative  goto 12
 	IDD  goto 15
 
-state 30
-	e:  e LTE.e 
+state 28
+	e:  e GT.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -485,8 +431,8 @@ state 30
 	negative  goto 12
 	IDD  goto 15
 
-state 31
-	e:  e EQ.e 
+state 29
+	e:  e GTE.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -507,8 +453,8 @@ state 31
 	negative  goto 12
 	IDD  goto 15
 
-state 32
-	e:  e NEQ.e 
+state 30
+	e:  e LT.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -529,29 +475,95 @@ state 32
 	negative  goto 12
 	IDD  goto 15
 
+state 31
+	e:  e LTE.e 
+
+	NULL  shift 13
+	INT  shift 3
+	STR  shift 4
+	RAWSTR  shift 5
+	BOOL  shift 7
+	FLOAT  shift 6
+	NOT  shift 8
+	MINUS  shift 16
+	ID  shift 17
+	LP  shift 10
+	DOLLAR  shift 9
+	CASE  shift 14
+	.  error
+
+	e  goto 63
+	func_call  goto 11
+	negative  goto 12
+	IDD  goto 15
+
+state 32
+	e:  e EQ.e 
+
+	NULL  shift 13
+	INT  shift 3
+	STR  shift 4
+	RAWSTR  shift 5
+	BOOL  shift 7
+	FLOAT  shift 6
+	NOT  shift 8
+	MINUS  shift 16
+	ID  shift 17
+	LP  shift 10
+	DOLLAR  shift 9
+	CASE  shift 14
+	.  error
+
+	e  goto 64
+	func_call  goto 11
+	negative  goto 12
+	IDD  goto 15
+
 state 33
+	e:  e NEQ.e 
+
+	NULL  shift 13
+	INT  shift 3
+	STR  shift 4
+	RAWSTR  shift 5
+	BOOL  shift 7
+	FLOAT  shift 6
+	NOT  shift 8
+	MINUS  shift 16
+	ID  shift 17
+	LP  shift 10
+	DOLLAR  shift 9
+	CASE  shift 14
+	.  error
+
+	e  goto 65
+	func_call  goto 11
+	negative  goto 12
+	IDD  goto 15
+
+state 34
 	e:  e IS.NULL 
 	e:  e IS.NOT NULL 
 
-	NULL  shift 63
-	NOT  shift 64
-	.  error
-
-
-state 34
-	e:  e IN.LP e_list RP 
-
-	LP  shift 65
+	NULL  shift 66
+	NOT  shift 67
 	.  error
 
 
 state 35
-	func_call:  e cast_func.    (40)
+	e:  e IN.LP e_list RP 
 
-	.  reduce 40 (src line 117)
+	LP  shift 68
+	.  error
 
 
 state 36
+	func_call:  e cast_func.    (42)
+
+	.  reduce 42 (src line 121)
+
+
+state 37
 	func_call:  e PIPE.IDD 
 	func_call:  e PIPE.IDD LP RP 
 	func_call:  e PIPE.IDD LP e_list RP 
@@ -559,18 +571,20 @@ state 36
 	ID  shift 17
 	.  error
 
-	IDD  goto 66
+	IDD  goto 69
 
-state 37
+state 38
 	cast_func:  CAST.IDD 
 
 	ID  shift 17
 	.  error
 
-	IDD  goto 67
+	IDD  goto 70
 
-state 38
+state 39
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -579,7 +593,7 @@ state 38
 	e:  e.MINUS e 
 	e:  e.DIV e 
 	e:  e.MUL e 
-	e:  NOT e.    (16)
+	e:  NOT e.    (18)
 	e:  e.GT e 
 	e:  e.GTE e 
 	e:  e.LT e 
@@ -596,39 +610,41 @@ state 38
 	func_call:  e.PIPE IDD LP e_list RP 
 
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 16 (src line 83)
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 18 (src line 87)
 
-	cast_func  goto 35
-
-state 39
-	e:  DOLLAR INT.    (25)
-
-	.  reduce 25 (src line 92)
-
+	cast_func  goto 36
 
 state 40
-	e:  DOLLAR MUL.    (26)
+	e:  DOLLAR INT.    (27)
 
-	.  reduce 26 (src line 93)
+	.  reduce 27 (src line 96)
 
 
 state 41
+	e:  DOLLAR MUL.    (28)
+
+	.  reduce 28 (src line 97)
+
+
+state 42
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -653,42 +669,43 @@ state 41
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	RP  shift 68
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	RP  shift 71
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
 	.  error
 
-	cast_func  goto 35
+	cast_func  goto 36
 
-state 42
+state 43
 	e:  CASE whenClause.END 
 	e:  CASE whenClause.ELSE e END 
 	whenClause:  whenClause.WHEN e THEN e 
 
-	WHEN  shift 71
-	END  shift 69
-	ELSE  shift 70
+	WHEN  shift 74
+	END  shift 72
+	ELSE  shift 73
 	.  error
 
 
-state 43
+state 44
 	whenClause:  WHEN.e THEN e 
 
 	NULL  shift 13
@@ -705,12 +722,12 @@ state 43
 	CASE  shift 14
 	.  error
 
-	e  goto 72
+	e  goto 75
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
 
-state 44
+state 45
 	func_call:  IDD LP.e_list RP 
 	func_call:  IDD LP.RP 
 
@@ -724,624 +741,71 @@ state 44
 	MINUS  shift 16
 	ID  shift 17
 	LP  shift 10
-	RP  shift 74
+	RP  shift 77
 	DOLLAR  shift 9
 	CASE  shift 14
 	.  error
 
-	e  goto 75
+	e  goto 78
 	func_call  goto 11
 	negative  goto 12
-	e_list  goto 73
+	e_list  goto 76
 	IDD  goto 15
 
-state 45
-	negative:  MINUS INT.    (35)
-
-	.  reduce 35 (src line 111)
-
-
 state 46
-	negative:  MINUS FLOAT.    (36)
+	negative:  MINUS INT.    (37)
 
-	.  reduce 36 (src line 112)
+	.  reduce 37 (src line 115)
 
 
 state 47
-	e:  e.LIKE e 
-	e:  e LIKE e.    (7)
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
+	negative:  MINUS FLOAT.    (38)
 
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 7 (src line 74)
+	.  reduce 38 (src line 116)
 
-	cast_func  goto 35
 
 state 48
-	e:  e NOT LIKE.e 
+	e:  e.LIKE e 
+	e:  e LIKE e.    (7)
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
 
-	NULL  shift 13
-	INT  shift 3
-	STR  shift 4
-	RAWSTR  shift 5
-	BOOL  shift 7
-	FLOAT  shift 6
-	NOT  shift 8
-	MINUS  shift 16
-	ID  shift 17
-	LP  shift 10
-	DOLLAR  shift 9
-	CASE  shift 14
-	.  error
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 7 (src line 76)
 
-	e  goto 76
-	func_call  goto 11
-	negative  goto 12
-	IDD  goto 15
+	cast_func  goto 36
 
 state 49
-	e:  e NOT IN.LP e_list RP 
-
-	LP  shift 77
-	.  error
-
-
-state 50
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e CONTAINS e.    (9)
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 9 (src line 76)
-
-	cast_func  goto 35
-
-state 51
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e AND e.    (10)
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	NOT  shift 19
-	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 10 (src line 77)
-
-	cast_func  goto 35
-
-state 52
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e OR e.    (11)
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	AND  shift 21
-	NOT  shift 19
-	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 11 (src line 78)
-
-	cast_func  goto 35
-
-state 53
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e ADD e.    (12)
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	MUL  shift 26
-	DIV  shift 25
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 12 (src line 79)
-
-	cast_func  goto 35
-
-state 54
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e MINUS e.    (13)
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	MUL  shift 26
-	DIV  shift 25
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 13 (src line 80)
-
-	cast_func  goto 35
-
-state 55
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e DIV e.    (14)
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 14 (src line 81)
-
-	cast_func  goto 35
-
-state 56
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e MUL e.    (15)
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 15 (src line 82)
-
-	cast_func  goto 35
-
-state 57
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e GT e.    (17)
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	LIKE  shift 18
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 17 (src line 84)
-
-	cast_func  goto 35
-
-state 58
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e GTE e.    (18)
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	LIKE  shift 18
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 18 (src line 85)
-
-	cast_func  goto 35
-
-state 59
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e LT e.    (19)
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	LIKE  shift 18
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 19 (src line 86)
-
-	cast_func  goto 35
-
-state 60
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e LTE e.    (20)
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	LIKE  shift 18
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 20 (src line 87)
-
-	cast_func  goto 35
-
-state 61
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e EQ e.    (21)
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	LIKE  shift 18
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 21 (src line 88)
-
-	cast_func  goto 35
-
-state 62
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e NEQ e.    (22)
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	LIKE  shift 18
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 22 (src line 89)
-
-	cast_func  goto 35
-
-state 63
-	e:  e IS NULL.    (23)
-
-	.  reduce 23 (src line 90)
-
-
-state 64
-	e:  e IS NOT.NULL 
-
-	NULL  shift 78
-	.  error
-
-
-state 65
-	e:  e IN LP.e_list RP 
+	e:  e SIMILAR TO.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -1357,41 +821,20 @@ state 65
 	CASE  shift 14
 	.  error
 
-	e  goto 75
+	e  goto 79
 	func_call  goto 11
 	negative  goto 12
-	e_list  goto 79
 	IDD  goto 15
 
-state 66
-	func_call:  e PIPE IDD.    (41)
-	func_call:  e PIPE IDD.LP RP 
-	func_call:  e PIPE IDD.LP e_list RP 
+state 50
+	e:  e NOT SIMILAR.TO e 
 
-	LP  shift 80
-	.  reduce 41 (src line 118)
+	TO  shift 80
+	.  error
 
 
-state 67
-	cast_func:  CAST IDD.    (47)
-
-	.  reduce 47 (src line 132)
-
-
-state 68
-	e:  LP e RP.    (27)
-
-	.  reduce 27 (src line 94)
-
-
-state 69
-	e:  CASE whenClause END.    (31)
-
-	.  reduce 31 (src line 98)
-
-
-state 70
-	e:  CASE whenClause ELSE.e END 
+state 51
+	e:  e NOT LIKE.e 
 
 	NULL  shift 13
 	INT  shift 3
@@ -1412,7 +855,640 @@ state 70
 	negative  goto 12
 	IDD  goto 15
 
+state 52
+	e:  e NOT IN.LP e_list RP 
+
+	LP  shift 82
+	.  error
+
+
+state 53
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e CONTAINS e.    (11)
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 11 (src line 80)
+
+	cast_func  goto 36
+
+state 54
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e AND e.    (12)
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	NOT  shift 20
+	LIKE  shift 18
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
+	.  reduce 12 (src line 81)
+
+	cast_func  goto 36
+
+state 55
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e OR e.    (13)
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	AND  shift 22
+	NOT  shift 20
+	LIKE  shift 18
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
+	.  reduce 13 (src line 82)
+
+	cast_func  goto 36
+
+state 56
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e ADD e.    (14)
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	MUL  shift 27
+	DIV  shift 26
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 14 (src line 83)
+
+	cast_func  goto 36
+
+state 57
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e MINUS e.    (15)
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	MUL  shift 27
+	DIV  shift 26
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 15 (src line 84)
+
+	cast_func  goto 36
+
+state 58
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e DIV e.    (16)
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 16 (src line 85)
+
+	cast_func  goto 36
+
+state 59
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e MUL e.    (17)
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 17 (src line 86)
+
+	cast_func  goto 36
+
+state 60
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e GT e.    (19)
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	LIKE  shift 18
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 19 (src line 88)
+
+	cast_func  goto 36
+
+state 61
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e GTE e.    (20)
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	LIKE  shift 18
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 20 (src line 89)
+
+	cast_func  goto 36
+
+state 62
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e LT e.    (21)
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	LIKE  shift 18
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 21 (src line 90)
+
+	cast_func  goto 36
+
+state 63
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e LTE e.    (22)
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	LIKE  shift 18
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 22 (src line 91)
+
+	cast_func  goto 36
+
+state 64
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e EQ e.    (23)
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	LIKE  shift 18
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 23 (src line 92)
+
+	cast_func  goto 36
+
+state 65
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e NEQ e.    (24)
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	LIKE  shift 18
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 24 (src line 93)
+
+	cast_func  goto 36
+
+state 66
+	e:  e IS NULL.    (25)
+
+	.  reduce 25 (src line 94)
+
+
+state 67
+	e:  e IS NOT.NULL 
+
+	NULL  shift 83
+	.  error
+
+
+state 68
+	e:  e IN LP.e_list RP 
+
+	NULL  shift 13
+	INT  shift 3
+	STR  shift 4
+	RAWSTR  shift 5
+	BOOL  shift 7
+	FLOAT  shift 6
+	NOT  shift 8
+	MINUS  shift 16
+	ID  shift 17
+	LP  shift 10
+	DOLLAR  shift 9
+	CASE  shift 14
+	.  error
+
+	e  goto 78
+	func_call  goto 11
+	negative  goto 12
+	e_list  goto 84
+	IDD  goto 15
+
+state 69
+	func_call:  e PIPE IDD.    (43)
+	func_call:  e PIPE IDD.LP RP 
+	func_call:  e PIPE IDD.LP e_list RP 
+
+	LP  shift 85
+	.  reduce 43 (src line 122)
+
+
+state 70
+	cast_func:  CAST IDD.    (49)
+
+	.  reduce 49 (src line 136)
+
+
 state 71
+	e:  LP e RP.    (29)
+
+	.  reduce 29 (src line 98)
+
+
+state 72
+	e:  CASE whenClause END.    (33)
+
+	.  reduce 33 (src line 102)
+
+
+state 73
+	e:  CASE whenClause ELSE.e END 
+
+	NULL  shift 13
+	INT  shift 3
+	STR  shift 4
+	RAWSTR  shift 5
+	BOOL  shift 7
+	FLOAT  shift 6
+	NOT  shift 8
+	MINUS  shift 16
+	ID  shift 17
+	LP  shift 10
+	DOLLAR  shift 9
+	CASE  shift 14
+	.  error
+
+	e  goto 86
+	func_call  goto 11
+	negative  goto 12
+	IDD  goto 15
+
+state 74
 	whenClause:  whenClause WHEN.e THEN e 
 
 	NULL  shift 13
@@ -1429,13 +1505,15 @@ state 71
 	CASE  shift 14
 	.  error
 
-	e  goto 82
+	e  goto 87
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
 
-state 72
+state 75
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -1460,133 +1538,201 @@ state 72
 	func_call:  e.PIPE IDD LP e_list RP 
 	whenClause:  WHEN e.THEN e 
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	THEN  shift 83
-	IN  shift 34
-	IS  shift 33
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	THEN  shift 88
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
 	.  error
 
-	cast_func  goto 35
+	cast_func  goto 36
 
-state 73
+state 76
 	func_call:  IDD LP e_list.RP 
 	e_list:  e_list.COMMA e 
 
-	COMMA  shift 85
-	RP  shift 84
+	COMMA  shift 90
+	RP  shift 89
 	.  error
 
 
-state 74
-	func_call:  IDD LP RP.    (38)
-
-	.  reduce 38 (src line 115)
-
-
-state 75
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-	e_list:  e.    (48)
-
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
-	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 48 (src line 134)
-
-	cast_func  goto 35
-
-state 76
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e NOT LIKE e.    (8)
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 8 (src line 75)
-
-	cast_func  goto 35
-
 state 77
+	func_call:  IDD LP RP.    (40)
+
+	.  reduce 40 (src line 119)
+
+
+state 78
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+	e_list:  e.    (50)
+
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
+	LIKE  shift 18
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
+	.  reduce 50 (src line 138)
+
+	cast_func  goto 36
+
+state 79
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e SIMILAR TO e.    (8)
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 8 (src line 77)
+
+	cast_func  goto 36
+
+state 80
+	e:  e NOT SIMILAR TO.e 
+
+	NULL  shift 13
+	INT  shift 3
+	STR  shift 4
+	RAWSTR  shift 5
+	BOOL  shift 7
+	FLOAT  shift 6
+	NOT  shift 8
+	MINUS  shift 16
+	ID  shift 17
+	LP  shift 10
+	DOLLAR  shift 9
+	CASE  shift 14
+	.  error
+
+	e  goto 91
+	func_call  goto 11
+	negative  goto 12
+	IDD  goto 15
+
+state 81
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e NOT LIKE e.    (10)
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 10 (src line 79)
+
+	cast_func  goto 36
+
+state 82
 	e:  e NOT IN LP.e_list RP 
 
 	NULL  shift 13
@@ -1603,28 +1749,28 @@ state 77
 	CASE  shift 14
 	.  error
 
-	e  goto 75
+	e  goto 78
 	func_call  goto 11
 	negative  goto 12
-	e_list  goto 86
+	e_list  goto 92
 	IDD  goto 15
 
-state 78
-	e:  e IS NOT NULL.    (24)
+state 83
+	e:  e IS NOT NULL.    (26)
 
-	.  reduce 24 (src line 91)
+	.  reduce 26 (src line 95)
 
 
-state 79
+state 84
 	e:  e IN LP e_list.RP 
 	e_list:  e_list.COMMA e 
 
-	COMMA  shift 85
-	RP  shift 87
+	COMMA  shift 90
+	RP  shift 93
 	.  error
 
 
-state 80
+state 85
 	func_call:  e PIPE IDD LP.RP 
 	func_call:  e PIPE IDD LP.e_list RP 
 
@@ -1638,19 +1784,21 @@ state 80
 	MINUS  shift 16
 	ID  shift 17
 	LP  shift 10
-	RP  shift 88
+	RP  shift 94
 	DOLLAR  shift 9
 	CASE  shift 14
 	.  error
 
-	e  goto 75
+	e  goto 78
 	func_call  goto 11
 	negative  goto 12
-	e_list  goto 89
+	e_list  goto 95
 	IDD  goto 15
 
-state 81
+state 86
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -1675,32 +1823,35 @@ state 81
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	END  shift 90
-	IS  shift 33
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	END  shift 96
+	IS  shift 34
+	SIMILAR  shift 19
 	.  error
 
-	cast_func  goto 35
+	cast_func  goto 36
 
-state 82
+state 87
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -1725,31 +1876,32 @@ state 82
 	func_call:  e.PIPE IDD LP e_list RP 
 	whenClause:  whenClause WHEN e.THEN e 
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	THEN  shift 91
-	IN  shift 34
-	IS  shift 33
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	THEN  shift 97
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
 	.  error
 
-	cast_func  goto 35
+	cast_func  goto 36
 
-state 83
+state 88
 	whenClause:  WHEN e THEN.e 
 
 	NULL  shift 13
@@ -1766,18 +1918,18 @@ state 83
 	CASE  shift 14
 	.  error
 
-	e  goto 92
+	e  goto 98
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
 
-state 84
-	func_call:  IDD LP e_list RP.    (37)
+state 89
+	func_call:  IDD LP e_list RP.    (39)
 
-	.  reduce 37 (src line 114)
+	.  reduce 39 (src line 118)
 
 
-state 85
+state 90
 	e_list:  e_list COMMA.e 
 
 	NULL  shift 13
@@ -1794,48 +1946,88 @@ state 85
 	CASE  shift 14
 	.  error
 
-	e  goto 93
+	e  goto 99
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
 
-state 86
+state 91
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e NOT SIMILAR TO e.    (9)
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	.  reduce 9 (src line 78)
+
+	cast_func  goto 36
+
+state 92
 	e:  e NOT IN LP e_list.RP 
 	e_list:  e_list.COMMA e 
 
-	COMMA  shift 85
-	RP  shift 94
+	COMMA  shift 90
+	RP  shift 100
 	.  error
 
 
-state 87
-	e:  e IN LP e_list RP.    (33)
+state 93
+	e:  e IN LP e_list RP.    (35)
 
-	.  reduce 33 (src line 103)
-
-
-state 88
-	func_call:  e PIPE IDD LP RP.    (42)
-
-	.  reduce 42 (src line 119)
+	.  reduce 35 (src line 107)
 
 
-state 89
+state 94
+	func_call:  e PIPE IDD LP RP.    (44)
+
+	.  reduce 44 (src line 123)
+
+
+state 95
 	func_call:  e PIPE IDD LP e_list.RP 
 	e_list:  e_list.COMMA e 
 
-	COMMA  shift 85
-	RP  shift 95
+	COMMA  shift 90
+	RP  shift 101
 	.  error
 
 
-state 90
-	e:  CASE whenClause ELSE e END.    (32)
+state 96
+	e:  CASE whenClause ELSE e END.    (34)
 
-	.  reduce 32 (src line 99)
+	.  reduce 34 (src line 103)
 
 
-state 91
+state 97
 	whenClause:  whenClause WHEN e THEN.e 
 
 	NULL  shift 13
@@ -1852,13 +2044,15 @@ state 91
 	CASE  shift 14
 	.  error
 
-	e  goto 96
+	e  goto 102
 	func_call  goto 11
 	negative  goto 12
 	IDD  goto 15
 
-state 92
+state 98
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -1881,33 +2075,36 @@ state 92
 	func_call:  e.PIPE IDD 
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
-	whenClause:  WHEN e THEN e.    (44)
+	whenClause:  WHEN e THEN e.    (46)
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 44 (src line 122)
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
+	.  reduce 46 (src line 126)
 
-	cast_func  goto 35
+	cast_func  goto 36
 
-state 93
+state 99
 	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
 	e:  e.NOT LIKE e 
 	e:  e.CONTAINS e 
 	e:  e.AND e 
@@ -1930,101 +2127,105 @@ state 93
 	func_call:  e.PIPE IDD 
 	func_call:  e.PIPE IDD LP RP 
 	func_call:  e.PIPE IDD LP e_list RP 
-	e_list:  e_list COMMA e.    (49)
+	e_list:  e_list COMMA e.    (51)
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
 	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
-	.  reduce 49 (src line 135)
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
+	.  reduce 51 (src line 139)
 
-	cast_func  goto 35
+	cast_func  goto 36
 
-state 94
-	e:  e NOT IN LP e_list RP.    (34)
+state 100
+	e:  e NOT IN LP e_list RP.    (36)
 
-	.  reduce 34 (src line 106)
-
-
-state 95
-	func_call:  e PIPE IDD LP e_list RP.    (43)
-
-	.  reduce 43 (src line 120)
+	.  reduce 36 (src line 110)
 
 
-state 96
-	e:  e.LIKE e 
-	e:  e.NOT LIKE e 
-	e:  e.CONTAINS e 
-	e:  e.AND e 
-	e:  e.OR e 
-	e:  e.ADD e 
-	e:  e.MINUS e 
-	e:  e.DIV e 
-	e:  e.MUL e 
-	e:  e.GT e 
-	e:  e.GTE e 
-	e:  e.LT e 
-	e:  e.LTE e 
-	e:  e.EQ e 
-	e:  e.NEQ e 
-	e:  e.IS NULL 
-	e:  e.IS NOT NULL 
-	e:  e.IN LP e_list RP 
-	e:  e.NOT IN LP e_list RP 
-	func_call:  e.cast_func 
-	func_call:  e.PIPE IDD 
-	func_call:  e.PIPE IDD LP RP 
-	func_call:  e.PIPE IDD LP e_list RP 
-	whenClause:  whenClause WHEN e THEN e.    (45)
+state 101
+	func_call:  e PIPE IDD LP e_list RP.    (45)
 
-	OR  shift 22
-	AND  shift 21
-	NOT  shift 19
-	LIKE  shift 18
-	NEQ  shift 32
-	GT  shift 27
-	LT  shift 29
-	GTE  shift 28
-	LTE  shift 30
-	EQ  shift 31
-	ADD  shift 23
-	MINUS  shift 24
-	MUL  shift 26
-	DIV  shift 25
-	CONTAINS  shift 20
-	CAST  shift 37
-	PIPE  shift 36
-	IN  shift 34
-	IS  shift 33
 	.  reduce 45 (src line 124)
 
-	cast_func  goto 35
 
-43 terminals, 9 nonterminals
-50 grammar rules, 97/16000 states
+state 102
+	e:  e.LIKE e 
+	e:  e.SIMILAR TO e 
+	e:  e.NOT SIMILAR TO e 
+	e:  e.NOT LIKE e 
+	e:  e.CONTAINS e 
+	e:  e.AND e 
+	e:  e.OR e 
+	e:  e.ADD e 
+	e:  e.MINUS e 
+	e:  e.DIV e 
+	e:  e.MUL e 
+	e:  e.GT e 
+	e:  e.GTE e 
+	e:  e.LT e 
+	e:  e.LTE e 
+	e:  e.EQ e 
+	e:  e.NEQ e 
+	e:  e.IS NULL 
+	e:  e.IS NOT NULL 
+	e:  e.IN LP e_list RP 
+	e:  e.NOT IN LP e_list RP 
+	func_call:  e.cast_func 
+	func_call:  e.PIPE IDD 
+	func_call:  e.PIPE IDD LP RP 
+	func_call:  e.PIPE IDD LP e_list RP 
+	whenClause:  whenClause WHEN e THEN e.    (47)
+
+	OR  shift 23
+	AND  shift 22
+	NOT  shift 20
+	LIKE  shift 18
+	NEQ  shift 33
+	GT  shift 28
+	LT  shift 30
+	GTE  shift 29
+	LTE  shift 31
+	EQ  shift 32
+	ADD  shift 24
+	MINUS  shift 25
+	MUL  shift 27
+	DIV  shift 26
+	CONTAINS  shift 21
+	CAST  shift 38
+	PIPE  shift 37
+	IN  shift 35
+	IS  shift 34
+	SIMILAR  shift 19
+	.  reduce 47 (src line 128)
+
+	cast_func  goto 36
+
+45 terminals, 9 nonterminals
+52 grammar rules, 103/16000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 58 working sets used
-memory: parser 168/240000
-83 extra closures
-695 shift entries, 1 exceptions
-37 goto entries
-108 entries saved by goto default
-Optimizer space used: output 441/240000
-441 table entries, 162 zero
-maximum spread: 43, maximum offset: 91
+memory: parser 180/240000
+89 extra closures
+749 shift entries, 1 exceptions
+39 goto entries
+116 entries saved by goto default
+Optimizer space used: output 464/240000
+464 table entries, 173 zero
+maximum spread: 45, maximum offset: 97

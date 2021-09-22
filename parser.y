@@ -49,11 +49,13 @@ import "github.com/yjhatfdu/expr/types"
 %token END
 %token ELSE
 %token IS
+%token SIMILAR
+%token TO
 %left OR
 %left AND
-%left NOT
+%left NOT SIMILAR
 %left GT LT GTE LTE EQ NEQ
-%left LIKE CONTAINS
+%left LIKE CONTAINS TO
 %left ADD MINUS
 %left MUL DIV
 %left PIPE
@@ -72,6 +74,8 @@ e:    INT              { $$.node =newAst(CONST,$1.text,types.Int,$1.offset); }
     | FLOAT            { $$.node =newAst(CONST,$1.text,types.Float,$1.offset); }
     | BOOL             { $$.node =newAst(CONST,$1.text,types.Bool,$1.offset); }
     | e LIKE e          { $$.node =newAst(FUNC,"like",types.Any,$2.offset,$1.node,$3.node); }
+    | e SIMILAR TO e          { $$.node =newAst(FUNC,"similarTo",types.Any,$2.offset,$1.node,$4.node); }
+    | e NOT SIMILAR TO e          { $$.node =newAst(FUNC,"notSimilarTo",types.Any,$2.offset,$1.node,$5.node); }
     | e NOT LIKE e          { $$.node =newAst(FUNC,"notLike",types.Any,$2.offset,$1.node,$4.node); }
     | e CONTAINS e          { $$.node =newAst(FUNC,"contains",types.Any,$2.offset,$1.node,$3.node); }
     | e AND e          { $$.node =newAst(FUNC,"and",types.Any,$2.offset,$1.node,$3.node); }

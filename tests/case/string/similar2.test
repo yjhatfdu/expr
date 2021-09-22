@@ -1,7 +1,0 @@
-Text,TextS,Bool
-$1|similar($2)
-ai.nb.sy,ai.+\.sy,true
-.sy,,false
-ai.sy,,false
-ai.1.sy,,true
-ai.\.sy,,true
