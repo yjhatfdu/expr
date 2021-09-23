@@ -29,23 +29,21 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 	}
 
 	var needSub bool
+	var unlimitedEnd bool
 	var startIndex int
 	var endIndex int
 
 	if len(vectors) == 4 {
 		startIndex = int(vectors[3].Index(0).(int64))
 		needSub = true
+		unlimitedEnd = true
 	} else if len(vectors) == 5 {
 		startIndex = int(vectors[3].Index(0).(int64))
 		endIndex = int(vectors[4].Index(0).(int64))
 		needSub = true
-	} else {
-		needSub = false
-	}
 
-	if needSub {
-		if startIndex < 0 || endIndex < 0 {
-			return nil, errors.New(fmt.Sprintf("regexpReplace 函数的 startIndex 与 endIndex 必须大于等于 0, 实际值 startIndex: %d, endIndex: %d", startIndex, endIndex))
+		if endIndex < 0 {
+			return nil, errors.New(fmt.Sprintf("regexpReplace 函数的 endIndex 必须大于等于 0, 实际值 startIndex: %d, endIndex: %d", startIndex, endIndex))
 		}
 
 		if startIndex == endIndex {
@@ -54,6 +52,14 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 
 		if startIndex > endIndex {
 			return nil, errors.New(fmt.Sprintf("regexpReplace 函数的 startIndex 必须小于等于 endIndex, 实际值 startIndex: %d, endIndex: %d", startIndex, endIndex))
+		}
+	} else {
+		needSub = false
+	}
+
+	if needSub {
+		if startIndex < 0 {
+			return nil, errors.New(fmt.Sprintf("regexpReplace 函数的 startIndex 必须大于等于 0, 实际值 startIndex: %d", startIndex))
 		}
 	}
 
@@ -64,15 +70,19 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 		var realEnd int
 		v := input.Index(i).(string)
 		if needSub {
-			if len(v) <= endIndex {
+			if unlimitedEnd {
 				realEnd = len(v)
 			} else {
-				realEnd = endIndex
+				if len(v) <= endIndex {
+					realEnd = len(v)
+				} else {
+					realEnd = endIndex
+				}
 			}
 		}
 
 		if needSub {
-			sub := string([]rune(v)[startIndex:realEnd])
+			sub := string([]rune(v)[startIndex: realEnd])
 			subReplaceStr := s.regexp.ReplaceAllString(sub, replace)
 			out.Set(i, string([]rune(v)[0:startIndex])+subReplaceStr+string([]rune(v)[realEnd:]), false)
 		} else {
