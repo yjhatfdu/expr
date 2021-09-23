@@ -1,0 +1,4 @@
+Text,TextS,Bool
+$1|similarTo($2)
+abc,abc,true
+-a-,abc,false

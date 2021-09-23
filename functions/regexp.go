@@ -214,20 +214,55 @@ func init() {
 		})
 	})
 
-	similar, _ := NewFunction("similar")
-	similar.Overload([]types.BaseType{types.Text, types.TextS}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		output := &types.NullableBool{}
-		input := vectors[0].(*types.NullableText)
-		reStr := vectors[1].Index(0).(string)
-		re, err := regexp.Compile(reStr)
-		if err != nil {
-			return nil, errors.New(fmt.Sprintf("similar函数未能成功编译正则表达式 %s, %s", reStr, err.Error()))
-		}
-		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Seti(i, re.MatchString(input.Index(i).(string)))
-			return nil
+	// similarTo
+	// this function is for SQL Style `SIMILAR TO` operator
+	// similar to LIKE, except interprets the pattern using SQL standard's
+	// _ and % also can be used as wildcard characters.
+	// [(comparable to . and .*) so we can just replace _ and % with . and .*]
+	// according to https://postgresql.org/docs/13/functions-matching.html
+	_similarTo, _ := NewFunction("similarTo")
+	_similarTo.Overload(
+		[]types.BaseType{types.Text, types.TextS},
+		types.Bool,
+		func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+			text := vectors[0].(*types.NullableText)
+			pattern := vectors[1].(*types.NullableText).Index(0).(string)
+			output := &types.NullableBool{}
+
+			// copy from https://github.com/postgres/postgres/blob/master/src/backend/utils/adt/regexp.c#L833
+			// take a look.
+			pattern = `^(?:` + pattern + `)$`
+			var r, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*"), "_", "."))
+			if err != nil {
+				return nil, errors.New(fmt.Sprintf("SimilarTo函数匹配语法未能编译成正确的正则表达式, %v %v", pattern, err.Error()))
+			}
+
+			return BroadCast1(text, output, func(i int) error {
+				output.Seti(i, r.MatchString(text.Index(i).(string)))
+				return nil
+			})
 		})
-	})
+
+	_notSimilarTo, _ := NewFunction("notSimilarTo")
+	_notSimilarTo.Overload(
+		[]types.BaseType{types.Text, types.TextS},
+		types.Bool,
+		func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+			text := vectors[0].(*types.NullableText)
+			pattern := vectors[1].(*types.NullableText).Index(0).(string)
+			output := &types.NullableBool{}
+
+			pattern = `^(?:` + pattern + `)$`
+			var r, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*"), "_", "."))
+			if err != nil {
+				return nil, errors.New(fmt.Sprintf("SimilarTo函数匹配语法未能编译成正确的正则表达式, %v %v", pattern, err.Error()))
+			}
+
+			return BroadCast1(text, output, func(i int) error {
+				output.Seti(i, !r.MatchString(text.Index(i).(string)))
+				return nil
+			})
+		})
 
 	replaceAll, _ := NewFunction("regexpReplace")
 	replaceAll.OverloadHandler(

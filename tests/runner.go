@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func loader(file string) {
+func CaseLoader(file string) {
 	log.Printf("testing %s", file)
 	fp, err := os.Open(file)
 	defer fp.Close()

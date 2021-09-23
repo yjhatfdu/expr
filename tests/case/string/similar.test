@@ -1,6 +1,0 @@
-Text,TextS,Bool
-$1|similar($2)
-123?fdsaf,.*a.*,true
-123,,false
-1a23,,true
-a123,,true
