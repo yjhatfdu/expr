@@ -3,14 +3,14 @@ package functions
 import (
 	"errors"
 	"fmt"
+	"github.com/dlclark/regexp2"
 	"github.com/yjhatfdu/expr/types"
-	"regexp"
 	"strings"
 	"unicode/utf8"
 )
 
 type regexpReplaceAllIndex struct {
-	regexp *regexp.Regexp
+	regexp *regexp2.Regexp
 	start  int
 	end    int
 }
@@ -22,7 +22,7 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 	if s.regexp == nil {
 		r := vectors[1].Index(0).(string)
 		var err error
-		s.regexp, err = regexp.Compile(r)
+		s.regexp, err = regexp2.Compile(r, regexp2.None)
 		if err != nil {
 			return nil, err
 		}
@@ -82,11 +82,18 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 		}
 
 		if needSub {
-			sub := string([]rune(v)[startIndex: realEnd])
-			subReplaceStr := s.regexp.ReplaceAllString(sub, replace)
-			out.Set(i, string([]rune(v)[0:startIndex])+subReplaceStr+string([]rune(v)[realEnd:]), false)
+			sub := string([]rune(v)[startIndex:realEnd])
+			str, err := s.regexp.Replace(sub, replace, 0, -1)
+			if err != nil {
+				return err
+			}
+			out.Seti(i, string([]rune(v)[0:startIndex])+str+string([]rune(v)[realEnd:]))
 		} else {
-			out.Set(i, s.regexp.ReplaceAllString(v, replace), false)
+			str, err := s.regexp.Replace(v, replace, 0, -1)
+			if err != nil {
+				return err
+			}
+			out.Seti(i, str)
 		}
 
 		return nil
@@ -94,7 +101,7 @@ func (s *regexpReplaceAllIndex) Handle(vectors []types.INullableVector, env map[
 }
 
 type likeFunc struct {
-	regexp *regexp.Regexp
+	regexp *regexp2.Regexp
 	not    bool
 }
 
@@ -104,11 +111,7 @@ func (s *likeFunc) Init(cons []string, env map[string]string) error {
 	}
 
 	pattern := cons[1]
-	//if err != nil {
-	//	return errors.New(fmt.Sprintf("未能成功解析 like 函数表达式 %s，异常信息 %s", cons[1], err))
-	//}
-	re, err := regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*?"), "_", "."))
-	//re, err := regexp.Compile(pattern)
+	re, err := regexp2.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*?"), "_", "."), regexp2.None)
 	if err != nil {
 		return errors.New(fmt.Sprintf("未能成功编译 like 函数表达式 %s，异常信息 %s", cons[1], err))
 	}
@@ -120,9 +123,17 @@ func (s *likeFunc) Handle(vectors []types.INullableVector, env map[string]string
 	output := &types.NullableBool{}
 	return BroadCast1(input, output, func(i int) error {
 		if s.not {
-			output.Seti(i, !s.regexp.MatchString(input.Values[i]))
+			matched, err := s.regexp.MatchString(input.Values[i])
+			if err != nil {
+				return err
+			}
+			output.Seti(i, !matched)
 		} else {
-			output.Seti(i, s.regexp.MatchString(input.Values[i]))
+			matched, err := s.regexp.MatchString(input.Values[i])
+			if err != nil {
+				return err
+			}
+			output.Seti(i, matched)
 		}
 		return nil
 	})
@@ -242,13 +253,17 @@ func init() {
 			// copy from https://github.com/postgres/postgres/blob/master/src/backend/utils/adt/regexp.c#L833
 			// take a look.
 			pattern = `^(?:` + pattern + `)$`
-			var r, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*"), "_", "."))
+			var r, err = regexp2.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*"), "_", "."), regexp2.None)
 			if err != nil {
 				return nil, errors.New(fmt.Sprintf("SimilarTo函数匹配语法未能编译成正确的正则表达式, %v %v", pattern, err.Error()))
 			}
 
 			return BroadCast1(text, output, func(i int) error {
-				output.Seti(i, r.MatchString(text.Index(i).(string)))
+				matched, err := r.MatchString(text.Index(i).(string))
+				if err != nil {
+					return err
+				}
+				output.Seti(i, matched)
 				return nil
 			})
 		})
@@ -263,13 +278,17 @@ func init() {
 			output := &types.NullableBool{}
 
 			pattern = `^(?:` + pattern + `)$`
-			var r, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*"), "_", "."))
+			var r, err = regexp2.Compile(strings.ReplaceAll(strings.ReplaceAll(pattern, "%", ".*"), "_", "."), regexp2.None)
 			if err != nil {
 				return nil, errors.New(fmt.Sprintf("SimilarTo函数匹配语法未能编译成正确的正则表达式, %v %v", pattern, err.Error()))
 			}
 
 			return BroadCast1(text, output, func(i int) error {
-				output.Seti(i, !r.MatchString(text.Index(i).(string)))
+				matched, err := r.MatchString(text.Index(i).(string))
+				if err != nil {
+					return err
+				}
+				output.Seti(i, !matched)
 				return nil
 			})
 		})
@@ -296,21 +315,26 @@ func init() {
 		output := &types.NullableTextArray{}
 		input := vectors[0].(*types.NullableText)
 		reStr := vectors[1].Index(0).(string)
-		re, err := regexp.Compile(reStr)
+		re, err := regexp2.Compile(reStr, regexp2.None)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("regexpMatch函数未能成功编译正则表达式 %s, %s", reStr, err.Error()))
 		}
 		return BroadCast1(vectors[0], output, func(i int) error {
-			ret := re.FindStringSubmatch(input.Index(i).(string))
-			if len(ret) > 0 {
-				if len(ret) == 1 { // 仅匹配自身，不存在分组
-					output.Seti(i, ret)
+			var ret = make([]string, 0)
+			match, err := re.FindStringMatch(input.Index(i).(string))
+			for err == nil {
+				if match != nil {
+					ret = append(ret, match.String())
+					match, err = re.FindNextMatch(match)
 				} else {
-					output.Seti(i, ret[1:])
+					break
 				}
-			} else {
-				output.SetNull(i, true)
 			}
+			if err != nil {
+				return err
+			}
+
+			output.Seti(i, ret)
 			return nil
 		})
 	})
