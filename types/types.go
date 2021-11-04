@@ -164,6 +164,7 @@ type INullableVector interface {
 	InitFilterArr() []bool
 	Copy() INullableVector
 	Concat(vector INullableVector) (INullableVector, error)
+	InterfaceArr() []interface{}
 }
 
 type NullableVector struct {
@@ -285,6 +286,18 @@ type NullableInt struct {
 	Values []int64
 }
 
+func (v *NullableInt) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
+}
+
 func (v *NullableInt) Concat(vector INullableVector) (INullableVector, error) {
 	other, ok := vector.(*NullableInt)
 	if !ok {
@@ -370,6 +383,18 @@ func (v NullableInt) Index(i int) interface{} {
 type NullableFloat struct {
 	NullableVector
 	Values []float64
+}
+
+func (v *NullableFloat) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
 }
 
 func (v *NullableFloat) Concat(vector INullableVector) (INullableVector, error) {
@@ -460,6 +485,18 @@ type NullableBool struct {
 	Values []bool
 }
 
+func (v *NullableBool) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
+}
+
 func (v *NullableBool) Concat(vector INullableVector) (INullableVector, error) {
 	other, ok := vector.(*NullableBool)
 	if !ok {
@@ -545,6 +582,18 @@ type NullableNumeric struct {
 	NullableVector
 	Values []int64
 	Scale  int
+}
+
+func (v *NullableNumeric) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
 }
 
 func (v *NullableNumeric) Concat(vector INullableVector) (INullableVector, error) {
@@ -635,6 +684,18 @@ type NullableText struct {
 	Values []string
 }
 
+func (v *NullableText) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
+}
+
 func (v *NullableText) Concat(vector INullableVector) (INullableVector, error) {
 	other, ok := vector.(*NullableText)
 	if !ok {
@@ -721,6 +782,18 @@ type NullableTimestamp struct {
 	NullableVector
 	Values []int64
 	TsType BaseType //one of Timestamp,Date,Time, Interval
+}
+
+func (v *NullableTimestamp) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
 }
 
 func (v *NullableTimestamp) Concat(vector INullableVector) (INullableVector, error) {
@@ -881,6 +954,18 @@ type NullableIntArray struct {
 	Values [][]int64
 }
 
+func (v *NullableIntArray) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
+}
+
 func (v *NullableIntArray) Concat(vector INullableVector) (INullableVector, error) {
 	other, ok := vector.(*NullableIntArray)
 	if !ok {
@@ -968,6 +1053,18 @@ func (v NullableIntArray) Index(i int) interface{} {
 type NullableTextArray struct {
 	NullableVector
 	Values [][]string
+}
+
+func (v *NullableTextArray) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
 }
 
 func (v *NullableTextArray) Concat(vector INullableVector) (INullableVector, error) {
@@ -1059,6 +1156,14 @@ type NullVector struct {
 	FilterArr []bool
 	IsScalaV  bool
 	Values    []string
+}
+
+func (v NullVector) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+			out[i] = nil
+	}
+	return out
 }
 
 func (n NullVector) IsNull(i int) bool {
