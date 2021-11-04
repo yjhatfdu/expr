@@ -72,6 +72,8 @@ func init() {
 			}
 		case types.Numeric:
 			output = &types.NullableNumeric{Scale: vectors[1].(*types.NullableNumeric).Scale}
+		case types.TextA:
+			output=&types.NullableTextArray{}
 		default:
 			panic("should not happend")
 		}

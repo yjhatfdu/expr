@@ -19,13 +19,13 @@ import (
 //}
 
 func TestExpr_Like(t *testing.T) {
-	code := `case WHEN 1 then null else 1 end`
-	p, err := Compile(code, nil, nil)
+	code := `case when $1 = '%~%' then regexpMatch(trim($1),'')end`
+	p, err := Compile(code, []types.BaseType{types.Text}, nil)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	ret, err := p.Run(nil, nil)
+	ret, err := p.Run([]types.INullableVector{types.BuildValue(types.Text, "a")}, nil)
 	if err != nil {
 		t.Error(err)
 		return
