@@ -42,8 +42,13 @@ func init() {
 	toBool.Overload([]types.BaseType{types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableBool{}
 		input := vectors[0].(*types.NullableText)
-		//output.FilterArr = input.FilterArr
 		return BroadCast1(vectors[0], output, func(i int) error {
+			if input.Index(i).(string) == "Y" {
+				output.Seti(i, true)
+			} else if input.Index(i).(string) == "F" {
+				output.Seti(i, false)
+			}
+
 			ret, err := strconv.ParseBool(input.Values[i])
 			if err != nil {
 				return err
