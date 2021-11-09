@@ -3,6 +3,7 @@ package functions
 import (
 	"github.com/yjhatfdu/expr/types"
 	"strconv"
+	"strings"
 )
 
 func init() {
@@ -43,17 +44,20 @@ func init() {
 		output := &types.NullableBool{}
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			if input.Index(i).(string) == "Y" {
+			is := input.Index(i).(string)
+			uis := strings.ToUpper(is)
+			if uis == "Y" {
 				output.Seti(i, true)
-			} else if input.Index(i).(string) == "F" {
+			} else if uis == "N" {
 				output.Seti(i, false)
+			} else {
+				ret, err := strconv.ParseBool(is)
+				if err != nil {
+					return err
+				}
+				output.Seti(i, ret)
 			}
 
-			ret, err := strconv.ParseBool(input.Values[i])
-			if err != nil {
-				return err
-			}
-			output.Seti(i, ret)
 			return nil
 		})
 	})
