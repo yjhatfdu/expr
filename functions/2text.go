@@ -1,6 +1,7 @@
 package functions
 
 import (
+	"github.com/axgle/mahonia"
 	"github.com/yjhatfdu/expr/types"
 	"strconv"
 	"strings"
@@ -118,4 +119,47 @@ func init() {
 			return nil
 		})
 	})
+	toText.Overload([]types.BaseType{types.Blob}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableBlob)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), "gbk", "utf8"), false)
+			return nil
+		})
+	})
+	toText.Overload([]types.BaseType{types.Blob, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableBlob)
+		oldEncoder := vectors[1].(*types.NullableText).Values[0]
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), oldEncoder, "utf8"), false)
+			return nil
+		})
+	})
+	toText.Overload([]types.BaseType{types.Blob, types.TextS, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableBlob)
+		oldEncoder := vectors[1].(*types.NullableText).Values[0]
+		newEncoder := vectors[2].(*types.NullableText).Values[0]
+		return BroadCast1(vectors[0], output, func(i int) error {
+			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), oldEncoder, newEncoder), false)
+			return nil
+		})
+	})
+	//toText.Overload([]types.BaseType{types.Blob, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+	//	output := &types.NullableText{}
+	//	input := vectors[0].(*)
+	//	return BroadCast1(vectors[0], output, func(i int) error {
+	//		output.Set(i, strconv.FormatBool(input.Values[i]), false)
+	//		return nil
+	//	})
+	//})
+}
+
+func ConvertToNewString(src string, oldEncoder string, newEncoder string) string {
+	srcDecoder := mahonia.NewDecoder(oldEncoder)
+	desDecoder := mahonia.NewDecoder(newEncoder)
+	resStr := srcDecoder.ConvertString(src)
+	_, resBytes, _ := desDecoder.Translate([]byte(resStr), true)
+	return string(resBytes)
 }

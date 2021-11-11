@@ -1161,7 +1161,7 @@ type NullVector struct {
 func (v NullVector) InterfaceArr() []interface{} {
 	out := make([]interface{}, v.Length())
 	for i := 0; i < len(out); i++ {
-			out[i] = nil
+		out[i] = nil
 	}
 	return out
 }
@@ -1244,4 +1244,104 @@ func (n NullVector) Copy() INullableVector {
 
 func (n NullVector) Concat(vector INullableVector) (INullableVector, error) {
 	return n, nil
+}
+
+type NullableBlob struct {
+	NullableVector
+	Values [][]byte
+}
+
+func (v *NullableBlob) InterfaceArr() []interface{} {
+	out := make([]interface{}, v.Length())
+	for i := 0; i < len(out); i++ {
+		if v.IsNullArr[i] {
+			out[i] = nil
+		} else {
+			out[i] = v.Values[i]
+		}
+	}
+	return out
+}
+
+func (v *NullableBlob) Concat(vector INullableVector) (INullableVector, error) {
+	other, ok := vector.(*NullableText)
+	if !ok {
+		return nil, fmt.Errorf("NullableText must concat NullableText")
+	}
+
+	var r = v.Copy().(*NullableText)
+	if !v.IsScalaV {
+		r.Values = append(r.Values, other.Values...)
+		r.errors = append(r.errors, other.errors...)
+		r.FilterArr = append(r.FilterArr, other.FilterArr...)
+		r.IsNullArr = append(r.IsNullArr, other.IsNullArr...)
+		return r, nil
+	} else {
+		return v, nil
+	}
+}
+
+func (v NullableBlob) Set(i int, val []byte, isNull bool) {
+	if i >= len(v.Values) {
+		return
+	}
+	v.Values[i] = val
+	v.IsNullArr[i] = isNull
+}
+
+func (v NullableBlob) Seti(i int, val interface{}) {
+	if vval, ok := val.([]byte); ok {
+		v.Set(i, vval, false)
+	} else {
+		v.SetNull(i, true)
+	}
+}
+
+func (v *NullableBlob) Init(length int) {
+	v.IsNullArr = make([]bool, length)
+	v.Values = make([][]byte, length)
+}
+
+func (v NullableBlob) Type() BaseType {
+	return Text
+}
+
+func (v NullableBlob) Index(i int) interface{} {
+	if v.IsScalaV {
+		if v.IsNullArr[0] {
+			return nil
+		} else {
+			return v.Values[0]
+		}
+	} else {
+		if v.IsNullArr[i] {
+			return nil
+		} else {
+			return v.Values[i]
+		}
+	}
+}
+
+func (v NullableBlob) Truthy(i int) bool {
+	return v.IsNullArr[i] == false && len(v.Values[i]) != 0
+}
+
+func (v NullableBlob) TruthyArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := 0; i < len(v.IsNullArr); i++ {
+		arr[i] = v.IsNullArr[i] == false && len(v.Values[i]) != 0
+	}
+	return arr
+}
+
+func (v NullableBlob) FalseArr() []bool {
+	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
+	for i := range v.IsNullArr {
+		arr[i] = len(v.Values[i]) == 0 || v.IsNullArr[i]
+	}
+	return arr
+}
+
+func (v NullableBlob) Copy() INullableVector {
+	return &v
 }
