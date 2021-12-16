@@ -365,7 +365,15 @@ func unquoteDouble(s string) (string, error) {
 	if s == `""` {
 		return "", nil
 	}
-	return _unquote(strings.ReplaceAll(s, `""`, `"`))
+	if strings.HasSuffix(s, `\""`) {
+		n := strings.Count(s, `\""`)
+		if n-1 > 0 {
+			s = strings.Replace(s, `""`, `"`, n-1)
+		}
+	} else {
+		s = strings.ReplaceAll(s, `""`, `"`)
+	}
+	return _unquote(s)
 
 }
 
