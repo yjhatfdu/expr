@@ -242,48 +242,6 @@ func (f *Function) Match(inputTypes []types.BaseType) (*handlerFunction, error) 
 	return nil, nil
 }
 
-//func BroadCast2Bool(left, right types.INullableVector, f func(i, j bool) (bool, error)) (types.INullableVector, error) {
-//	var ll = left.Length()
-//	var rl = right.Length()
-//	var lIsScala = left.IsScala()
-//	var rIsScala = right.IsScala()
-//	if ll != rl && !lIsScala && !rIsScala {
-//		return nil, fmt.Errorf(`invalid BroadCast2 between two vectors, first length is %d, second length is %d`, left.Length(), right.Length())
-//	}
-//	var length = ll
-//	if rl > ll {
-//		length = rl
-//	}
-//	output := &types.NullableBool{}
-//	output.Init(length)
-//	//values := make([]bool, length)
-//	//isNull := make([]bool, length)
-//	leftTruty := left.TruthyArr()
-//	rightTruty := right.TruthyArr()
-//	for i := 0; i < length; i++ {
-//		li := i
-//		ri := i
-//		if lIsScala {
-//			li = 0
-//		}
-//		if rIsScala {
-//			ri = 0
-//		}
-//		leftv := leftTruty[li]
-//		rightv := rightTruty[ri]
-//		out, err := f(leftv, rightv)
-//		if err != nil {
-//			output.SetNull(i, true)
-//			output.AddError(&types.VectorError{
-//				Index: i,
-//				Error: err,
-//			})
-//		}
-//		output.Values[i] = out
-//	}
-//	return output, nil
-//}
-
 func BroadCast2(left, right, output types.INullableVector, f func(index, i, j int) error) (types.INullableVector, error) {
 	var ll = left.Length()
 	var rl = right.Length()

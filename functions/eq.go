@@ -12,7 +12,7 @@ func init() {
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableInt)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i] == right.Values[j], false)
+			output.Set(index, left.Index(i).(float64) == right.Index(j).(float64), false)
 			return nil
 		})
 	})
@@ -21,7 +21,7 @@ func init() {
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableFloat)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, math.Abs(left.Values[i]-right.Values[j]) <= math.SmallestNonzeroFloat64, false)
+			output.Set(index, math.Abs(left.Index(i).(float64)-right.Index(j).(float64)) <= math.SmallestNonzeroFloat64, false)
 			return nil
 		})
 	})
@@ -30,7 +30,7 @@ func init() {
 		left := vectors[0].(*types.NullableText)
 		right := vectors[1].(*types.NullableText)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i] == right.Values[j], false)
+			output.Set(index, left.Index(i).(string) == right.Index(j).(string), false)
 			return nil
 		})
 	})
@@ -39,7 +39,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableNumeric)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumeric(left.Values[i], left.Scale, right.Values[i], right.Scale) == 0, false)
+			output.Set(index, types.CompareNumeric(left.Index(i).(int64), left.Scale, right.Index(j).(int64), right.Scale) == 0, false)
 			return nil
 		})
 	})
@@ -48,7 +48,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableInt)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericInt(left.Values[i], left.Scale, right.Values[j]) == 0, false)
+			output.Set(index, types.CompareNumericInt(left.Index(i).(int64), left.Scale, right.Index(j).(int64)) == 0, false)
 			return nil
 		})
 	})
@@ -57,7 +57,7 @@ func init() {
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableNumeric)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericInt(right.Values[i], right.Scale, left.Values[j]) == 0, false)
+			output.Set(index, types.CompareNumericInt(right.Index(j).(int64), right.Scale, left.Index(i).(int64)) == 0, false)
 			return nil
 		})
 	})
@@ -66,7 +66,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableFloat)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericFloat(left.Values[i], left.Scale, right.Values[j]) == 0, false)
+			output.Set(index, types.CompareNumericFloat(left.Index(i).(int64), left.Scale, right.Index(j).(float64)) == 0, false)
 			return nil
 		})
 	})
@@ -75,7 +75,7 @@ func init() {
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableNumeric)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericFloat(right.Values[i], right.Scale, left.Values[j]) == 0, false)
+			output.Set(index, types.CompareNumericFloat(right.Index(j).(int64), right.Scale, left.Index(i).(float64)) == 0, false)
 			return nil
 		})
 	})
@@ -84,7 +84,7 @@ func init() {
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i] == right.Values[j], false)
+			output.Set(index, left.Index(i).(int64) == right.Index(j).(int64), false)
 			return nil
 		})
 	})
@@ -93,7 +93,7 @@ func init() {
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i] == right.Values[j], false)
+			output.Set(index, left.Index(i).(int64) == right.Index(j).(int64), false)
 			return nil
 		})
 	})
@@ -102,7 +102,7 @@ func init() {
 		left := vectors[0].(*types.NullableTimestamp)
 		right := vectors[1].(*types.NullableTimestamp)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i] == right.Values[j], false)
+			output.Set(index, left.Index(i).(int64) == right.Index(j).(int64), false)
 			return nil
 		})
 	})

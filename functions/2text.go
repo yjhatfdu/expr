@@ -89,7 +89,7 @@ func init() {
 	toText.Overload([]types.BaseType{types.Timestamp, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableTimestamp)
-		standard := vectors[1].(*types.NullableText).Values[0]
+		standard := vectors[1].(*types.NullableText).Index(0).(string)
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			t := time.Unix(0, input.Index(i).(int64))
@@ -100,7 +100,7 @@ func init() {
 	toText.Overload([]types.BaseType{types.Date, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableTimestamp)
-		standard := vectors[1].(*types.NullableText).Values[0]
+		standard := vectors[1].(*types.NullableText).Index(0).(string)
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			t := time.Unix(0, input.Index(i).(int64))
@@ -111,7 +111,7 @@ func init() {
 	toText.Overload([]types.BaseType{types.Time, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableTimestamp)
-		standard := vectors[1].(*types.NullableText).Values[0]
+		standard := vectors[1].(*types.NullableText).Index(0).(string)
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			t := time.Unix(0, input.Index(i).(int64))
@@ -130,7 +130,7 @@ func init() {
 	toText.Overload([]types.BaseType{types.Blob, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableBlob)
-		oldEncoder := vectors[1].(*types.NullableText).Values[0]
+		oldEncoder := vectors[1].(*types.NullableText).Index(0).(string)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), oldEncoder, "utf8"), false)
 			return nil
@@ -139,8 +139,8 @@ func init() {
 	toText.Overload([]types.BaseType{types.Blob, types.TextS, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableBlob)
-		oldEncoder := vectors[1].(*types.NullableText).Values[0]
-		newEncoder := vectors[2].(*types.NullableText).Values[0]
+		oldEncoder := vectors[1].(*types.NullableText).Index(0).(string)
+		newEncoder := vectors[2].(*types.NullableText).Index(0).(string)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), oldEncoder, newEncoder), false)
 			return nil

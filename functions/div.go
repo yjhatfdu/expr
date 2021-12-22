@@ -12,10 +12,10 @@ func init() {
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableInt)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			if right.Values[j] == 0 {
+			if right.Index(j).(int64) == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, left.Values[i]/right.Values[j], false)
+			output.Set(index, left.Index(i).(int64)/right.Index(j).(int64), false)
 			return nil
 		})
 
@@ -25,7 +25,7 @@ func init() {
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableFloat)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, float64(left.Values[i])/right.Values[j], false)
+			output.Set(index, float64(left.Index(i).(int64))/right.Index(j).(float64), false)
 			return nil
 		})
 	})
@@ -34,7 +34,7 @@ func init() {
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableInt)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i]/float64(right.Values[j]), false)
+			output.Set(index, left.Index(i).(float64)/float64(right.Index(j).(int64)), false)
 			return nil
 		})
 	})
@@ -43,7 +43,7 @@ func init() {
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableFloat)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Values[i]/right.Values[j], false)
+			output.Set(index, left.Index(i).(float64)/right.Index(j).(float64), false)
 			return nil
 		})
 	})
@@ -54,10 +54,10 @@ func init() {
 		s := types.NumericScale(left.Scale, right.Scale)
 		output.Scale = s
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			if right.Values[j] == 0 {
+			if right.Index(j).(int64) == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, types.Int2numeric(types.NormalizeNumeric(left.Values[i], left.Scale, s), s)/types.NormalizeNumeric(right.Values[j], left.Scale, s), false)
+			output.Set(index, types.Int2numeric(types.NormalizeNumeric(left.Index(i).(int64), left.Scale, s), s)/types.NormalizeNumeric(right.Index(j).(int64), left.Scale, s), false)
 			return nil
 		})
 	})
@@ -67,10 +67,10 @@ func init() {
 		right := vectors[1].(*types.NullableInt)
 		output.Scale = left.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			if right.Values[j] == 0 {
+			if right.Index(j).(int64) == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, left.Values[i]/types.Int2numeric(right.Values[j], left.Scale), false)
+			output.Set(index, left.Index(i).(int64)/types.Int2numeric(right.Index(j).(int64), left.Scale), false)
 			return nil
 		})
 	})
@@ -80,10 +80,10 @@ func init() {
 		right := vectors[1].(*types.NullableNumeric)
 		output.Scale = right.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			if right.Values[j] == 0 {
+			if right.Index(j).(int64) == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, types.Int2numeric(left.Values[i], right.Scale)/right.Values[j], false)
+			output.Set(index, types.Int2numeric(left.Index(i).(int64), right.Scale)/right.Index(j).(int64), false)
 			return nil
 		})
 	})
@@ -93,10 +93,10 @@ func init() {
 		right := vectors[1].(*types.NullableFloat)
 		output.Scale = left.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			if right.Values[j] == 0 {
+			if right.Index(j).(float64) == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, left.Values[i]/types.Float2numeric(right.Values[j], left.Scale), false)
+			output.Set(index, left.Index(i).(int64)/types.Float2numeric(right.Index(j).(float64), left.Scale), false)
 			return nil
 		})
 	})
@@ -106,10 +106,10 @@ func init() {
 		right := vectors[1].(*types.NullableNumeric)
 		output.Scale = right.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			if right.Values[j] == 0 {
+			if right.Index(j).(int64) == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, types.Float2numeric(left.Values[i], right.Scale)/right.Values[j], false)
+			output.Set(index, types.Float2numeric(left.Index(i).(float64), right.Scale)/right.Index(j).(int64), false)
 			return nil
 		})
 	})

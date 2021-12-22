@@ -15,9 +15,9 @@ func init() {
 		output.IsScalaV = input.IsScalaV
 		for i, v := range input.Values {
 			if v > 0 {
-				output.Values[i] = true
+				output.Seti(i, true)
 			} else {
-				output.Values[i] = false
+				output.Seti(i, false)
 			}
 		}
 		output.IsNullArr = input.IsNullArr
@@ -31,9 +31,9 @@ func init() {
 		output.IsScalaV = input.IsScalaV
 		for i, v := range input.Values {
 			if v > 0 {
-				output.Values[i] = true
+				output.Seti(i, true)
 			} else {
-				output.Values[i] = false
+				output.Seti(i, false)
 			}
 		}
 		output.IsNullArr = input.IsNullArr

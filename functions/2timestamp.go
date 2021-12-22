@@ -53,7 +53,7 @@ func init() {
 	toTimestamp.Overload([]types.BaseType{types.Text, types.TextS}, types.Timestamp, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableTimestamp{TsType: types.Timestamp}
 		input := vectors[0].(*types.NullableText)
-		standard := vectors[1].(*types.NullableText).Values[0]
+		standard := vectors[1].(*types.NullableText).Index(0).(string)
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Index(i).(string)
