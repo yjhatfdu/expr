@@ -21,7 +21,7 @@ func init() {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
-			t := time.Unix(0, input.Values[i]).In(time.Local)
+			t := time.Unix(0, input.Index(i).(int64)).In(time.Local)
 			output.Set(i, int64(t.Year()), false)
 			return nil
 		})
@@ -31,7 +31,7 @@ func init() {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
-			t := time.Unix(0, input.Values[i]).In(time.Local)
+			t := time.Unix(0, input.Index(i).(int64)).In(time.Local)
 			output.Set(i, int64(t.Month()), false)
 			return nil
 		})
@@ -41,7 +41,7 @@ func init() {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
-			t := time.Unix(0, input.Values[i]).In(time.Local)
+			t := time.Unix(0, input.Index(i).(int64)).In(time.Local)
 			output.Set(i, int64(t.Day()), false)
 			return nil
 		})
@@ -51,7 +51,7 @@ func init() {
 		input := vectors[0].(*types.NullableTimestamp)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
-			t := time.Unix(0, input.Values[i]).In(time.Local)
+			t := time.Unix(0, input.Index(i).(int64)).In(time.Local)
 			output.Set(i, int64(t.Weekday()), false)
 			return nil
 		})

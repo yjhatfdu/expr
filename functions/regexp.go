@@ -123,13 +123,13 @@ func (s *likeFunc) Handle(vectors []types.INullableVector, env map[string]string
 	output := &types.NullableBool{}
 	return BroadCast1(input, output, func(i int) error {
 		if s.not {
-			matched, err := s.regexp.MatchString(input.Values[i])
+			matched, err := s.regexp.MatchString(input.Index(i).(string))
 			if err != nil {
 				return err
 			}
 			output.Seti(i, !matched)
 		} else {
-			matched, err := s.regexp.MatchString(input.Values[i])
+			matched, err := s.regexp.MatchString(input.Index(i).(string))
 			if err != nil {
 				return err
 			}
@@ -145,7 +145,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(input, output, func(i int) error {
-			output.Set(i, strings.TrimSpace(input.Values[i]), false)
+			output.Set(i, strings.TrimSpace(input.Index(i).(string)), false)
 			return nil
 		})
 	})
@@ -154,7 +154,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		t := vectors[1].(*types.NullableText).Index(0).(string)
 		return BroadCast1(input, output, func(i int) error {
-			var v = input.Values[i]
+			var v = input.Index(i).(string)
 			for strings.HasPrefix(v, t) {
 				v = strings.TrimLeft(v, t)
 			}
@@ -173,7 +173,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableInt{}
 		return BroadCast1(input, output, func(i int) error {
-			output.Set(i, int64(utf8.RuneCountInString(input.Values[i])), false)
+			output.Set(i, int64(utf8.RuneCountInString(input.Index(i).(string))), false)
 			return nil
 		})
 	})
@@ -183,7 +183,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableText{}
 		return BroadCast1(input, output, func(i int) error {
-			output.Set(i, strings.ToLower(input.Values[i]), false)
+			output.Set(i, strings.ToLower(input.Index(i).(string)), false)
 			return nil
 		})
 	})
@@ -193,7 +193,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		output := &types.NullableText{}
 		return BroadCast1(input, output, func(i int) error {
-			output.Set(i, strings.ToUpper(input.Values[i]), false)
+			output.Set(i, strings.ToUpper(input.Index(i).(string)), false)
 			return nil
 		})
 	})
@@ -210,19 +210,6 @@ func init() {
 		types.Bool,
 		func() IHandler { return &likeFunc{not: true} },
 	)
-	//like.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-	//	output := &types.NullableBool{}
-	//	input := vectors[0].(*types.NullableText)
-	//	likeStr := vectors[1].(*types.NullableText).Index(0).(string)
-	//	var rxp, err = regexp.Compile(strings.ReplaceAll(strings.ReplaceAll(likeStr, "%", ".*?"), "_", "."))
-	//	if err != nil {
-	//		return nil, errors.New(fmt.Sprintf("like函数匹配语法未能编译成正确的正则表达式，原始匹配语法 %s，编译异常信息 %s", likeStr, err.Error()))
-	//	}
-	//	return BroadCast1(input, output, func(i int) error {
-	//		output.Seti(i, rxp.MatchString(input.Index(i).(string)))
-	//		return nil
-	//	})
-	//})
 
 	contains, _ := NewFunction("contains")
 	contains.Overload([]types.BaseType{types.Text, types.Text}, types.Bool, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {

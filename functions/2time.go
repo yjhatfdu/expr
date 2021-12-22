@@ -28,7 +28,7 @@ func init() {
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			//t := input.Values[i] - types.LocalOffsetNano
-			dt := input.Values[i] % (24 * 3600 * 1e9)
+			dt := input.Index(i).(int64) % (24 * 3600 * 1e9)
 			output.Set(i, dt, false)
 			return nil
 		})
@@ -37,7 +37,7 @@ func init() {
 		output := &types.NullableTimestamp{TsType: types.Time}
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			s := input.Values[i]
+			s := input.Index(i).(string)
 			ts, err := time.Parse("15:04:05", s)
 			if err != nil {
 				return err
@@ -54,7 +54,7 @@ func init() {
 		standard := vectors[1].(*types.NullableText).Values[0]
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			s := input.Values[i]
+			s := input.Index(i).(string)
 			ts, err := time.Parse(gostyle, s)
 			if err != nil {
 				return err

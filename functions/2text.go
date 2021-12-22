@@ -34,7 +34,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableBool)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, strconv.FormatBool(input.Values[i]), false)
+			output.Set(i, strconv.FormatBool(input.Index(i).(bool)), false)
 			return nil
 		})
 	})
@@ -42,7 +42,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableInt)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, strconv.FormatInt(input.Values[i], 10), false)
+			output.Set(i, strconv.FormatInt(input.Index(i).(int64), 10), false)
 			return nil
 		})
 	})
@@ -50,7 +50,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableFloat)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, strconv.FormatFloat(input.Values[i], 'f', -1, 64), false)
+			output.Set(i, strconv.FormatFloat(input.Index(i).(float64), 'f', -1, 64), false)
 			return nil
 		})
 	})
@@ -58,7 +58,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableNumeric)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, types.Numeric2Text(input.Values[i], input.Scale), false)
+			output.Set(i, types.Numeric2Text(input.Index(i).(int64), input.Scale), false)
 			return nil
 		})
 	})
@@ -66,7 +66,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, time.Unix(0, input.Values[i]).Format(time.RFC3339), false)
+			output.Set(i, time.Unix(0, input.Index(i).(int64)).Format(time.RFC3339), false)
 			return nil
 		})
 	})
@@ -74,7 +74,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, time.Unix(0, input.Values[i]).Format("2006-01-02"), false)
+			output.Set(i, time.Unix(0, input.Index(i).(int64)).Format("2006-01-02"), false)
 			return nil
 		})
 	})
@@ -82,7 +82,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableTimestamp)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, time.Unix(0, input.Values[i]).Format("15:04:05"), false)
+			output.Set(i, time.Unix(0, input.Index(i).(int64)).Format("15:04:05"), false)
 			return nil
 		})
 	})
@@ -92,7 +92,7 @@ func init() {
 		standard := vectors[1].(*types.NullableText).Values[0]
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			t := time.Unix(0, input.Values[i])
+			t := time.Unix(0, input.Index(i).(int64))
 			output.Set(i, t.Format(gostyle), false)
 			return nil
 		})
@@ -103,7 +103,7 @@ func init() {
 		standard := vectors[1].(*types.NullableText).Values[0]
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			t := time.Unix(0, input.Values[i])
+			t := time.Unix(0, input.Index(i).(int64))
 			output.Set(i, t.Format(gostyle), false)
 			return nil
 		})
@@ -114,7 +114,7 @@ func init() {
 		standard := vectors[1].(*types.NullableText).Values[0]
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			t := time.Unix(0, input.Values[i])
+			t := time.Unix(0, input.Index(i).(int64))
 			output.Set(i, t.Format(gostyle), false)
 			return nil
 		})
@@ -146,14 +146,6 @@ func init() {
 			return nil
 		})
 	})
-	//toText.Overload([]types.BaseType{types.Blob, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-	//	output := &types.NullableText{}
-	//	input := vectors[0].(*)
-	//	return BroadCast1(vectors[0], output, func(i int) error {
-	//		output.Set(i, strconv.FormatBool(input.Values[i]), false)
-	//		return nil
-	//	})
-	//})
 }
 
 func ConvertToNewString(src string, oldEncoder string, newEncoder string) string {

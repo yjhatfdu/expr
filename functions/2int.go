@@ -31,7 +31,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		//output.FilterArr = input.FilterArr
 		return BroadCast1(vectors[0], output, func(i int) error {
-			ret, err := strconv.ParseInt(input.Values[i], 10, 64)
+			ret, err := strconv.ParseInt(input.Index(i).(string), 10, 64)
 			if err != nil {
 				return err
 			}
@@ -79,7 +79,7 @@ func init() {
 		output := &types.NullableInt{}
 		input := vectors[0].(*types.NullableNumeric)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, types.Numeric2Int(input.Values[i], input.Scale), false)
+			output.Set(i, types.Numeric2Int(input.Index(i).(int64), input.Scale), false)
 			return nil
 		})
 	})
@@ -87,7 +87,7 @@ func init() {
 		output := &types.NullableInt{}
 		input := vectors[0].(*types.NullableBool)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			if input.Values[i] {
+			if input.Index(i).(bool) {
 				output.Set(i, 1, false)
 			} else {
 				output.Set(i, 0, false)

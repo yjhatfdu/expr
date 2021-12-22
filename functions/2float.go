@@ -30,7 +30,7 @@ func init() {
 		output := &types.NullableFloat{}
 		input := vectors[0].(*types.NullableNumeric)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, types.Numeric2Float(input.Values[i], input.Scale), false)
+			output.Set(i, types.Numeric2Float(input.Index(i).(int64), input.Scale), false)
 			return nil
 		})
 	})
@@ -38,7 +38,7 @@ func init() {
 		output := &types.NullableFloat{}
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			f, err := strconv.ParseFloat(input.Values[i], 64)
+			f, err := strconv.ParseFloat(input.Index(i).(string), 64)
 			if err != nil {
 				return err
 			}

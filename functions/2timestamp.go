@@ -40,7 +40,7 @@ func init() {
 		output := &types.NullableTimestamp{TsType: types.Timestamp}
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			s := input.Values[i]
+			s := input.Index(i).(string)
 			ts, err := time.Parse(time.RFC3339, s)
 			if err != nil {
 				return err
@@ -56,7 +56,7 @@ func init() {
 		standard := vectors[1].(*types.NullableText).Values[0]
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			s := input.Values[i]
+			s := input.Index(i).(string)
 			ts, err := time.Parse(gostyle, s)
 			if err != nil {
 				return err
