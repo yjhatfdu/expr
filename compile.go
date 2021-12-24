@@ -201,13 +201,21 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 			an.OutType = types.FloatS
 		case types.Text:
 			var str string
-			if strings.HasPrefix(an.Value, `"`) && strings.HasSuffix(an.Value, `"`) {
-				str = an.Value[1 : len(an.Value)-1]
-			} else if strings.HasPrefix(an.Value, `'`) && strings.HasSuffix(an.Value, `'`) {
-				str = an.Value[1 : len(an.Value)-1]
-			} else {
+			switch an.Value {
+			case "":
 				str = an.Value
+			case `"`, `""`:
+				str = `"`
+			default:
+				if strings.HasPrefix(an.Value, `"`) && strings.HasSuffix(an.Value, `"`) {
+					str = an.Value[1 : len(an.Value)-1]
+				} else if strings.HasPrefix(an.Value, `'`) && strings.HasSuffix(an.Value, `'`) {
+					str = an.Value[1 : len(an.Value)-1]
+				} else {
+					str = an.Value
+				}
 			}
+
 			str = strings.ReplaceAll(str, "\\\\", "\\")
 			ctx.addOperation(operation{
 				op:   CONST,

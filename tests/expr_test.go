@@ -11,6 +11,14 @@ import (
 	"time"
 )
 
+func Test1(t *testing.T) {
+	p, err := expr.Compile(`'{"patient_name":"'+'""'`, nil, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(p.Run(nil, nil))
+}
+
 func TestCase(t *testing.T) {
 	var err error
 	types.LocalOffsetNano = 8 * 3600 * 1e9
