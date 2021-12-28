@@ -12,7 +12,7 @@ func init() {
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableInt)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Index(i).(float64) == right.Index(j).(float64), false)
+			output.Set(index, left.Index(i).(int64) == right.Index(j).(int64), false)
 			return nil
 		})
 	})
