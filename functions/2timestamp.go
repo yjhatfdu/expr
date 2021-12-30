@@ -41,7 +41,7 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Index(i).(string)
-			ts, err := time.Parse(time.RFC3339, s)
+			ts, err := time.ParseInLocation(time.RFC3339, s, time.Local)
 			if err != nil {
 				return err
 			}
@@ -57,7 +57,7 @@ func init() {
 		gostyle := convert2GoTimeFormatStyle(standard)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Index(i).(string)
-			ts, err := time.Parse(gostyle, s)
+			ts, err := time.ParseInLocation(gostyle, s, time.Local)
 			if err != nil {
 				return err
 			}

@@ -225,7 +225,7 @@ func buildTimestampVec(d []string, isScalar bool) types.INullableVector {
 		if s == `\N` || s == "" {
 			val.Set(i, 0, true)
 		} else {
-			v, err := time.Parse(time.RFC3339, s)
+			v, err := time.ParseInLocation(time.RFC3339, s, time.Local)
 			if err != nil {
 				panic(err)
 			}
@@ -270,7 +270,7 @@ func buildDateVec(d []string, isScalar bool) types.INullableVector {
 		if s == `\N` || s == "" {
 			val.Set(i, 0, true)
 		} else {
-			v, err := time.Parse("2006-01-02", s)
+			v, err := time.ParseInLocation("2006-01-02", s, time.Local)
 			if err != nil {
 				panic(err)
 			}
@@ -293,7 +293,7 @@ func buildTimeVec(d []string, isScalar bool) types.INullableVector {
 		if s == `\N` || s == "" {
 			val.Set(i, 0, true)
 		} else {
-			v, err := time.Parse(time.RFC3339, "1970-01-01T"+s+"Z")
+			v, err := time.ParseInLocation(time.RFC3339, "1970-01-01T"+s+"Z", time.Local)
 			if err != nil {
 				panic(err)
 			}
