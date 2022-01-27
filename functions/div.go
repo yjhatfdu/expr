@@ -57,7 +57,7 @@ func init() {
 			if right.Index(j).(int64) == 0 {
 				return errors.New("divide zero")
 			}
-			output.Set(index, types.Int2numeric(types.NormalizeNumeric(left.Index(i).(int64), left.Scale, s), s)/types.NormalizeNumeric(right.Index(j).(int64), left.Scale, s), false)
+			output.Set(index, types.Int2numeric(types.NormalizeNumeric(left.Index(i).(int64), left.Scale, s), s)/types.NormalizeNumeric(right.Index(j).(int64), right.Scale, s), false)
 			return nil
 		})
 	})

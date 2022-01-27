@@ -50,7 +50,7 @@ func init() {
 		s := types.NumericScale(left.Scale, right.Scale)
 		output.Scale = s
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.NormalizeNumeric(left.Index(i).(int64), left.Scale, s)*types.NormalizeNumeric(right.Index(j).(int64), left.Scale, s), false)
+			output.Set(index, types.NormalizeNumeric(left.Index(i).(int64), left.Scale, s)*types.NormalizeNumeric(right.Index(j).(int64), right.Scale, s), false)
 			return nil
 		})
 	})
