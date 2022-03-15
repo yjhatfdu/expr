@@ -12,7 +12,7 @@ import (
 )
 
 func Test1(t *testing.T) {
-	p, err := expr.Compile(`'{"patient_name":"'+'""'`, nil, nil)
+	p, err := expr.Compile(`toNumeric(1.0,2)`, nil, nil)
 	if err != nil {
 		panic(err)
 	}

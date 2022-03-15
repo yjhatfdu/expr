@@ -39,7 +39,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableNumeric)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumeric(left.Index(i).(int64), left.Scale, right.Index(j).(int64), right.Scale) == 0, false)
+			output.Set(index, types.CompareDecimal(left.Values[i], right.Values[j]) == 0, false)
 			return nil
 		})
 	})
@@ -48,7 +48,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableInt)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericInt(left.Index(i).(int64), left.Scale, right.Index(j).(int64)) == 0, false)
+			output.Set(index, types.CompareDecimal(left.Values[i], types.Int2Decimal(right.Values[j], 0)) == 0, false)
 			return nil
 		})
 	})
@@ -57,7 +57,7 @@ func init() {
 		left := vectors[0].(*types.NullableInt)
 		right := vectors[1].(*types.NullableNumeric)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericInt(right.Index(j).(int64), right.Scale, left.Index(i).(int64)) == 0, false)
+			output.Set(index, types.CompareDecimal(types.Int2Decimal(left.Values[i], 0), right.Values[j]) == 0, false)
 			return nil
 		})
 	})
@@ -66,7 +66,7 @@ func init() {
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableFloat)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericFloat(left.Index(i).(int64), left.Scale, right.Index(j).(float64)) == 0, false)
+			output.Set(index, types.CompareDecimal(left.Values[i], types.Float2Decimal(right.Values[j], left.Scale)) == 0, false)
 			return nil
 		})
 	})
@@ -75,7 +75,7 @@ func init() {
 		left := vectors[0].(*types.NullableFloat)
 		right := vectors[1].(*types.NullableNumeric)
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.CompareNumericFloat(right.Index(j).(int64), right.Scale, left.Index(i).(float64)) == 0, false)
+			output.Set(index, types.CompareDecimal(types.Float2Decimal(left.Values[i], right.Scale), right.Values[j]) == 0, false)
 			return nil
 		})
 	})

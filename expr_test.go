@@ -95,9 +95,9 @@ func buildNumericVec(d []string, isScalar bool) types.INullableVector {
 	}
 	for i, s := range d {
 		if s == `\N` || s == "" {
-			val.Set(i, 0, true)
+			val.Set(i, types.Int2Decimal(0, 0), true)
 		} else {
-			v, err := types.Text2Numeric(s, 4)
+			v, err := types.Text2Decimal(s)
 			if err != nil {
 				panic(err)
 			}
