@@ -1303,7 +1303,7 @@ func (v *NullableBlob) Init(length int) {
 }
 
 func (v NullableBlob) Type() BaseType {
-	return Text
+	return Blob
 }
 
 func (v NullableBlob) Index(i int) interface{} {
