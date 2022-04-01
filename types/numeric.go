@@ -79,6 +79,9 @@ func (d Decimal) String() string {
 	isNeg := d.i.Sign() < 0
 
 	num, frac := (&big.Int{}).DivMod(absN.i, big.NewInt(pow10[d.scale]), &big.Int{})
+	if frac.Cmp(&big.Int{}) == 0 {
+		return num.String()
+	}
 	if isNeg {
 		return "-" + num.String() + "." + frac.String()
 	} else {
@@ -94,6 +97,9 @@ func (d Decimal) StringScale(n int) string {
 	isNeg := d.i.Sign() < 0
 
 	num, frac := (&big.Int{}).DivMod(absN.i, big.NewInt(pow10[d.scale]), &big.Int{})
+	if frac.Cmp(&big.Int{}) == 0 {
+		return num.String()
+	}
 	fracString := frac.String()
 	if len(fracString) < n {
 		fracString = fracString + strings.Repeat("0", n-len(fracString))

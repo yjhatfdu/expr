@@ -26,6 +26,7 @@ var keywords = map[string]int{
 	"<":       LT,
 	"<=":      LTE,
 	"lte":     LTE,
+	"<>":      NEQ,
 	"!=":      NEQ,
 	"!==":     NEQ,
 	"ne":      NEQ,

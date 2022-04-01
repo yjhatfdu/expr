@@ -17,6 +17,14 @@ import (
 //	fmt.Println(functions.PrintAllFunctions())
 //}
 
+func TestCompile2(t *testing.T) {
+	p, err := Compile("$1<>'' and $1 is not null", []types.BaseType{types.Text}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(p)
+}
+
 func TestExpr_Like(t *testing.T) {
 	code := `case when $1 = '%~%' then regexpMatch(trim($1),'')end`
 	p, err := Compile(code, []types.BaseType{types.Text}, nil)
