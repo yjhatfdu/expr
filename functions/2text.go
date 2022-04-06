@@ -1,11 +1,17 @@
 package functions
 
 import (
+	"bytes"
+	"errors"
 	"github.com/axgle/mahonia"
 	"github.com/yjhatfdu/expr/types"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 func convert2GoTimeFormatStyle(standard string) (gostyle string) {
@@ -122,34 +128,132 @@ func init() {
 	toText.Overload([]types.BaseType{types.Blob}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableBlob)
+		var utf8Flag bool
+		var gbkFlag bool
+		sample := input.Index(0).([]byte)
+		if utf8.Valid(sample) {
+			utf8Flag = true
+		} else if isGBK(sample) {
+			gbkFlag = true
+		}
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), "gbk", "utf8"), false)
+			if utf8Flag {
+				output.Seti(i, string(input.Index(i).([]byte)))
+			} else if gbkFlag {
+				output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), "gbk", "utf8"), false)
+			} else {
+				return errors.New("未知的原始编码，请确定编码后使用双参数toText函数尝试转换")
+			}
 			return nil
 		})
 	})
 	toText.Overload([]types.BaseType{types.Blob, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableBlob)
-		oldEncoder := vectors[1].(*types.NullableText).Index(0).(string)
+		oldEncoder := strings.ToLower(vectors[1].(*types.NullableText).Index(0).(string))
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), oldEncoder, "utf8"), false)
-			return nil
-		})
-	})
-	toText.Overload([]types.BaseType{types.Blob, types.TextS, types.TextS}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		output := &types.NullableText{}
-		input := vectors[0].(*types.NullableBlob)
-		oldEncoder := vectors[1].(*types.NullableText).Index(0).(string)
-		newEncoder := vectors[2].(*types.NullableText).Index(0).(string)
-		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, ConvertToNewString(string(input.Index(i).([]byte)), oldEncoder, newEncoder), false)
+			//if oldEncoder == "gbk" {
+			//	bs, err := GbkToUtf8(input.Index(i).([]byte))
+			//	if err != nil {
+			//		return err
+			//	}
+			//	output.Seti(i, string(bs))
+			//} else if oldEncoder == "gb18030" {
+			//	bs, err := Gb18030ToUtf8(input.Index(i).([]byte))
+			//	if err != nil {
+			//		return err
+			//	}
+			//	output.Seti(i, string(bs))
+			//} else {
+			output.Seti(i, ConvertToNewString(string(input.Index(i).([]byte)), oldEncoder, "utf8"))
+			//}
 			return nil
 		})
 	})
 }
 
-func ConvertToNewString(src string, oldEncoder string, newEncoder string) string {
-	srcDecoder := mahonia.NewDecoder(oldEncoder)
+func isGBK(data []byte) bool {
+	length := len(data)
+	var i int = 0
+	for i < length {
+		if data[i] <= 0x7f {
+			//编码0~127,只有一个字节的编码，兼容ASCII码
+			i++
+			continue
+		} else {
+			//大于127的使用双字节编码，落在gbk编码范围内的字符
+			if data[i] >= 0x81 &&
+				data[i] <= 0xfe &&
+				data[i+1] >= 0x40 &&
+				data[i+1] <= 0xfe &&
+				data[i+1] != 0xf7 {
+
+				i += 2
+				continue
+			} else {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func GbkToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func Utf8ToGbk(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewEncoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func Gb18030ToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GB18030.NewDecoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func Utf8ToGb18030(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GB18030.NewEncoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func HZGB2312ToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.HZGB2312.NewDecoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func Utf8ToHZGB2312(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.HZGB2312.NewEncoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func ConvertToNewString(src string, oldDecoder string, newEncoder string) string {
+	srcDecoder := mahonia.NewDecoder(oldDecoder)
 	desDecoder := mahonia.NewDecoder(newEncoder)
 	resStr := srcDecoder.ConvertString(src)
 	_, resBytes, _ := desDecoder.Translate([]byte(resStr), true)

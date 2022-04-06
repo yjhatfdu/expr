@@ -932,6 +932,17 @@ func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
 			}
 		}
 		return v
+	case Blob:
+		v := &NullableBlob{}
+		v.Init(l)
+		for i := 0; i < l; i++ {
+			if values[i] == nil {
+				v.IsNullArr[i] = true
+			} else {
+				v.Values[i] = values[i].([]byte)
+			}
+		}
+		return v
 	}
 	return nil
 }

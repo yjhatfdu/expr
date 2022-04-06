@@ -442,5 +442,18 @@ func TestTimeFormat(t *testing.T) {
 		panic(err)
 	}
 	t.Log(types.ToString(ret))
+}
 
+func TestToGBKText(t *testing.T) {
+	c, err := Compile(fmt.Sprint(`toText($1)`), []types.BaseType{types.Blob}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	bs, err := functions.Utf8ToGbk([]byte("expr表达式"))
+	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Blob, bs)}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
 }
