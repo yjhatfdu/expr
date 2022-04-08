@@ -15,6 +15,10 @@ type Decimal struct {
 	scale int
 }
 
+func (d Decimal) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, d.String())), nil
+}
+
 func Int2Decimal(i int64, scale int) Decimal {
 	if scale == 0 {
 		scale = 4
