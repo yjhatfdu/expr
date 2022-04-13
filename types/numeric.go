@@ -3,12 +3,13 @@ package types
 import (
 	"fmt"
 	"math/big"
+	"strconv"
 	"strings"
 )
 
-var pow10 = [16]int64{
-	1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14, 1e15,
-}
+//var pow10 = [16]int64{
+//	1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14, 1e15,
+//}
 
 type Decimal struct {
 	i     *big.Int
@@ -24,19 +25,28 @@ func Int2Decimal(i int64, scale int) Decimal {
 		scale = 4
 	}
 	return Decimal{
-		i:     big.NewInt(i * pow10[scale]),
+		i:     new(big.Int).Mul(big.NewInt(i), GenPow(scale)),
 		scale: scale,
 	}
 }
 
 func Float2Decimal(f float64, scale int) Decimal {
-	if scale == 0 {
-		scale = 4
+	d, _ := Text2Decimal(fmt.Sprint(f))
+	if d.scale < scale {
+		_scale := scale - d.scale
+		d.i = big.NewInt(0).Mul(d.i, GenPow(_scale))
 	}
-	return Decimal{
-		i:     big.NewInt(int64(f * float64(pow10[scale]))),
-		scale: scale,
+	return d
+}
+
+func GenPow(scale int) *big.Int {
+	src := "1"
+	for i := 0; i < scale; i++ {
+		src += "0"
 	}
+	num := &big.Int{}
+	num.SetString(src, 10)
+	return num
 }
 
 //func Float2numeric(f float64, scale int) int64 {
@@ -55,11 +65,13 @@ func (d Decimal) ToInt() int64 {
 	if d.scale == 0 {
 		return d.i.Int64()
 	}
-	return (&big.Int{}).Div(d.i, big.NewInt(pow10[d.scale])).Int64()
+	return (&big.Int{}).Div(d.i, GenPow(d.scale)).Int64()
 }
 
 func (d Decimal) ToFloat() float64 {
-	return float64(d.i.Int64()) / float64(pow10[d.scale])
+	str := d.String()
+	f, _ := strconv.ParseFloat(str, 64)
+	return f
 }
 
 func (d Decimal) abs() Decimal {
@@ -82,7 +94,7 @@ func (d Decimal) String() string {
 	absN := d.abs()
 	isNeg := d.i.Sign() < 0
 
-	num, frac := (&big.Int{}).DivMod(absN.i, big.NewInt(pow10[d.scale]), &big.Int{})
+	num, frac := (&big.Int{}).DivMod(absN.i, GenPow(d.scale), &big.Int{})
 	if frac.Cmp(&big.Int{}) == 0 {
 		return num.String()
 	}
@@ -100,7 +112,7 @@ func (d Decimal) StringScale(n int) string {
 	absN := d.abs()
 	isNeg := d.i.Sign() < 0
 
-	num, frac := (&big.Int{}).DivMod(absN.i, big.NewInt(pow10[d.scale]), &big.Int{})
+	num, frac := (&big.Int{}).DivMod(absN.i, GenPow(d.scale), &big.Int{})
 	if frac.Cmp(&big.Int{}) == 0 {
 		return num.String()
 	}
@@ -135,10 +147,10 @@ func CompareDecimal(d1, d2 Decimal) int {
 		return d1.i.Cmp(d2.i)
 	}
 	if d1.scale > d2.scale {
-		i2 := (&big.Int{}).Mul(d2.i, big.NewInt(pow10[d1.scale-d2.scale]))
+		i2 := (&big.Int{}).Mul(d2.i, GenPow(d1.scale-d2.scale))
 		return d1.i.Cmp(i2)
 	}
-	i1 := (&big.Int{}).Mul(d1.i, big.NewInt(pow10[d2.scale-d1.scale]))
+	i1 := (&big.Int{}).Mul(d1.i, GenPow(d2.scale-d1.scale))
 	return i1.Cmp(d2.i)
 }
 
@@ -154,7 +166,7 @@ func DivideDecimal(d1, d2 Decimal) Decimal {
 	//	return Decimal{i: (&big.Int{}).Div(d1.i, i2), scale: d1.scale}
 	//}
 	//i1 := (&big.Int{}).Mul(d1.i, big.NewInt(pow10[d2.scale-d1.scale]))
-	return Decimal{i: (&big.Int{}).Div((&big.Int{}).Mul(d1.i, big.NewInt(pow10[d2.scale])), d2.i), scale: d2.scale}
+	return Decimal{i: (&big.Int{}).Div((&big.Int{}).Mul(d1.i, GenPow(d2.scale)), d2.i), scale: d2.scale}
 }
 
 func MulDecimal(d1, d2 Decimal) Decimal {
@@ -172,13 +184,13 @@ func AddDecimal(d1, d2 Decimal) Decimal {
 		}
 	}
 	if d1.scale > d2.scale {
-		i2 := (&big.Int{}).Mul(d2.i, big.NewInt(pow10[d1.scale-d2.scale]))
+		i2 := (&big.Int{}).Mul(d2.i, GenPow(d1.scale-d2.scale))
 		return Decimal{
 			i:     (&big.Int{}).Add(d1.i, i2),
 			scale: d1.scale,
 		}
 	}
-	i1 := (&big.Int{}).Mul(d1.i, big.NewInt(pow10[d2.scale-d1.scale]))
+	i1 := (&big.Int{}).Mul(d1.i, GenPow(d2.scale-d1.scale))
 	return Decimal{
 		i:     (&big.Int{}).Add(i1, d2.i),
 		scale: d2.scale,
@@ -193,13 +205,13 @@ func MinusDecimal(d1, d2 Decimal) Decimal {
 		}
 	}
 	if d1.scale > d2.scale {
-		i2 := (&big.Int{}).Mul(d2.i, big.NewInt(pow10[d1.scale-d2.scale]))
+		i2 := (&big.Int{}).Mul(d2.i, GenPow(d1.scale-d2.scale))
 		return Decimal{
 			i:     (&big.Int{}).Sub(d1.i, i2),
 			scale: d1.scale,
 		}
 	}
-	i1 := (&big.Int{}).Mul(d1.i, big.NewInt(pow10[d2.scale-d1.scale]))
+	i1 := (&big.Int{}).Mul(d1.i, GenPow(d2.scale-d1.scale))
 	return Decimal{
 		i:     (&big.Int{}).Sub(i1, d2.i),
 		scale: d2.scale,
@@ -303,7 +315,7 @@ func Text2Decimal(s string) (n Decimal, err error) {
 		}
 		scale := len(segs[1])
 		i := &big.Int{}
-		i = i.Add(num.Mul(num, big.NewInt(pow10[scale])), frac)
+		i = i.Add(num.Mul(num, GenPow(scale)), frac)
 		return Decimal{i: i, scale: scale}, nil
 	} else {
 		return Decimal{}, fmt.Errorf("invalid numeric '%s'", s)
