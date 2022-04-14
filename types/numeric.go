@@ -2,8 +2,8 @@ package types
 
 import (
 	"fmt"
+	d2 "github.com/shopspring/decimal"
 	"math/big"
-	"strconv"
 	"strings"
 )
 
@@ -69,8 +69,8 @@ func (d Decimal) ToInt() int64 {
 }
 
 func (d Decimal) ToFloat() float64 {
-	str := d.String()
-	f, _ := strconv.ParseFloat(str, 64)
+	dc2, _ := d2.NewFromString(d.String())
+	f, _ := dc2.Float64()
 	return f
 }
 
