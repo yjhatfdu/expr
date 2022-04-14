@@ -21,3 +21,10 @@ func TestDecimal3(t *testing.T) {
 	d, err := Text2Decimal(src)
 	fmt.Println(d, err)
 }
+
+func TestDecimal4(t *testing.T) {
+	src := "1.12345678901234567890"
+	d, _ := Text2Decimal(src)
+	a := d.StringScale(0)
+	fmt.Println(a)
+}

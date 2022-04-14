@@ -117,6 +117,9 @@ func (d Decimal) StringScale(n int) string {
 		return num.String()
 	}
 	fracString := frac.String()
+	if n == 0 {
+		return d.String()
+	}
 	if len(fracString) < n {
 		fracString = fracString + strings.Repeat("0", n-len(fracString))
 	} else {
