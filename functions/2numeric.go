@@ -49,6 +49,18 @@ func init() {
 			return nil
 		})
 	})
+	toNumeric.Overload([]types.BaseType{types.Text}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableNumeric{}
+		input := vectors[0].(*types.NullableText)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			t, err := types.Text2Decimal(input.Values[i])
+			if err != nil {
+				return err
+			}
+			output.Set(i, t, false)
+			return nil
+		})
+	})
 	toNumeric.Overload([]types.BaseType{types.Float, types.IntS}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableNumeric{}
 		input := vectors[0].(*types.NullableFloat)

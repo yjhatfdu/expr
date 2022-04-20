@@ -31,7 +31,7 @@ func Int2Decimal(i int64, scale int) Decimal {
 }
 
 func Float2Decimal(f float64, scale int) Decimal {
-	d, _ := Text2Decimal(fmt.Sprint(f))
+	d, _ := Text2Decimal(strconv.FormatFloat(f, 'f', -1, 64))
 	if d.scale < scale {
 		_scale := scale - d.scale
 		d.i = big.NewInt(0).Mul(d.i, GenPow(_scale))
@@ -101,7 +101,12 @@ func (d Decimal) String() string {
 	}
 
 	x := d.i.String()
-	return fmt.Sprintf("%s%s.%s", neg, x[0:d.scale], x[d.scale:])
+
+	if len(x) > d.scale {
+		return fmt.Sprintf("%s%s.%s", neg, x[0:len(x)-d.scale], x[len(x)-d.scale:])
+	} else {
+		return fmt.Sprintf("%s0.%s", neg, strings.Repeat("0", d.scale-len(x))+x)
+	}
 
 	//num, frac := (&big.Int{}).DivMod(absN.i, GenPow(d.scale), &big.Int{})
 	//if frac.Cmp(&big.Int{}) == 0 {
