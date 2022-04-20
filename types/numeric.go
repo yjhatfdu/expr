@@ -92,18 +92,26 @@ func (d Decimal) String() string {
 	if d.scale == 0 {
 		return d.i.String()
 	}
-	absN := d.abs()
+	//absN := d.abs()
 	isNeg := d.i.Sign() < 0
 
-	num, frac := (&big.Int{}).DivMod(absN.i, GenPow(d.scale), &big.Int{})
-	if frac.Cmp(&big.Int{}) == 0 {
-		return num.String()
-	}
+	neg := ""
 	if isNeg {
-		return "-" + num.String() + "." + frac.String()
-	} else {
-		return num.String() + "." + frac.String()
+		neg = "-"
 	}
+
+	x := d.i.String()
+	return fmt.Sprintf("%s%s.%s", neg, x[0:d.scale], x[d.scale:])
+
+	//num, frac := (&big.Int{}).DivMod(absN.i, GenPow(d.scale), &big.Int{})
+	//if frac.Cmp(&big.Int{}) == 0 {
+	//	return num.String()
+	//}
+	//if isNeg {
+	//	return "-" + num.String() + "." + frac.String()
+	//} else {
+	//	return num.String() + "." + frac.String()
+	//}
 }
 
 func (d Decimal) StringScale(n int) string {
