@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/yjhatfdu/expr/functions"
 	"github.com/yjhatfdu/expr/types"
+	"log"
 	"strings"
 	"testing"
 	"time"
@@ -179,6 +180,22 @@ func TestExprNow(t *testing.T) {
 		panic(err)
 	}
 	t.Log(types.ToString(ret))
+}
+
+func TestText2Numeric(t *testing.T) {
+	code := `toNumeric(toFloat($1))`
+	p, err := Compile(code, []types.BaseType{types.Text}, nil)
+	if err != nil {
+		panic(err)
+	}
+	a := []types.INullableVector{types.BuildValue(types.Text, "89.5")}
+	log.Println(a)
+	ret, err := p.Run(a, nil)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(ret)
+	log.Println(ret.Index(0).(types.Decimal).String())
 }
 
 func TestExprNowDate(t *testing.T) {

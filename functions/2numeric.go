@@ -42,8 +42,8 @@ func init() {
 	toNumeric.Overload([]types.BaseType{types.Float}, types.Numeric, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableNumeric{}
 		input := vectors[0].(*types.NullableFloat)
-		scale := 4
-		output.Scale = 4
+		scale := 0
+		output.Scale = 0
 		return BroadCast1(vectors[0], output, func(i int) error {
 			output.Set(i, types.Float2Decimal(input.Values[i], scale), false)
 			return nil

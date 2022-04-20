@@ -35,6 +35,7 @@ func Float2Decimal(f float64, scale int) Decimal {
 	if d.scale < scale {
 		_scale := scale - d.scale
 		d.i = big.NewInt(0).Mul(d.i, GenPow(_scale))
+		d.scale = scale
 	}
 	return d
 }
