@@ -330,7 +330,9 @@ func Text2Decimal(s string) (n Decimal, err error) {
 		if _, ok := frac.SetString(segs[1], 10); !ok {
 			return Decimal{}, fmt.Errorf("invalid numeric '%s'", s)
 		}
-		frac.Neg(frac)
+		if strings.HasPrefix(segs[0], "-") {
+			frac.Neg(frac)
+		}
 		scale := len(segs[1])
 		i := &big.Int{}
 		i = i.Add(num.Mul(num, GenPow(scale)), frac)
