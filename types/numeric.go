@@ -94,11 +94,13 @@ func (d Decimal) String() string {
 	}
 
 	isNeg := !d.i.IsUint64()
+
+	x2 := new(big.Int).Set(d.i)
 	if isNeg {
-		d.i.Neg(d.i)
+		x2 = new(big.Int).Neg(d.i)
 	}
 
-	x := d.i.String()
+	x := x2.String()
 	negString := ""
 	if isNeg {
 		negString = "-"
