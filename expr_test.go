@@ -188,13 +188,11 @@ func TestText2Numeric(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	a := []types.INullableVector{types.BuildValue(types.Text, "203.95")}
-	log.Println(a)
+	a := []types.INullableVector{types.BuildValue(types.Text, ".423")}
 	ret, err := p.Run(a, nil)
 	if err != nil {
 		panic(err)
 	}
-	log.Println(ret)
 	log.Println(ret.Index(0).(types.Decimal).String())
 }
 
