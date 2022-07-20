@@ -685,9 +685,16 @@ func (v NullableNumeric) Copy() INullableVector {
 	result.NullableVector = v.NullableVector.copy()
 	result.Values = make([]Decimal, len(v.Values), cap(v.Values))
 	for i := range v.Values {
-		result.Values[i] = Decimal{
-			i:     big.NewInt(v.Values[i].i.Int64()),
-			scale: v.Values[i].scale,
+		if v.Values[i].i != nil {
+			result.Values[i] = Decimal{
+				i:     big.NewInt(v.Values[i].i.Int64()),
+				scale: v.Values[i].scale,
+			}
+		} else {
+			result.Values[i] = Decimal{
+				i:     nil,
+				scale: v.Values[i].scale,
+			}
 		}
 	}
 	return result

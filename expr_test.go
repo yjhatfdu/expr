@@ -188,7 +188,7 @@ func TestText2Numeric(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	a := []types.INullableVector{types.BuildValue(types.Text, "0.423")}
+	a := []types.INullableVector{types.BuildValue(types.Text, "-1.423")}
 	ret, err := p.Run(a, nil)
 	if err != nil {
 		panic(err)
