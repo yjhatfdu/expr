@@ -3,9 +3,13 @@ package functions
 import (
 	"github.com/axgle/mahonia"
 	"github.com/yjhatfdu/expr/types"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 func convert2GoTimeFormatStyle(standard string) (gostyle string) {
@@ -28,7 +32,26 @@ func convert2GoTimeFormatStyle(standard string) (gostyle string) {
 func init() {
 	toText, _ := NewFunction("toText")
 	toText.Overload([]types.BaseType{types.Text}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
-		return vectors[0], nil
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableText)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			s := input.Index(i).(string)
+			if utf8.ValidString(s) {
+				output.Seti(i, s)
+				return nil
+			} else if ValidGBKString(s) {
+				reader := transform.NewReader(strings.NewReader(s), simplifiedchinese.GB18030.NewDecoder())
+				d, err := ioutil.ReadAll(reader)
+				if err != nil {
+					return err
+				}
+				output.Seti(i, string(d))
+			} else {
+				output.Seti(i, s)
+			}
+
+			return nil
+		})
 	})
 	toText.Overload([]types.BaseType{types.Bool}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := &types.NullableText{}
@@ -146,6 +169,30 @@ func init() {
 			return nil
 		})
 	})
+}
+
+func ValidGBKString(s string) bool {
+	data := []byte(s)
+	length := len(data)
+	var i int = 0
+	for i < length {
+		if data[i] <= 0xff {
+			i++
+			continue
+		} else {
+			if data[i] >= 0x81 &&
+				data[i] <= 0xfe &&
+				data[i+1] >= 0x40 &&
+				data[i+1] <= 0xfe &&
+				data[i+1] != 0xf7 {
+				i += 2
+				continue
+			} else {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func ConvertToNewString(src string, oldEncoder string, newEncoder string) string {
