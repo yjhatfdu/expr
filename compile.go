@@ -65,7 +65,7 @@ func (p *Program) Run(input []types.INullableVector, env map[string]string) (vec
 		op := p.opCode[i]
 		switch op.op {
 		case CONST:
-			s.push(op.v)
+			s.push(op.v.Copy())
 		case VAR:
 			s.push(input[op.varIndex])
 		case FUNC:

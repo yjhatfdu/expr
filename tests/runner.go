@@ -16,6 +16,9 @@ import (
 )
 
 func CaseLoader(file string) {
+	if strings.HasSuffix(file, "ignore") {
+		return
+	}
 	log.Printf("testing %s", file)
 	fp, err := os.Open(file)
 	defer fp.Close()
@@ -179,9 +182,9 @@ func buildNumericVec(d []string, isScalar bool) types.INullableVector {
 	}
 	for i, s := range d {
 		if s == `\N` || s == "" {
-			val.Set(i, 0, true)
+			val.Set(i, types.Decimal{}, true)
 		} else {
-			v, err := types.Text2Numeric(s, 4)
+			v, err := types.Text2Decimal(s)
 			if err != nil {
 				panic(err)
 			}

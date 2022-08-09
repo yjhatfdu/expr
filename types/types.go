@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 	"time"
@@ -259,7 +260,7 @@ func ToString(v INullableVector) string {
 			case Text, TextS:
 				retSegs = append(retSegs, strconv.Quote(val.(string)))
 			case Numeric, NumericS:
-				retSegs = append(retSegs, Numeric2Text(val.(int64), v.(*NullableNumeric).Scale))
+				retSegs = append(retSegs, val.(Decimal).StringScale(v.(*NullableNumeric).Scale))
 			case Timestamp, TimestampS:
 				t := time.Unix(0, val.(int64)).In(time.Local)
 				retSegs = append(retSegs, t.Format(time.RFC3339))
@@ -360,7 +361,11 @@ func (v NullableInt) FalseArr() []bool {
 }
 
 func (v NullableInt) Copy() INullableVector {
-	return &v
+	result := &NullableInt{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([]int64, len(v.Values), cap(v.Values))
+	copy(result.Values, v.Values)
+	return result
 }
 
 func (v NullableInt) Index(i int) interface{} {
@@ -461,7 +466,11 @@ func (v NullableFloat) FalseArr() []bool {
 }
 
 func (v NullableFloat) Copy() INullableVector {
-	return &v
+	result := &NullableFloat{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([]float64, len(v.Values), cap(v.Values))
+	copy(result.Values, v.Values)
+	return result
 }
 
 func (v NullableFloat) Index(i int) interface{} {
@@ -559,7 +568,11 @@ func (v NullableBool) FalseArr() []bool {
 	return arr
 }
 func (v NullableBool) Copy() INullableVector {
-	return &v
+	result := &NullableBool{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([]bool, len(v.Values), cap(v.Values))
+	copy(result.Values, v.Values)
+	return result
 }
 
 func (v NullableBool) Index(i int) interface{} {
@@ -580,7 +593,7 @@ func (v NullableBool) Index(i int) interface{} {
 
 type NullableNumeric struct {
 	NullableVector
-	Values []int64
+	Values []Decimal
 	Scale  int
 }
 
@@ -614,7 +627,7 @@ func (v *NullableNumeric) Concat(vector INullableVector) (INullableVector, error
 	}
 }
 
-func (v NullableNumeric) Set(i int, val int64, isNull bool) {
+func (v NullableNumeric) Set(i int, val Decimal, isNull bool) {
 	if i >= len(v.Values) {
 		return
 	}
@@ -623,7 +636,7 @@ func (v NullableNumeric) Set(i int, val int64, isNull bool) {
 }
 
 func (v NullableNumeric) Seti(i int, val interface{}) {
-	if vval, ok := val.(int64); ok {
+	if vval, ok := val.(Decimal); ok {
 		v.Set(i, vval, false)
 	} else {
 		v.SetNull(i, true)
@@ -632,7 +645,7 @@ func (v NullableNumeric) Seti(i int, val interface{}) {
 
 func (v *NullableNumeric) Init(length int) {
 	v.IsNullArr = make([]bool, length)
-	v.Values = make([]int64, length)
+	v.Values = make([]Decimal, length)
 }
 
 func (v NullableNumeric) Type() BaseType {
@@ -656,25 +669,41 @@ func (v NullableNumeric) Index(i int) interface{} {
 }
 
 func (v NullableNumeric) Truthy(i int) bool {
-	return v.IsNullArr[i] == false && v.Values[i] != 0
+	return v.IsNullArr[i] == false && !v.Values[i].IsZero()
 }
 
 func (v NullableNumeric) TruthyArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := 0; i < len(v.IsNullArr); i++ {
-		arr[i] = v.IsNullArr[i] == false && v.Values[i] != 0
+		arr[i] = v.IsNullArr[i] == false && !v.Values[i].IsZero()
 	}
 	return arr
 }
 
 func (v NullableNumeric) Copy() INullableVector {
-	return &v
+	result := &NullableNumeric{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([]Decimal, len(v.Values), cap(v.Values))
+	for i := range v.Values {
+		if v.Values[i].i != nil {
+			result.Values[i] = Decimal{
+				i:     big.NewInt(v.Values[i].i.Int64()),
+				scale: v.Values[i].scale,
+			}
+		} else {
+			result.Values[i] = Decimal{
+				i:     nil,
+				scale: v.Values[i].scale,
+			}
+		}
+	}
+	return result
 }
 
 func (v NullableNumeric) FalseArr() []bool {
 	arr := make([]bool, len(v.IsNullArr), cap(v.IsNullArr))
 	for i := range v.IsNullArr {
-		arr[i] = v.Values[i] == 0 || v.IsNullArr[i]
+		arr[i] = v.IsNullArr[i] || v.Values[i].IsZero()
 	}
 	return arr
 }
@@ -775,7 +804,11 @@ func (v NullableText) FalseArr() []bool {
 }
 
 func (v NullableText) Copy() INullableVector {
-	return &v
+	result := &NullableText{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([]string, len(v.Values), cap(v.Values))
+	copy(result.Values, v.Values)
+	return result
 }
 
 type NullableTimestamp struct {
@@ -876,7 +909,11 @@ func (v NullableTimestamp) FalseArr() []bool {
 }
 
 func (v NullableTimestamp) Copy() INullableVector {
-	return &v
+	result := &NullableTimestamp{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([]int64, len(v.Values), cap(v.Values))
+	copy(result.Values, v.Values)
+	return result
 }
 
 func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
@@ -929,6 +966,17 @@ func BuildValue(valueType BaseType, values ...interface{}) INullableVector {
 				v.IsNullArr[i] = true
 			} else {
 				v.Values[i] = values[i].(bool)
+			}
+		}
+		return v
+	case Blob:
+		v := &NullableBlob{}
+		v.Init(l)
+		for i := 0; i < l; i++ {
+			if values[i] == nil {
+				v.IsNullArr[i] = true
+			} else {
+				v.Values[i] = values[i].([]byte)
 			}
 		}
 		return v
@@ -1030,7 +1078,13 @@ func (v NullableIntArray) FalseArr() []bool {
 }
 
 func (v NullableIntArray) Copy() INullableVector {
-	return &v
+	result := &NullableIntArray{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([][]int64, len(v.Values), cap(v.Values))
+	for i := range v.Values {
+		copy(result.Values[i], v.Values[i])
+	}
+	return result
 }
 
 func (v NullableIntArray) Index(i int) interface{} {
@@ -1131,7 +1185,13 @@ func (v *NullableTextArray) FalseArr() []bool {
 }
 
 func (v *NullableTextArray) Copy() INullableVector {
-	return v
+	result := &NullableTextArray{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([][]string, len(v.Values), cap(v.Values))
+	for i := range v.Values {
+		copy(result.Values[i], v.Values[i])
+	}
+	return result
 }
 
 func (v *NullableTextArray) Index(i int) interface{} {
@@ -1239,7 +1299,22 @@ func (n NullVector) InitFilterArr() []bool {
 }
 
 func (n NullVector) Copy() INullableVector {
-	return n
+	result := &NullVector{
+		IsScalaV: n.IsScalaV,
+	}
+	if n.FilterArr != nil {
+		result.FilterArr = make([]bool, len(n.FilterArr), cap(n.FilterArr))
+		copy(result.FilterArr, n.FilterArr)
+	}
+	if n.IsNullArr != nil {
+		result.IsNullArr = make([]bool, len(n.IsNullArr), cap(n.IsNullArr))
+		copy(result.IsNullArr, n.IsNullArr)
+	}
+	if n.Values != nil {
+		result.Values = make([]string, len(n.Values), cap(n.Values))
+		copy(result.Values, n.Values)
+	}
+	return result
 }
 
 func (n NullVector) Concat(vector INullableVector) (INullableVector, error) {
@@ -1303,7 +1378,7 @@ func (v *NullableBlob) Init(length int) {
 }
 
 func (v NullableBlob) Type() BaseType {
-	return Text
+	return Blob
 }
 
 func (v NullableBlob) Index(i int) interface{} {
@@ -1343,5 +1418,9 @@ func (v NullableBlob) FalseArr() []bool {
 }
 
 func (v NullableBlob) Copy() INullableVector {
+	result := &NullableBlob{}
+	result.NullableVector = v.NullableVector.copy()
+	result.Values = make([][]byte, len(v.Values), cap(v.Values))
+	copy(result.Values, v.Values)
 	return &v
 }

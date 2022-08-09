@@ -99,7 +99,7 @@ func init() {
 				}
 			}
 		case types.Numeric:
-			var inArr = make([]int64, 0, len(vectors)-1)
+			var inArr = make([]types.Decimal, 0, len(vectors)-1)
 			for i := 1; i < len(vectors); i++ {
 				inArr = append(inArr, vectors[i].(*types.NullableNumeric).Values[0])
 			}
@@ -109,7 +109,7 @@ func init() {
 					continue
 				}
 				for j := 0; j < len(inArr); j++ {
-					if v.Values[i] == inArr[j] {
+					if types.CompareDecimal(v.Values[i], inArr[j]) == 0 {
 						output.Values[i] = true
 						break
 					}
@@ -220,7 +220,7 @@ func init() {
 				}
 			}
 		case types.Numeric:
-			var inArr = make([]int64, 0, len(vectors)-1)
+			var inArr = make([]types.Decimal, 0, len(vectors)-1)
 			for i := 1; i < len(vectors); i++ {
 				inArr = append(inArr, vectors[i].(*types.NullableNumeric).Values[0])
 			}
@@ -231,7 +231,7 @@ func init() {
 				}
 				output.Values[i] = true
 				for j := 0; j < len(inArr); j++ {
-					if v.Values[i] == inArr[j] {
+					if types.CompareDecimal(v.Values[i], inArr[j]) == 0 {
 						output.Values[i] = false
 						break
 					}

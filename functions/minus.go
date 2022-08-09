@@ -44,10 +44,9 @@ func init() {
 		output := types.NullableNumeric{}
 		left := vectors[0].(*types.NullableNumeric)
 		right := vectors[1].(*types.NullableNumeric)
-		s := types.NumericScale(left.Scale, right.Scale)
-		output.Scale = s
+		output.Scale = left.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.NormalizeNumeric(left.Index(i).(int64), left.Scale, s)-types.NormalizeNumeric(right.Index(j).(int64), left.Scale, s), false)
+			output.Set(index, types.MinusDecimal(left.Values[i], right.Values[j]), false)
 			return nil
 		})
 	})
@@ -57,7 +56,7 @@ func init() {
 		right := vectors[1].(*types.NullableInt)
 		output.Scale = left.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Index(i).(int64)-types.Int2numeric(right.Index(j).(int64), left.Scale), false)
+			output.Set(index, types.MinusDecimal(left.Values[i], types.Int2Decimal(right.Values[j], left.Scale)), false)
 			return nil
 		})
 	})
@@ -67,7 +66,7 @@ func init() {
 		right := vectors[1].(*types.NullableNumeric)
 		output.Scale = right.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.Int2numeric(left.Index(i).(int64), right.Scale)-right.Index(j).(int64), false)
+			output.Set(index, types.MinusDecimal(types.Int2Decimal(left.Values[i], right.Scale), right.Values[j]), false)
 			return nil
 		})
 	})
@@ -77,7 +76,7 @@ func init() {
 		right := vectors[1].(*types.NullableFloat)
 		output.Scale = left.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, left.Index(i).(int64)-types.Float2numeric(right.Index(j).(float64), left.Scale), false)
+			output.Set(index, types.MinusDecimal(left.Values[i], types.Float2Decimal(right.Values[j], left.Scale)), false)
 			return nil
 		})
 	})
@@ -87,7 +86,7 @@ func init() {
 		right := vectors[1].(*types.NullableNumeric)
 		output.Scale = right.Scale
 		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
-			output.Set(index, types.Float2numeric(left.Index(i).(float64), right.Scale)-right.Index(j).(int64), false)
+			output.Set(index, types.MinusDecimal(types.Float2Decimal(left.Values[i], right.Scale), right.Values[j]), false)
 			return nil
 		})
 	})

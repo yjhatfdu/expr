@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/yjhatfdu/expr/functions"
 	"github.com/yjhatfdu/expr/types"
+	"log"
 	"strings"
 	"testing"
 	"time"
@@ -16,6 +17,14 @@ import (
 //	}
 //	fmt.Println(functions.PrintAllFunctions())
 //}
+
+func TestCompile2(t *testing.T) {
+	p, err := Compile("$1<>'' and $1 is not null", []types.BaseType{types.Text}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(p)
+}
 
 func TestExpr_Like(t *testing.T) {
 	code := `case when $1 = '%~%' then regexpMatch(trim($1),'')end`
@@ -95,9 +104,9 @@ func buildNumericVec(d []string, isScalar bool) types.INullableVector {
 	}
 	for i, s := range d {
 		if s == `\N` || s == "" {
-			val.Set(i, 0, true)
+			val.Set(i, types.Int2Decimal(0, 0), true)
 		} else {
-			v, err := types.Text2Numeric(s, 4)
+			v, err := types.Text2Decimal(s)
 			if err != nil {
 				panic(err)
 			}
@@ -171,6 +180,21 @@ func TestExprNow(t *testing.T) {
 		panic(err)
 	}
 	t.Log(types.ToString(ret))
+}
+
+func TestText2Numeric(t *testing.T) {
+	code := `toNumeric(toFloat($1))`
+	p, err := Compile(code, []types.BaseType{types.Text}, nil)
+	if err != nil {
+		panic(err)
+	}
+	a := []types.INullableVector{types.BuildValue(types.Text, "-1.423")}
+	ret, err := p.Run(a, nil)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(ret.Index(0).(types.Decimal).String())
+	log.Println(ret.Index(0).(types.Decimal).String())
 }
 
 func TestExprNowDate(t *testing.T) {
@@ -434,5 +458,18 @@ func TestTimeFormat(t *testing.T) {
 		panic(err)
 	}
 	t.Log(types.ToString(ret))
+}
 
+func TestToGBKText(t *testing.T) {
+	c, err := Compile(fmt.Sprint(`toText($1)`), []types.BaseType{types.Blob}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	bs, err := functions.Utf8ToGbk([]byte("expr表达式"))
+	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Blob, bs)}, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(types.ToString(ret))
 }
