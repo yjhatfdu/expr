@@ -81,7 +81,7 @@ func init() {
 		output := &types.NullableText{}
 		input := vectors[0].(*types.NullableNumeric)
 		return BroadCast1(vectors[0], output, func(i int) error {
-			output.Set(i, types.Numeric2Text(input.Index(i).(int64), input.Scale), false)
+			output.Set(i, input.Index(i).(types.Decimal).String(), false)
 			return nil
 		})
 	})
