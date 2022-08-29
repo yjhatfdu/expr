@@ -23,7 +23,7 @@ func (d Decimal) MarshalJSON() ([]byte, error) {
 
 func Int2Decimal(i int64, scale int) Decimal {
 	if scale == 0 {
-		scale = 4
+		scale = 0
 	}
 	return Decimal{
 		i:     new(big.Int).Mul(big.NewInt(i), GenPow(scale)),
@@ -320,11 +320,11 @@ func Text2Decimal(s string) (n Decimal, err error) {
 	if len(segs) == 1 {
 		i := &big.Int{}
 		_, ok := i.SetString(s, 10)
-		i.Mul(i, big.NewInt(10000))
+		i.Mul(i, big.NewInt(1))
 		if !ok {
 			return Decimal{}, fmt.Errorf("invalid numeric '%s'", s)
 		}
-		return Decimal{i: i, scale: 4}, nil
+		return Decimal{i: i, scale: 0}, nil
 	} else if len(segs) == 2 {
 		num := &big.Int{}
 		if _, ok := num.SetString(segs[0], 10); !ok {
