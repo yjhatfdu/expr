@@ -11,6 +11,14 @@ import (
 	"time"
 )
 
+func TestNumericToInt(t *testing.T) {
+	p, err := expr.Compile(`toInt('1.00')`, nil, nil)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(p.Run(nil, nil))
+}
+
 func Test1(t *testing.T) {
 	p, err := expr.Compile(`toNumeric(1.0,2)`, nil, nil)
 	if err != nil {
