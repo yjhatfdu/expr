@@ -1,6 +1,7 @@
 package functions
 
 import (
+	"fmt"
 	"github.com/axgle/mahonia"
 	"github.com/yjhatfdu/expr/types"
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -66,6 +67,20 @@ func init() {
 		input := vectors[0].(*types.NullableInt)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			output.Set(i, strconv.FormatInt(input.Index(i).(int64), 10), false)
+			return nil
+		})
+	})
+	toText.Overload([]types.BaseType{types.IntA}, types.Text, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := &types.NullableText{}
+		input := vectors[0].(*types.NullableIntArray)
+		return BroadCast1(vectors[0], output, func(i int) error {
+			vl := input.Index(i).([]int64)
+			var sl = make([]string, len(vl))
+			for i, v := range vl {
+				sl[i] = strconv.FormatInt(v, 10)
+			}
+
+			output.Set(i, fmt.Sprintf("{%sl}", strings.Join(sl, ",")), false)
 			return nil
 		})
 	})
