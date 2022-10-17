@@ -1,9 +1,15 @@
 package functions
 
 import (
+	"errors"
+	"fmt"
 	"github.com/yjhatfdu/expr/types"
+	"regexp"
 	"time"
 )
+
+var tsfmt1 = regexp.MustCompile(`\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}`)
+var tsfmt2 = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 
 func init() {
 	toTimestamp, _ := NewFunction("toTimestamp")
@@ -41,9 +47,20 @@ func init() {
 		input := vectors[0].(*types.NullableText)
 		return BroadCast1(vectors[0], output, func(i int) error {
 			s := input.Index(i).(string)
-			ts, err := time.ParseInLocation(time.RFC3339, s, time.Local)
+
+			var format string
+			var ts time.Time
+			var err error
+			if tsfmt1.MatchString(s) {
+				format = "2006-01-02 15:04:05"
+			} else if tsfmt2.MatchString(s) {
+				format = "2006-01-02"
+			} else {
+				format = time.RFC3339
+			}
+			ts, err = time.ParseInLocation(format, s, time.Local)
 			if err != nil {
-				return err
+				return errors.New(fmt.Sprintf("未能成功根据指定时间字符串格式 %s 解析目标字符串 %s", format, s))
 			}
 			t := ts.UnixNano()
 			output.Set(i, t, false)
