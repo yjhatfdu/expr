@@ -10,7 +10,8 @@ import (
 
 var tsfmt0 = regexp.MustCompile(`\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}`)
 var tsfmt1 = regexp.MustCompile(`\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}`)
-var tsfmt2 = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
+var tsfmt2 = regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`)
+var tsfmt3 = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 
 func init() {
 	toTimestamp, _ := NewFunction("toTimestamp")
@@ -51,16 +52,18 @@ func init() {
 
 			var format string
 			var ts time.Time
-			var err error
 			if tsfmt0.MatchString(s) {
 				format = "2006-01-02 15:04:05.000000"
 			} else if tsfmt1.MatchString(s) {
 				format = "2006-01-02 15:04:05"
 			} else if tsfmt2.MatchString(s) {
+				format = time.RFC3339
+			} else if tsfmt3.MatchString(s) {
 				format = "2006-01-02"
 			} else {
-				format = time.RFC3339
+				return errors.New("未支持的时间字符串 " + s)
 			}
+			var err error
 			ts, err = time.ParseInLocation(format, s, time.Local)
 			if err != nil {
 				return errors.New(fmt.Sprintf("未能成功根据指定时间字符串格式 %s 解析目标字符串 %s", format, s))
