@@ -100,6 +100,16 @@ func init() {
 			return nil
 		})
 	})
+	minusFunc.Overload([]types.BaseType{types.Timestamp, types.IntS}, types.Timestamp, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
+		output := types.NullableTimestamp{TsType: types.Timestamp}
+		output.TsType = types.Timestamp
+		left := vectors[0].(*types.NullableTimestamp)
+		interval := vectors[1].(*types.NullableInt).Index(0).(int64)
+		return BroadCast2(vectors[0], vectors[1], &output, func(index, i, j int) error {
+			output.Set(index, left.Index(i).(int64)-interval, false)
+			return nil
+		})
+	})
 	minusFunc.Overload([]types.BaseType{types.Timestamp, types.Interval}, types.Timestamp, func(vectors []types.INullableVector, env map[string]string) (vector types.INullableVector, e error) {
 		output := types.NullableTimestamp{TsType: types.Timestamp}
 		output.TsType = types.Timestamp
