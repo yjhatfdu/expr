@@ -176,7 +176,9 @@ type NullableVector struct {
 }
 
 func (v *NullableVector) AddError(err *VectorError) {
-	v.errors = append(v.errors, err)
+	if v != nil {
+		v.errors = append(v.errors, err)
+	}
 }
 
 func (v *NullableVector) GetErrors() []*VectorError {
