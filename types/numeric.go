@@ -93,7 +93,7 @@ func (d Decimal) String() string {
 		return d.i.String()
 	}
 
-	isNeg := !d.i.IsUint64()
+	isNeg := d.i.Sign() < 0
 
 	x2 := new(big.Int).Set(d.i)
 	if isNeg {
