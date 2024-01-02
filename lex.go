@@ -249,6 +249,8 @@ func (l *Lexer) lex() (token, error) {
 		case StateDoubleQuote:
 			s := l.lookAhead(1)
 			switch {
+			case s == "\\":
+				l.pos += 2
 			case s == "\"":
 				switch s2 := l.lookAhead(2); {
 				case s2 == "" || s2[1] != '"':
@@ -268,8 +270,7 @@ func (l *Lexer) lex() (token, error) {
 				}
 			case s == "":
 				return token{}, errors.New("unexpected EOF, incomplete string")
-			case s == "\\":
-				l.pos += 2
+
 			default:
 				l.pos++
 			}
