@@ -17,7 +17,7 @@ func TestDecimal2(t *testing.T) {
 }
 
 func TestDecimal3(t *testing.T) {
-	src := "1.12345678901234567890"
+	src := "-1.12345678901234567890"
 	d, err := Text2Decimal(src)
 	fmt.Println(d, err)
 }
@@ -26,5 +26,11 @@ func TestDecimal4(t *testing.T) {
 	src := "1.12345678901234567890"
 	d, _ := Text2Decimal(src)
 	a := d.StringScale(0)
+	fmt.Println(a)
+}
+func TestDecimal5(t *testing.T) {
+	src := "-1.4275782073449123754729160278752640754"
+	d, _ := Text2Decimal(src)
+	a := d.String()
 	fmt.Println(a)
 }
