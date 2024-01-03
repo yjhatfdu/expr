@@ -117,12 +117,12 @@ func (ct *context) addOperation(op operation) {
 }
 
 func Compile(code string, inputType []types.BaseType, env map[string]string) (p *Program, err error) {
-	defer func() {
-		r := recover()
-		if r != nil {
-			err = errors.New(fmt.Sprintf("%v", r))
-		}
-	}()
+	//defer func() {
+	//	r := recover()
+	//	if r != nil {
+	//		err = errors.New(fmt.Sprintf("%v", r))
+	//	}
+	//}()
 	l := NewLexer(code)
 	yyErrorVerbose = true
 	yyParse(l)
@@ -201,20 +201,21 @@ func compile(an *AstNode, ctx *context, inputType []types.BaseType, env map[stri
 			an.OutType = types.FloatS
 		case types.Text:
 			var str string
-			switch an.Value {
-			case "":
-				str = an.Value
-			case `"`, `""`:
-				str = `"`
-			default:
-				if strings.HasPrefix(an.Value, `"`) && strings.HasSuffix(an.Value, `"`) {
-					str = an.Value[1 : len(an.Value)-1]
-				} else if strings.HasPrefix(an.Value, `'`) && strings.HasSuffix(an.Value, `'`) {
-					str = an.Value[1 : len(an.Value)-1]
-				} else {
-					str = an.Value
-				}
-			}
+			str = an.Value
+			//switch an.Value {
+			//case "":
+			//	str = an.Value
+			//case `"`, `""`:
+			//	str = `"`
+			//default:
+			//	if strings.HasPrefix(an.Value, `"`) && strings.HasSuffix(an.Value, `"`) {
+			//		str = an.Value[1 : len(an.Value)-1]
+			//	} else if strings.HasPrefix(an.Value, `'`) && strings.HasSuffix(an.Value, `'`) {
+			//		str = an.Value[1 : len(an.Value)-1]
+			//	} else {
+			//		str = an.Value
+			//	}
+			//}
 
 			str = strings.ReplaceAll(str, "\\\\", "\\")
 			ctx.addOperation(operation{

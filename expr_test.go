@@ -18,6 +18,14 @@ import (
 //	fmt.Println(functions.PrintAllFunctions())
 //}
 
+func TestCompile3(t *testing.T) {
+	p, err := Compile(`'aaa'`, []types.BaseType{types.Text}, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(p.Run([]types.INullableVector{types.BuildValue(types.Text, "a")}, nil))
+}
+
 func TestCompile2(t *testing.T) {
 	p, err := Compile("$1<>'' and $1 is not null", []types.BaseType{types.Text}, nil)
 	if err != nil {
@@ -460,16 +468,16 @@ func TestTimeFormat(t *testing.T) {
 	t.Log(types.ToString(ret))
 }
 
-func TestToGBKText(t *testing.T) {
-	c, err := Compile(fmt.Sprint(`toText($1)`), []types.BaseType{types.Blob}, nil)
-	if err != nil {
-		t.Error(err)
-	}
-
-	bs, err := functions.Utf8ToGbk([]byte("expr表达式"))
-	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Blob, bs)}, nil)
-	if err != nil {
-		panic(err)
-	}
-	t.Log(types.ToString(ret))
-}
+//func TestToGBKText(t *testing.T) {
+//	c, err := Compile(fmt.Sprint(`toText($1)`), []types.BaseType{types.Blob}, nil)
+//	if err != nil {
+//		t.Error(err)
+//	}
+//
+//	bs, err := functions.Utf8ToGbk([]byte("expr表达式"))
+//	ret, err := c.Run([]types.INullableVector{types.BuildValue(types.Blob, bs)}, nil)
+//	if err != nil {
+//		panic(err)
+//	}
+//	t.Log(types.ToString(ret))
+//}

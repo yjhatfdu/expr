@@ -3,6 +3,7 @@ package expr
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -356,26 +357,31 @@ func (l *Lexer) lex() (token, error) {
 	}
 }
 
+var quoteRegexp = regexp.MustCompile(`''([^$])`)
+
 func unquote(s string) (string, error) {
 	if s == `''` {
 		return "", nil
 	}
-	return _unquote(strings.ReplaceAll(s, "''", "\\'"))
+
+	return _unquote(quoteRegexp.ReplaceAllString(s, `\'$1`))
 }
+
+var doubleQuoteRegexp = regexp.MustCompile(`""([^$])`)
 
 func unquoteDouble(s string) (string, error) {
 	if s == `""` {
 		return "", nil
 	}
-	if strings.HasSuffix(s, `\""`) {
-		n := strings.Count(s, `\""`)
-		if n-1 > 0 {
-			s = strings.Replace(s, `""`, `"`, n-1)
-		}
-	} else {
-		s = strings.ReplaceAll(s, `""`, `"`)
-	}
-	return _unquote(s)
+	//if strings.HasSuffix(s, `\""`) {
+	//	n := strings.Count(s, `\""`)
+	//	if n-1 > 0 {
+	//		s = strings.Replace(s, `""`, `"`, n-1)
+	//	}
+	//} else {
+	//	s = strings.ReplaceAll(s, `""`, `"`)
+	//}
+	return _unquote(doubleQuoteRegexp.ReplaceAllString(s, `\"$1`))
 
 }
 
